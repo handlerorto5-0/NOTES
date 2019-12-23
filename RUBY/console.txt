@@ -1,0 +1,15 @@
+irb --simple-prompt
+irb --simple-prompt --noecho
+---------------------------------------
+ruby -cw file.rb 
+ruby -c c2f.rb -проверяет синтаксис
+ruby -w c2f.rb -варнинги
+ruby -e 'puts "Code demo!"' - в кавычках
+ruby -le 'print "+ newline!"' - по линиям
+ruby -rscanf will require scanf (-r - require)
+---------------------------------------
+irb --simple-prompt -r rbconfig
+>> RbConfig::CONFIG["bindir"] (page 18)
+-------------------------------------
+ruby -e 'puts $:' - list of directories
+----------------------------------------
