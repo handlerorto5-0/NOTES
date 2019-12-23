@@ -1,0 +1,60 @@
+Gemfile : gem '...', '^>...' - версия выше
+bundle install - установка
+bundle install --binstubs -установка в директорию /bin
+bundle outdated -  сведения о старых версиях
+bandle exec rake db:migrate - подключение своей версии rake
+===========================================
+devise - регистрация и вход пользователей
+<div class="container">
+  <% flash.each do |name, msg| %>
+    <%= content_tag(:div, msg, class: "alert alert-info") %>
+  <% end %>
+</div>
+
+gem 'devise' >> Gemfile
+rails g devise:install
+rails g devise user
+rails g devise views users
+===========================================
+acts_as_list | сортировка в views
+===========================================
+Tomcat9
+excavator 12345
+sudo service tomcat9 start 
+sudo service tomcat9 status
+sudo service tomcat9 stop
+sunspot
+rm -rvf solr (Delete your /solr directory)
+rails sunspot:solr:reindex
+rails sunspot:solr:start
+rails sunspot:solr:restart
+rails sunspot:solr:stop
+rails sunspot:solr:ru
+=========================================
+Elasticsearch
+https://linuxize.com/post/how-to-install-elasticsearch-on-ubuntu-18-04/
+java -version
+sudo vim /etc/elasticsearch/elasticsearch.yml
+sudo systemctl daemon-reload 
+sudo systemctl enable elasticsearch.service
+sudo systemctl start elasticsearch.service
+sudo systemctl stop elasticsearch.service
+sudo systemctl status elasticsearch.service
+sudo systemctl restart elasticsearch.service
+
+sudo netstat -tulnp | grep 9200
+curl -XGET http://127.0.0.1:9200 - RESTful  tocol
+
+mapping:
+curl -XPUT http://127.0.0.1:9200/test
+curl -XPUT http://127.0.0.1:9200/test/mytype/1 -H "Content-Type: application/json" -d '{"name":"Paul", "age":35}'
+curl -XGET http://127.0.0.1:9200/test/mytype/_mapping?include_type_name=true
+deleting:
+curl -XDELETE http://127.0.0.1:9200/test
+opening/closing
+curl -XPOST http://127.0.0.1:9200/test/_close
+curl -XPOST http://127.0.0.1:9200/test/_open
+=========================================================================
+slim-rails
+config/application.rb
+ g.template_ingine :slim

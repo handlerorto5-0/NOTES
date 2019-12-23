@@ -1,0 +1,7 @@
+mysql -u root -p | запуск клиента
+CREATE DATABASE test_database | создать БД
+SHOW DATABASES  | выбрать БД
+CREATE USER 'test_user' IDENTIFIED BY 'password' | создать юзера БД с паролем
+USE test_database; | выбрать БД
+grant usage on *.* to test_user@localhost identified by 'passwd'; | Установка права на подключение к серверу с хоста localhost с паролем «passwd»
+DROP DATABASE [database name] | удвлить БД

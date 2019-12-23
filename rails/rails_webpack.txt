@@ -1,0 +1,75 @@
+test javascript/packs/application.js
+const Webpacker = "Hello from Webpack !";
+console.log(Webpacker);
+=========================================
+bootstrap:
+yarn add bootstrap jquery popper.js
+# config/webpack/environment.js
+const webpack = require('webpack')
+environment.plugins.append(
+  'Provide',
+  new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+    'window.jQuery': 'jquery',
+    Popper: ['popper.js', 'default']
+  })
+)
+// jQuery
+require("jquery")
+// Bootstrap
+require('bootstrap/dist/js/bootstrap')
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+//test jquery, pipet.js
+$(function(){
+  $('.jqr').html('Jquery run!');
+  $('[data-toggle="tooltip"]').tooltip();
+})
+
+test root to: 'home#index'
+<h3>test bootstrap</h3>
+<div class="jumbotron">
+  <p class="jqr"></p>
+  <button type="button" class="btn btn-primary btn-lg" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+    Tooltip on top
+  </button>
+</div>
+=======================================================
+CONFIG
+======================================================
+config/webpack/environment.js
+const typescript =  require('./loaders/typescript');
+const html =  require('./loaders/html');
+
+environment.loaders.prepend('typescript', typescript);
+environment.loaders.append('html', html);
+======================================================
+config/webpack/loaders/html.js
+module.exports = {
+  test: /\.html$/,
+  use: [{
+    loader: 'html-loader',
+    options: {
+      minimize: true,
+      removeAttributeQuotes: false,
+      caseSensitive: true,
+      customAttrSurround: [ [/#/, /(?:)/], [/\*/, /(?:)/], [/\[?\(?/, /(?:)/] ],
+      customAttrAssign: [ /\)?\]?=/ ]
+    }
+  }]
+}
+======================================================
+config/webpack/loaders/typescript.js
+const PnpWebpackPlugin = require('pnp-webpack-plugin')
+
+module.exports = {
+  test: /\.(ts|tsx)?(\.erb)?$/,
+  use: [
+    {
+      loader: 'ts-loader',
+      options: PnpWebpackPlugin.tsLoaderOptions()
+    }
+  ]
+}
+=======================================================

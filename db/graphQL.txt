@@ -1,0 +1,635 @@
+GraphQL язык запросов к API:
+REST -> SQL -> TABLE   |  GraphQL -> API
+get     -> select      |  query
+post    -> insert      |  mutation
+put     -> update      |  subcription
+delete  -> delete      |
+===============================================
+===============================================
+ЗАПРОСЫ
+пример запроса: 
+LiftCount {}  возвр кол-во лифтов
+allLift возвр список всех лифтов
+query LiftsAndTrails{
+    LiftCount(status: OPEN)
+    allLifts{
+        name
+        status
+    }
+    allTrails{
+        name
+        difficulty
+    }
+}
+================================================
+Изменение имён:
+CairLifts: allLifts{
+    LiftName: name
+    status
+}
+==============================================
+Фильтрация:
+query closedLidts{
+    allLifts(status: CLOSED sortby: "name"){
+        name
+        status
+    }
+}
+=============================================
+Использование идентификаторов:
+query jazzCatStatus{
+    Lift(id: "jazz-cat"){
+        name
+        status
+        might
+        alevationGain
+    }
+}
+================================================
+типы скалярные:
+Int, float, String, Boolean, ID
+----------------------------------------------
+Типы объектов, группы объектов, например:
+список маршрутов к которым можно получить доступ
+с определённого подъёмника - один ко многим
+query TrailsAccessedByJazzCat{
+    Lift(id: "jazz-cat"){
+        capacity
+        TrailAccess{
+            name
+            difficulty
+        }
+    }
+}
+==============================================
+Фрагменты - выборки для повторного использования:
+fragment LiftInfo on Lift{
+    name
+    status
+}
+query{
+    Lift(id: "jazz-cat"){
+        ...LiftInfo
+    }
+}
+===============================================
+Объявления, применяются, когда необходимо
+получить списки разных типов
+query Shedule{
+    agenda{
+        ...on Workout{
+            nameNames
+        }
+        ...on StudyGroup{
+            timeName
+        }
+    }
+}
+===============================================
+Использование именованых фрагментов с объединением
+query Today{
+    agenda{
+        ...Workout
+        ...Study
+    }
+}
+=================================================
+Интерфейсы - абстрактный тип, устанавливает список
+полей для рефлизации в похожих типах объектов
+query Shedule{
+    agenda{
+        name
+        start
+        end
+        ...Workout{
+            addItem
+        }
+    }
+}
+==============================================
+======================================================
+МУТАЦИИ - для записи новых даных,
+пример опасной мутации, вернёт true:
+mutation burnItDown{
+    deleteAllDate
+}
+поля доступные для мутаций определяются в API
+Пример создания:
+mutation createSong{
+    addSong(title: "No Scrubs", numbeOne: true, performerName: "TLC"){
+        id
+        title
+        numberOne
+        performerName
+    }
+}
+вернёт тип Song с переданными полями
+=================================================
+Переменные запроса - заменяют статическме значения в запросах
+на динамические, $variable - в GrephQL - переменная
+mutation createSong($title:String! $numberOne:Int! $by:String!){
+    addSong(title:$title, numberOne:$nemberOne, performaterName:$by){
+        id
+        title
+        numberOne
+        performaterName
+    }
+}
+данные передаются в JSON
+{
+    "title": "No Scrubs",
+    "numberOne": true,
+    "by": "TLC"
+}
+======================================================стр 71
+========================================================
+ПОДПИСКИ - прехват событий API GraphQL для изменения 
+даных в реальном времени
+subscription {
+    liftStatusChange {
+        name
+        capacity
+        status
+    }
+}
+=========================================================
+Самодиагностика — это возможность запрашивать детали
+ о текущей схеме API
+query {
+    __schema {
+        types {
+            name
+            description
+        }
+    }
+}
+данные определенного типа
+query liftDetails {
+    __type(name:"Lift") {
+        name
+        fields {
+            name
+            description
+            type {
+                name
+            }
+        }
+    }
+}
+поля доступные для корневых типов:
+query roots {
+  __schema {
+      queryType {
+          ...typeFields
+      }
+      mutationType {
+          ...typeFields
+      }
+      subscriptionType {
+          ...typeFields
+    }
+  }
+}
+fragment typeFields on __Type {
+    name
+    fields {
+        name
+    }
+}
+====================================================
+Абстрактные синтаксические деревья
+АСД — объект, который содержит вложенные
+поля, представляющие детали GraphQL-запроса
+запросы начинаются как документ GraphQL.
+Документ содержит хотя бы одно определение:
+OperationDefinition или FragmentDefinition
+OperationDefinition может содержать только один из трех типов
+операций: mutation , query или subscription . Внутрь вложена
+ выборка SelectionSet , которая содержит поля
+====================================================
+===================================================
+Схема GraphQL
+язык для определения схем,Schema Definition Language или SDL
+=====================================================
+Типы
+пользовательский объект, описывают основные функции  приложения.
+    Например, приложение для социальных сетей состоит из
+Users и Posts. Блог состоит из Categories и Articles.
+    Тип имеет поля, которые представляют данные, связанные с
+каждым объектом.
+------------------------------------------------------------
+Схема-набор определений типов в файле JavaScript
+с расширением .graphql , приложение PhotoShare:
+
+type Query {
+    totalPhotos: Int!
+    allPhotos: [Photo!]!
+    totalUsers: Int!
+    allUsers: [User!]!
+}
+schema {
+    query: Query
+}
+
+scalar DateTime - собственный скалярный тип
+
+type User {
+    githubLogin: ID!
+    name: String
+    avatar: String
+    postedPhotos: [Photo!]!
+}
+type Photo {
+    id: ID!
+    name: String!
+    url: String!
+    description: String
+    created: DateTime!
+    category: PhotoCategory!
+    postedBy: User!
+}
+enum PhotoCategory {
+    SELFIE
+    PORTRAIT
+    ACTION
+    LANDSCAPE
+    GRAPHIC
+}
+-------------------------------------------------------
+скалярные типы ID и String, возвратят JSON.
+Восклицательный знак указывает, что данное поле не может
+быть null
+-----------------------------------------------------
+Типы перечислений -enum , являются скалярными типами, кото-
+рые позволяют полю возвращать ограниченный набор строковых
+значений
+------------------------------------------------------
+Списки создаются путем окружения типа GraphQL квадратными скобками
+[]! - поле не может быть нулевым
+[!] - значения не могут быть нулевыми
+-------------------------------------------------------
+Соединения «один к одному»
+Ребро, соединяющее два узла, называется postedBy.
+-------------------------------------------------------
+Соединения «один ко многим»
+Поле postedPhotos будет возвращать список типов Photo
+------------------------------------------------------
+Чтобы фотографии или пользователи были доступны в запросе,
+нужно определить поля корневого типа Query. Теперь доступен 
+запрос
+query {
+    totalPhotos
+    allPhotos {
+        name
+        url
+    }
+}
+=========================================================
+Соединения «многие ко многим»
+тегирование-соединие одного списка узлов с другим списком узлов
+type User {
+    ...
+    inPhotos: [Photo!]!
+}
+type Photo {
+    ...
+    taggedUsers: [User!]!
+}
+==========================================================
+Сквозные типы
+подключкние многих пользователей друг к другу
+type User {
+friends: [User!]!
+}
+когда нужно сохранить некоторую информацию о самой дружбе
+type User {
+    friends: [Friendship!]!
+}
+type Friendship {
+    friend_a: User!
+    friend_b: User!
+    howLong: Int!
+    whereWeMet: Location
+}
+одно поле для всех friends в Friendship
+type Friendship {
+    friends: [User!]!
+    how_long: Int!
+    where_we_met: Location
+}
+==================================================
+==================================================
+Добавление в СХЕМУ списков разных типов
+==================================================
+union -тип объединения, используемый для возврата
+одного из нескольких разных типов
+union = StudyGroup | Workout | Class | Meal | Meeting | FreeTime
+мщжно объединить любое количество типов
+union AgendaItem = StudyGroup | Workout
+type StudyGroup {
+    name: String!
+    subject: String
+    students: [User!]!
+}
+type Workout {
+    name: String!
+    reps: Int!
+}
+type Query {
+    agenda: [AgendaItem!]!
+}
+доступен запрос
+query schedule {
+    agenda {
+        ...on Workout {
+            name
+            reps
+        }
+        ...on StudyGroup {
+            name
+            subject
+            students
+        }
+    }
+}
+---------------------------------------------------
+Интерфейс определяет все поля, которые должны быть включены
+в любой объект, который его реализует.
+для запроса agenda
+query schedule {
+    agenda {
+        name
+        start
+        end
+        ...on Workout {
+            reps
+        }
+    }
+}
+пример интерфейса
+scalar DataTime
+interface AgendaItem {
+    name: String!
+    start: DateTime!
+    end: DateTime!
+}
+type StudyGroup implements AgendaItem {
+    name: String!
+    start: DateTime!
+    end: DateTime!
+    participants: [User!]!
+    topic: String!
+}
+type Workout implements AgendaItem {
+    name: String!
+    start: DateTime!
+    end: DateTime!
+    reps: Int!
+}
+type Query {
+    agenda: [AgendaItem!]!
+}
+======================================================
+АРГУМЕНТЫ В СХЕМЕ
+type Query {
+    ...
+    User(githubLogin: ID!): User!
+    Photo(id: ID!): Photo!
+}
+----------------------------------------------------
+Фильтрация данных -добавить необязательные аргументы,
+используя нулевые поля
+type Query {
+...
+allPhotos(category: PhotoCategory): [Photo!]!
+}
+--------------------------------------------------
+Пагинация данных - разбиение данных на страницы
+type Query {
+    ...
+    allUsers(first: Int=50 start: Int=0): [User!]!
+    allPhotos(first: Int=25 start: Int=0): [Photo!]!
+}
+query {
+    allUsers(first: 10 start: 90) {
+        name
+        avatar
+    }
+}
+-------------------------------------------------
+Сортировка
+enum SortDirection {
+    ASCENDING
+    DESCENDING
+}
+enum SortablePhotoField {
+    name
+    description
+    category
+    created
+}
+Query {
+    allPhotos(
+        sort: SortDirection = DESCENDING
+        sortBy: SortablePhotoField = created
+    ): [Photo!]!
+}
+доступен запрос
+query {
+    allPhotos(sortBy: name)
+}
+или
+type User {
+    postedPhotos(
+        first: Int = 25
+        start: Int = 0
+        sort: SortDirection = DESCENDING
+        sortBy: SortablePhotoField = created
+        category: PhotoCategory
+    ): [Photo!]
+}
+===================================================стр 98       
+МУТАЦИИ В СХЕМЕ
+глаголы в приложении
+type Mutation {
+    postPhoto(
+        name: String!
+        description: String
+        category: PhotoCategory=PORTRAIT
+    ): Photo!
+}
+schema {
+    query: Query
+    mutation: Mutation
+}
+Добавление поля postPhoto типа Mutation позволяет пользовате-
+лям публиковать фотографии
+Например, пользователь может опубликовать фотографию
+mutation {
+    postPhoto(name: "Sending the Palisades") {
+        id
+        url
+        created
+        postedBy {
+            name
+        }
+    }
+}
+Переменные мутации
+mutation postPhoto(
+    $name: String!
+    $description: String
+    $category: PhotoCategory
+    ) {
+    postPhoto(
+        name: $name
+        description: $description
+        category: $category
+    ) {
+        id
+        name
+        email
+    }
+}
+-------------------------------------------
+Типы ввода
+input PostPhotoInput {
+    name: String!
+    description: String
+    category: PhotoCategory=PORTRAIT
+}
+type Mutation {
+    postPhoto(input: PostPhotoInput!): Photo!
+}
+при отправке мутации postPhoto
+mutation newPhoto($input: PostPhotoInput!) {
+    postPhoto(input: $input) {
+        id
+        url
+        created
+    }
+}
+сведения о новой фотографии должны быть включены в один объект:
+{
+    "input": {
+    "name": "Hanging at the Arc",
+    "description": "Sunny on the deck of the Arc",
+    "category": "LANDSCAPE"
+    }
+}
+---------------------------------------------------
+поля сортировки и фильтрации с помощью типов ввода:
+input PhotoFilter {
+    category: PhotoCategory
+    createdBetween: DateRange
+    taggedUsers: [ID!]
+    searchText: String
+}
+input DateRange {
+    start: DateTime!
+    end: DateTime!
+}
+input DataPage {
+    first: Int = 25
+    start: Int = 0
+}
+input DataSort {
+    sort: SortDirection = DESCENDING
+    sortBy: SortablePhotoField = created
+}
+type User {
+    ...
+    postedPhotos(filter:PhotoFilter paging:DataPage
+    sorting:DataSort): [Photo!]!
+    inPhotos(filter:PhotoFilter paging:DataPage
+    sorting:DataSort): [Photo!]!
+}
+type Photo {
+    ...
+    taggedUsers(sorting:DataSort): [User!]!
+}
+type Query {
+    ...
+    allUsers(paging:DataPage sorting:DataSort): [User!]!
+    allPhotos(filter:PhotoFilter paging:DataPage
+    sorting:DataSort): [Photo!]!
+}
+-------------------------------------------------
+Возвращаемые типы
+метаинформация о запросах и мутациях
+Чтобы авторизоваться с помощью GitHub OAuth, мы должны по-
+лучить код OAuth от GitHub.
+type AuthPayload {
+    user: User!
+    token: String!
+}
+type Mutation {
+    ...
+    githubAuth(code: String!): AuthPayload!
+}
+==================================================
+ПОДПИСКА В СХЕМЕ
+type Subscription {
+    newPhoto: Photo!
+    newUser: User!
+}
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+подписки могут использовать аргументы
+type Subscription {
+    newPhoto(category: PhotoCategory): Photo!
+    newUser: User!
+}
+=================================================
+Документация схемы
+===============================================
+комментарии к типу и аргументу (кавычки):
+Replace with:
+type Mutation {
+"""
+Authorizes a GitHub User
+"""
+githubAuth(
+    "The unique code from GitHub that is sent to authorize
+    the user"
+    code: String!
+    ): AuthPayload!
+}
+==================================================
+==================================================
+API GraphQL стр 111
+==================================================
+mkdir photo-share-api
+cd photo-share-api
+touch index.js
+npm init -y
+npm install apollo-server graphql nodemon
+в файл package.json:
+"main": "index.js"
+"scripts": {
+"start": "nodemon -e js,json,graphql"
+}
+запускаем npm start , выполняется файл index.js,
+ и nodemon будет следить за изменениями в лю-
+бых файлах с расширением js , json или graphql
+----------------------------------------------
+Распознаватель — это функция, которая возвращает данные для
+определенного поля. Функции Resolver возвращают данные в типе
+и форме, заданных схемой
+  Каждое поле должно иметь соответствующую
+функцию распознавателя. Распознаватель должен следовать прави-
+лам схемы — иметь то же имя, что и поле, которое было определено
+в схеме, и возвращать тип данных, заданный схемой
+const typeDefs = `
+    type Query {
+        totalPhotos: Int!
+    }
+`
+const resolvers = {
+    Query: {
+        totalPhotos: () => 42
+    }
+}

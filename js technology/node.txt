@@ -1,0 +1,104 @@
+mdm array - быстрый поиск справки  по js
+emojy <name_symbol> - поиск символа юникода
+
+mkdir example­project
+cd example­project
+npm init ­-y - флаг по умолчанию
+npm i ­­--save express - npm install, or npm i for short, ­­save option, npm will
+npm rm express ­­--save -удалить
+automatically update your package.json file, or install modules globally by using the ­­global
+--------------------------------------------
+Hello World with Node’s http module:
+const http = require('http');
+const port = 8080;
+const server = http.createServer((req, res) => {
+res.end('Hello, world.');
+});
+server.listen(port, () => {
+console.log('Server listening on: http://localhost:%s', port);
+});
+--------------------------------------------------
+node debug hello.js
+node ­­--inspect ­­--debug­-brk
+#!/usr/bin/env node -запуск программ в оболочке mode
+----------------------------------------------------
+пример подключения модуля
+в обработчике
+const currency = require('./lib/currency');
+в модуле
+module.exports = exports = Currency;
+----------------------------------------------------
+пример трёхуровнего обратного вызова
+http.createServer((req, res) => { ...
+fs.readFile('./titles.json', (err, data) => { ...
+fs.readFile('./template.html', (err, data) => { ...
+--------------------------------------------------
+типичное использование двух аргументов
+const fs = require('fs');
+fs.readFile('./titles.json', (err, data) => {
+if (err) throw err;
+// do something with data if no error has occurred
+});
+------------------------------------------------------
+простой echo server, отслеживает появление данных и выводит в консоль
+const net = require('net');
+cinst server = net.createServer(soxket => {
+    socket.on('date', data =>{      - socket.once - один раз
+        socket.wtire(sata);
+    });
+});
+server.listen(8888);
+запуск
+node echo_server.js
+подключиться 
+и создать собвтие
+telnet 127.0.0.1 8888
+-------------------------------------------------
+эмитер (коротко on или addListener)
+const EventEmitter = require('events').EventEmitter;
+const channel = new EventEmitter();
+channel.on('join', () => {
+console.log('Welcome!');
+});
+событие
+channel.emit('join');
+------------------------------------------------
+обработка ошибок в эмитере
+const events = require('events');
+const myEmitter = new events.EventEmitter();
+myEmitter.on('error', err => {
+    console.log(`ERROR: ${err.message}`);
+});
+myEmitter.emit('error', new Error('Something is wrong.'));
+-----------------------------------------------------
+serial flow control:
+npm install async
+const async = require('async')
+async.series([...tasks...]);
+-----------------------------------------------------
+parallel flow­-control:
+const tasks = [];
+let completeTasks = 0;
+function checkIfComplete(){
+    completeTasks ++; ...
+}
+...tasks...
+tasks.push(task)
+tasks.forEach(task => task());
+-----------------------------------------------------
+для обраюотки запросов из терминала
+npm install ­­--save body­parser, and implement
+curl ­­data "title=Example 2" http://localhost:3000/articles
+---------------------------------------------------
+прикрутить Bootstrap
+npm install bootstrap ­­--save
+в основном индексном файле
+app.use(
+'/css/bootstrap.css',
+express.static('node_modules/bootstrap/dist/css/bootstrap.css')
+);
+в основном файле в хедере
+<link rel="stylesheet" href="/css/bootstrap.css">
+--------------------------------------------------------------
+
+

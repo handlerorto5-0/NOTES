@@ -1,0 +1,10 @@
+pass
+pass Email/zx2c4.com
+pass -c Email/zx2c4.com
+pass insert Business/cheese-whiz-factory
+pass insert -m ...
+pass generate Email/jasondonenfeld.com 15
+pass rm Business/cheese-whiz-factory
+pass git push
+git clone https://git ...
+

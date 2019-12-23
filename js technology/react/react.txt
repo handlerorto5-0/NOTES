@@ -1,0 +1,16 @@
+CSS модули для локализации стилей
+yarn eject
+yarn install
+config/erbpackconfig.js
+(447)
+test: cssRegex,
+exclude: cssModuleRegex,
+use: getStyleLoaders({
+  importLoaders: 1,
+  modules: true,
+  localIdentName: '[name]__[local]___[hash:base64:5]',
+в файле подключить
+import classes from './Car.css';
+пользовать
+classes.itemCss
+====================================

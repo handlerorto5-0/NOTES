@@ -1,0 +1,238 @@
+RSPEC -фреймворк для тестирования приложенй
+gem install rspec - глобальная установка
+rspec hero_spec.rb --color - пример запуска файла с тестами
+====================================================================
+Тестирование RUBY
+
+пример тестов:
+require './hero' # в файле клас и экземпляр Hero
+describe  Hero do
+  it "has a capitalized name" do # название теста
+    hero=Hero.new 'joker'
+    expect(hero.name).to eq 'Joker' # ожидаемый результат
+  end
+end
+-----------------------------------------------------------------
+Пример оптимизации (начало describe)
+before do
+	@rero=Hero.new 'joker'
+end
+------------------------------------------------------------------
+пример разбивки тестов с помощью коментариев
+#arrange -подготовка
+car=Car.new
+#act -выполнение действия
+range=car.add_fuel 10
+#assert - проверка
+expect(car.range) to eq 200
+===========================================================================
+CAPYBARA 
+1. Ишет элементы в браузере по ID и содержанию
+visit('page_url') # navigate to page
+click_link('id_of_link') # click link by id
+click_link('link_text') # click link by link text
+click_button('button_name') # fill text field
+fill_in('First Name', :with => 'John') # choose radio button
+choose('radio_button') # choose radio button
+check('checkbox') # check in checkbox
+uncheck('checkbox') # uncheck in checkbox
+select('option', :from=>'select_box') # select from dropdown
+attach_file('image', 'path_to_image') # upload file
+2.
+
+===========================================================================
+Тестирование Rails:
+
+1. настройка, добавить в Gemfile, 
+group :development, :test do 
+	gem 'rspec-rails'
+  gem "capybara", '~> 2.13'
+  gem 'shoulda-matchers', '4.0.0.rc1'
+  gem 'rails-controller-testing' # If you are using Rails 5.x
+end
+
+в rails-healper.rb добавить
+houlda::Matchers.configure do |config|
+  config.integrate do |with|
+    # Choose a test framework:
+    with.test_framework :rspec
+    # Or, choose all of the above:
+    with.library :rails
+  end
+end
+
+после ввести 
+bundle install, (bundle install --without development test)
+2. Например, создать папку models, в ней файл contact_apec.rb
+
+require "rails_helper" (!!! в новой версии rails не spec)
+
+describe Contact do
+  it { should validate_presence_of(:email) }
+end
+или
+RSpec.describe Contact, type: :model do
+  it { should validate_presence_of(:email) }
+end
+3. rake spec - выполнить тест или bundle exec rspec
+4. Логические вложения , для красоты и понятности другим разработчикам
+Существует конвенция именновавния
+describe Contact do
+  describe "something" do - когда метод не тестируется
+  end
+  describe "#method" do - когда тестируется метод ...
+  describe ".method" do - когда тестиреутся метод класса
+end
+=====================================================================
+5. Гем factory_girl, 
+5.1. Установка 
+5.1.1 добавить в Gemfil
+group :development, :test do
+  ...
+  gem "factory_girl_rails"
+end   (bundle install)
+5.1.2 в spec/support/factory_girl.rb
+RSpec.configure do |config|
+  config.include FactoryGirl::Syntax::Methods
+end
+5.1.3 в rails_healper.rb(внутри ENV) или в файле теста добавить
+require 'support/factory_girl'
+------------------------------------------------------------
+5.2 Пример использования article:
+5.2.1 в модель добавить метод
+def subject
+    title
+end
+5.2.2 в spec/models/article_spec.rb
+describe "#subject" do
+    it "returns the article title" do
+      #создаём объект article хитрым способом
+      # arrange & act
+      article=create(:article, title: "Bla Bla Bla")
+      #assert
+      expect(article.subject).to eq "Bla Bla Bla"
+    end
+  end
+ rake spec || bundle exec rspec
+5.2.3 Непосредственно создать фабрику в spec/factories/articles.rb
+FactoryGirl.define do
+  factory :article do
+   title "Article title"
+   text "Article text"
+  end
+end
+===========================================================================
+Acceptence testing - приёмо-сдаточное испытание
+feature...do       то же самое,       describe...do
+ scenario...          что и            it... 
+feature и describe используются вместе + gem capybara
+-------------------------------------------------------------------------
+Условные правила имменования файлов
+visiter_..._spec.rb - для анонимных пользователей
+user_..._spec.rb - для залогиненых пользователей
+------------------------------------------------------------------------
+I18n- интернационализация
+config/localec/en.yml (в редакторе настройки, должно tab пробелами)
+ru.yml создают для русского , гем авторизаци divise имеет свой yml
+Пример:
+contacts: - создаём раздел
+  contact_us: 'Contact Us' -сздаём маску
+в views contact пишем
+<%= t('contacts.contact_us') %>
+---------------------------------------------------------------------
+Пример теста существования страницы и создания нового контакта, для незалогининого пользователя
+1. создать каталог spec/features
+2. в нём создать файл visiter_create_contact_spec.rb, подключить require 'raails_healper'
+3.
+feature "Contact creation" do
+  scenario "allows access to contact page" do
+    visit '/contacts'
+    expect(page).to have_content I18n.t('contacts.contact_us')
+  end
+ends
+4. гем capybara ищет по id, (??? :contact_email)
+удобно просмотреть в браузере id окна в котророе собираюсть добавить
+в тот же feature 
+scenario "allows a guest to create contact" do
+    visit '/contacts'
+    fill_in :contact_email, :with => 'user@example.com'
+    fill_in :contact_message, :with => "Im all set!"
+    click_button 'Send message'
+    expect(page).to have_content 'Thanks!'
+end
+-------------------------------------------------------------------------
+Пример с созданием аккаунта 
+1.создать features/visiter_create_user_account_spec.rb
+require "rails_helper"
+
+feature "Account creation" do
+  # тест создания аккаунта
+  scenario "allows guest to create account" do    
+    visit new_user_registration_path
+
+    fill_in :user_email, with: "user@exemple.com"
+    fill_in :user_username, with: "User_123"
+    fill_in :user_password, with: "123456"
+    fill_in :user_password_confirmation, with: "123456"
+
+    click_button 'Sign up'
+
+    expect(page).to have_content I18n.t('devise.registrations.signed_up')
+  end
+
+end
+2. Выносим создание в функцию и в олдельный файл spec/support/session_healper
+, подключаем rails_healper (ENV)
+def sing_up
+  visit new_user_registration_path
+
+  fill_in :user_email, with: "user@exemple.com"
+  fill_in :user_username, with: "User_123"
+  fill_in :user_password, with: "123456"
+  fill_in :user_password_confirmation, with: "123456"
+
+  click_button 'Sign up'
+end
+3. Оптимизируем features/visiter_create_user_account_spec.rb
+scenario "allows guest to create account" do    
+    sing_up
+    expect(page).to have_content I18n.t('devise.registrations.signed_up')
+end
+--------------------------------------------------------------------
+в rspec есть hooks befor  и after 
+before(:all) do ...end - исполняется перед тестированием
+before(:each) do...end - исполняется перед каждым тестом
+---------------------------------------------------------------------
+gem 'datebase_cleaner' - очищает БД, применяется чтобы не было конфликтов разных тестов
+Установка:
+1. Добавить в Gemfile
+2.Cкопировать RSpec Exemple с GitHub, подредактировать
+и в ставить в spec/support/datebase_cleaner.rb, 
+подключить в rails_healper(ENV):
+RSpec.configure do |config|
+config.before(:suite) do
+  DatabaseCleaner.strategy = :truncation
+end
+config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+end
+end
+-------------------------------------------------------------------
+Пример с входом на страницу созданием статьи
+spec/featurees/user_create_article_spec.rb
+require "rails_helper"
+feature "Article creation" do
+  before(:all) do
+    sing_up - временно создаёт пользователя для теста
+  end
+  # тест входа на страницу создания статьи
+  scenario "allows user to visit new article page" do    
+    visit new_article_path
+    expect(page).to have_content "New article"
+  end
+end
+-------------------------------------------------------------------
+
+

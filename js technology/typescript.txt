@@ -1,0 +1,328 @@
+tsc file.ts - запуск компилятора в консоли
+tsc -watch отслеживать
+====================================================
+Типы:
+var brand: string = 'Chevrolet';
+var age: number = 7;
+var isZeroGreaterThanOne: boolean = false;
+------------------------------------------------------
+массивы
+var brands: string[] = ['Chevrolet','Ford', 'General Motors'];
+var childrenAges: number[] = [8, 5, 12, 3, 1];
+----------------------------------------------------
+динамическая типизация
+var distance: any;
+// Допускается присваивание значений различных типов
+distance = '1000km';
+distance = 1000;
+// Допускается сочетание различных типов в массиве
+var distances: any[] = ['1000km', 1000];
+null и undefined  имеют тип any
+------------------------------------------------------
+Перечисления
+enum Brands { Chevrolet, Cadillac, Ford, Buick, Chrysler, Dodge };
+var myCar: Brands = Brands.Cadillac;
+Обращение к переменной myCar вернет 1
+enum BrandsReduced { Tesla = 1, GMC, Jeep };
+var myTruck: BrandsReduced = BrandsReduced.GMC;
+Обращение к переменной myTruck вернет 2, поскольку первому эле­
+менту перечисления было присвоено значение 1. Мы можем присво­
+ить значения всем элементам перечисления, лишь бы эти значения
+были целыми числами:
+enum Stackinglndex {
+None = О,
+Dropdown = 1000,
+Overlay = 2000,
+Modal = 3000
+};
+получить имя элемента по соответствующему числовому зна­чению:
+enum Brands { Chevrolet, Cadillac, Ford, Buick, Chrysler, Dodge };
+var myCarBrandName: string = Brands[1];
+-------------------------------------------------------------
+Тип void сообщает об отсутствии типа, и его применение ограничи­
+вается аннотированием функций, которые не возвращают никакого
+значения, то есть ничего не возвращают.
+resetPomodoro(): void {
+this.minutes = 24;
+this.seconds = 59;
+}
+============================================================
+Аннотации типов в функциях
+function sayHello(name: string): string {
+return 'Hello, ' + name;
+},  где
+mame тип параметра
+string тип возвращаемого значения
+  В случаях, когда объявляемая функция не возвращает никакого зна­
+чения, аннотация типа void даст компилятору информацию, необхо­
+димую для надлежащей проверки типов.
+  Переменная, ссы­лающаяся на анонимную функцию, должна аннотироваться типом
+функции, который информирует компилятор и о типах аргументов,
+передаваемых в функцию, и о типе возвращаемого значения, если та­
+ковое имеется. Это целый блок в форме: (аргументы: тип) => тип_воз-
+вращаемого значения:
+// Две функции с одинаковыми типами, но разной логикой
+function sayHello(input: string): string {
+    return 'Hello ' + input;
+}
+function sayHi(input: string): string {
+    return 'Hi ' + input;
+}
+// Здесь объявляется переменная с типом функции
+var greetMe:(name: string) => string;
+// Затем выполняется присваивание функции переменной
+greetMe = sayHello;
+=============================================
+Параметры функций в TypeScript
+---------------------------------------------
+Необязательные параметры
+function greetMe(name: string, greeting?: string): string {
+if (Igreeting) {
+greeting = 'Hello';
+}
+return greeting + ', ' + name;
+}
+----------------------------------------------
+Параметры по умолчанию
+function greetMe(name: string, greeting: string = 'Hello'): string {
+return greeting + ', ' + name;
+}
+----------------------------------------------
+Оставшиеся параметры
+function greetPeople(greeting: string, ...names: string[]): string {
+return greeting + ', ' + names.join(' and ') + '!';
+}
+alert(greetPeople('Hello', 'John', 'Ann', 'Fred'));
+-----------------------------------------------
+Перегрузка функций
+function hello(name: string): string;
+function hello(names: string[]): string;
+function hello(names: any, greeting?: string): string {
+    var namesArray: string[];
+    if(Array.isArray(names)) {
+    namesArray = names;
+    } else {
+    namesArray = [names];
+    }
+    i f ([greeting) {
+    greeting = 'Hello';
+    }
+    return greeting +', ' + namesArray.join(' and ') + '!';
+}
+==================================================
+Анатомия классов: конструкторы, свойства и методы
+class Car {
+private distanceRun: number = 0;
+color: string;
+constructor(public isHybrid: boolean, color: string = 'red') {
+this.color = color;
+}
+getGasConsumption(): string {
+return this.isHybrid ? 'Very low' : 'Too high!';
+}
+drive(distance: number): void {
+this.distanceRun += distance;
+}
+static honk(): string {
+return 1H000NK!1;
+}
+get distance(): number {
+return this.distanceRun;
+}
+}
+============================================
+Интерфейсы это схема,которой должен соответствовать любой класс, реализующий ее:
+interface Vehicle {
+make: string;
+}
+class Car implements Vehicle {
+// Компилятор выдаст предупреждение, если не определить свойство
+make: string;
+}
+----------------------------------------------
+Расширение классов с помощью наследования
+class Sedan extends Car {
+model: string;
+constructor(make: string, model: string) {
+super(make);
+this.model = model;
+}
+}
+=================================================
+Декораторы TypeScrip
+определяют способ добавления метаданных в объявления классов
+Декораторы легко узнаваемы по префиксу @ перед их именами
+и обычно располагаются над элементами, которые они декориру­
+ют, независимо от содержания этих элементов.
+--------------------------------------------------
+декораторы классов:
+function Greeter(target: Function): void {
+    target.prototype.greet = function(): void {
+    console.log('Hello!');
+}
+}
+@Greeter
+class Greeting {
+constructor() {
+// Здесь находится реализация...
+}
+}
+var myGreeting = new Greeting();
+myGreeting.greet();
+// в консоль будет выведено 'Hello!'
+декоратор Greeter добавил в класс Greeting метод
+greet (), который отсутствовал в нем
++++++++++++++++++++++++++++++++++++++++++++++
+Расширение сигнатуры функции декоратором класса
+function Greeter(greeting: string) {
+return function(target: Function)
+{
+target.prototype.greet = function(): void {
+console.log(greeting);
+}
+}
+}
+@Greeter('Howdy!')
+class Greeting {
+constructor() {
+// Здесь находится реализация...
+}
+}
+var myGreeting = new Greeting();
+myGreeting.greet();
+// в консоль будет выведено 'Howdy!'
+---------------------------------------------------
+декораторы свойств:
+определяются
+путем создания функции PropertyDecorator, чья сигнатура содержит
+два параметра:
+target: прототип декорируемого класса;
+key: имя декорируемого свойства.
+function LogChanges(target: Object, key: string) {
+var propertyValue: string = this[key];
+if (delete this[key]) {
+Object.defineProperty(target, key, {
+get: function() {
+return propertyValue;
+},
+set: function(newValue) {
+propertyValue = newValue;
+console.log('${key] is now $ [propertyValue]');
+}
+});
+}
+}
+class Fruit {
+@LogChanges
+name: string;
+}
+var fruit = new Fruit();
+fruit.name = 'banana1;
+// выведет в консоль 'name is now banana'
+fruit.name = 'plantain'; // выведет в консоль 'name is now plantain'
+-----------------------------------------------------
+декораторы методов:
+пособны обнаруживать, журналиро­вать и влиять на выполнение методов. Для этого требуется опреде­
+лить функцию MethodDecorator, принимающую следующие параметры:
+- target: объект, представляющий декорируемый метод;
+- key: строка с именем декорируемого метода;
+- value: дескриптор свойства данного метода. Фактически это
+объект хэша, содержащий среди прочего свойство value со
+ссылкой на сам метод.
+function LogOutput(target: Function, key: string, descriptor: any) {
+var originalMethod = descriptor.value;
+var newMethod = function(...args: any[]): any {
+var result: any = originalMethod.apply(this, args);
+i f (!this.loggedOutput)
+{
+this.loggedOutput = new Array<any>();
+}
+this.loggedOutput.push({
+method: key,
+parameters: args,
+output: result,
+timestamp: new Dated
+});
+return result;
+};
+descriptor.value = newMethod;
+}
+
+--------------------------------------------------
+декораторы параметров:
+- ParameterDecorator - используется для
+декорирования параметров в сигнатурах функций.
+принимает следующие параметры:
+- target: прототип объекта с функцией, чьи параметры декори­
+руются;
+- key: имя функции с декорируемым параметром;
+- parameterlndex: индекс параметра, к которому применяется де­
+корирование, в массиве параметров.
+function Log(target: Function, key: string, parameterlndex: number)
+{
+var functionLogged = key || target.prototype.constructor.name;
+console.log('
+The parameter in position $ {parameterlndex} at
+${functionLogged} has been decorated
+}
+class Greeter {
+greeting: string;
+constructor(@Log phrase: string) {
+this.greeting = phrase;
+}
+}
+// В консоль будет выведено то, что определено в классе выше:
+// 'The parameter in position 0 at Greeter has been decorated'
+=================================================
+Внутренние модули
+module Greetings {
+export class Greeting {
+constructor(public name: string) {
+console.log('Hello ${name}');
+}
+}
+export class XmasGreeting {
+constructor(public name: string) {
+console.log('Merry Xmas ${name}');
+}
+}
+}
+Модуль Greetings содержит два класса, которые становятся доступ­
+ными за пределами модуля при их импортировании:
+import XmasGreeting = Greetings.XmasGreeting;
+var XmasGreeting = new XmasGreeting('Joe');
+// в консоль будет выведено 'Merry Xmas Joe1
+Имеется даже возможность
+разбивать модули на несколько файлов, для чего в каждом файле до­
+статочно объявить одно и то же имя модуля. Но в этом случае требу­
+ется определить ссылки на файлы, по которым разбросаны объекты,
+принадлежащие этому модулю, с помощью тегов reference:
+/// creference path="greetings/XmasGreeting.ts" />
+
+tsc --outFile app.js module.ts
+Эта команда скомпилирует все файлы TypeScript вместе с файла­
+ми зависимостей, на которые указаны ссылки в виде тегов reference
+--------------------------------------------
+Внешние модули
+в файле Greetings.ts:
+export class Greeting {
+constructor(public name: string) {
+console.log('Hello ${name}');
+}
+}
+export class XmasGreeting (
+constructor(public name: string) {
+console.log('Merry Xmas ${name}');
+}
+}
+в файле Greetings.ts:
+export class Greeting {
+constructor(public name: string) {
+console.log('Hello ${name}');
+}
+}
+export class XmasGreeting (
+constructor(public name: string) {
+console.log('Merry Xmas ${name}');
+}
+}

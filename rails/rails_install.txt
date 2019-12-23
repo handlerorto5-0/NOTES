@@ -1,0 +1,23 @@
+
+----------------------------------------------------------------
+rails new project_name -d mysql  | создаст проект с БД MariaSQL
+rails db:create (inter DB password) | подключить БД MariaSQL
+rails db:migrate |
+rails db:create RAILS_ENV="test" | создать БД для тестов
+---------------------------------------------------------------
+-d postgresql
+config/database.yml
+host: localhost
+username: excavator
+password: 1
+
+rails db:create
+rails db:migrate
+---------------------------------------------------------------
+Параметры по умолчанию для rails new
+rails new solar_system --skip-test-unit --skip-bundle -d postgresql
+Чтобы не указывать эти флаги каждый раз, можно создать .railsrc:
+echo "--skip-bundle
+--skip-test-unit
+--database=postgresql" > ~/.railsrc
+-----------------------------------------------------------------

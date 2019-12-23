@@ -1,0 +1,101 @@
+﻿
+работа с GIT
+настройками конфигурации
+depot> git config --global --add user.name "Sam Ruby"
+depot> git config --global --add user.email rubys@intertwingly.net
+depot> git config --global --list - Проверить конфигурацию
+depot> git init - инициализация
+depot> git add . - дабавление всех файлов
+depot> git commit -m "Depot Scaffold" - отправка
+depot> git commit -a -m 'Validation!' - обединение add и commit
+depot> git checkout . - откат
+
+
+git config --global --add user.name "KVstudent"
+git config --global --add user.email "str_token@mail.ru"
+git config --global --add core.editor "sublime_text.exe"
+git config --global --list - Проверить конфигурацию
+git --version
+
+mkdir repo - создать папку
+cd repo - перейти в созданую папку
+git init - создать пустой депозитиарий
+
+>node выов nodejs , выйти .exit
+npm i npm@latest -g  обновить npm
+npm instal -g ungit установить глобально
+start ungit запуск в ком строке
+ungit авторизация через SSH:
+1. git/usr/bin/ssh-keygen.exe (в users должна быть папка .ssh)
+2. запус кейгена, в консоли к пути добавить /.ssh/id_rsa
+3. скопировать содержимое id_rsa.pab в github/myadmin/setting/ssh
+
+touch README.txt - создать файл
+echo "something..." >README.txt - добавить запись в файл
+git add . - дабавление всех файлов в stage
+git commit -m "[create repozitory]" 
+git commit -m "[creat]: Depot Scaffold" - отправка
+git commit -a -m '[creat]: Validation!' - обединение add и commit
+master- паказывает где находимся
+git log - список коммитов
+git log --oneline - сокращённый список коммтов
+git log -n3 --oneline -просмотр трёх последних
+git log --since="2018-03-05 23:21:00" --oneline - начиная с даты
+git log --intil="2018-03-05 23:21:00" --oneline - заканчивая датой
+git log --author="Slava" --oneline - по автору
+git log --grep="create" --oneline - по строке в описании
+HEAD -id комита в логе, указатель на комит в оношении которого будет создана новая заппись
+Бренчи- ветки
+
+git checkout master - снимок дерозитария относительно последнего комита
+git checkout 869ejgj - перейти по номеру в логе
+cd сменить директорию cd ../ верх  cd .git
+Tree-ish то что передаётся в качестве аргумента git | git команда tree-ish
+git show er6785 -q
+git show -q HEAD
+git show -q master
+git show -q @{5}
+ Trea-ish                | Exemplea
+ ------------------------------------------------------
+1.  <shal>               | uihfhudhg876780987687486
+2.  <decribeOutput>      | v 1.7.4.2 -679 - yfhu88
+3.  <refname>            | master, head/master, refs/heads/master
+4.  <refname>@{<data>}   | master@{yesterday}, HEAD@{5 minute ago
+5.  <refname>@{<n>}      | master@{1}
+6.  @{<n>}               | @{1}
+7.  @{-<n>}              | @{-1}
+8.  <refname>@{upstream} | master@{upstream}, @{u}
+9.  <rev>^               | HEAD^ , v1.5.1^0
+10. <rev>~<n>            | master~3
+11. <rev>^{<type>}       | v 9.88.6^{commit}
+12. <rev>^               | v 9.88.6^{}
+13. <rev>^{/<text>}      | HEAD^{/fix nasty big}
+14. :/<text>             | :/fix nasty big
+15. <rev>:<path>         | HEAD README.rb, master: sub-directiry/
+
+Удаление файлов из stage
+git status
+git rm --cached file.txt 
+
+Удаление файлов из репозитария
+git ls-tree master покажет дерево
+ls - покажет список
+git rm file.txt
+git commit -m "delete.."
+
+Переименование файлов
+git mv file1 file2
+git commit -m "rename..."
+
+GitHub репозиторий 
+git clone скопировать в репозитория в папку проекта
+git push дбавить в репозиторий
+git pull подтянуть с репозитория
+раздел issue для выкладки проблем и багов
+
+Как содать rails и прикрутить к Github  спомощью Upgit
+1. rails new ..
+2. создать чистый депозитарий с любым названием
+3. start ungit -> unitial commit -> no remotes specifed -> ad new remote
+4. копировать ссылки  remote and origin в репозитарии,
+в upgit name- origin, URL- скопированный адресс, выполняем push

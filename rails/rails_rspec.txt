@@ -1,0 +1,98 @@
+min gems:
+group :development, :test do
+  ...
+  # Test Framework
+  gem 'rspec'
+  gem 'rspec-rails'
+  gem "factory_bot_rails"
+end
+app/.spec
+--color
+--require spec_helper
+=====================================================
+group :test do
+  gem 'database_cleaner'
+end
+
+RSpec.configure do |config|
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
+
+end
+=========================================================
+gem 'shoulda-matchers'
+
+spec/rails_helper.rb
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+=======================================================
+config/application.rb конфиг генератора
+
+config.generators do |g|
+      g.test_framework :rspec,
+                       fixtures: true,
+                       view_spec: false,
+                       helper_specs: false,
+                       routing_specs: false,
+                       request_specs: false,
+                       controller_spec: true
+      g.fixture_replacement :factory_bot, dir: "spec/factories"
+end
+++++++++++++++=======================================
+tuning Devise with Rspec
+
+spec/suppirt/devise.rb
+RSpec.configure do |config|
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
+end
+
+spec/factories/factories.rb
+FactoryBot.define do
+  sequence :email do |n|
+    "user#{n}@test.com"
+  end
+
+  factory :user do
+    email
+    password {"12345678"}
+    password_confirmation {"12345678"}
+  end
+end
+
+in test 
+before do 
+      @user = create(:user)
+      @request.env['devise.mapping'] = Devise.mappings{:user}
+      sign_in @user
+    end
+==================================================
+include custom macros
+
+spec/support/anymaceos.rb
+  module Any
+  def ...
+  end
+end
+rail_halper.tb  
+Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f } -раскоментить
+
+in configure
+config.extend ControllerMacros, type: :controller
+  config.include AcceptanceHelper, type: :feature
+=====================================================
+
+

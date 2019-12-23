@@ -1,0 +1,14 @@
+sudo service mongod start
+sudo service mongod stop
+sudo service mongod status
+sudo service mongod restart
+mongo
+ use name_db
+ db
+ show dbs
+ db.new_collection.insert({key: "value"}) - пока нет записи, БД не сохраняется
+ db.createUser({
+    user: "name"
+    pwd: "password"
+    roles: [{ role: "readWrite", db: "name_db"}]
+ })

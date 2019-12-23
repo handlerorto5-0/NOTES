@@ -1,0 +1,35 @@
+rails g controller home reset -s | добвить столбец 'reset' в существующую модель 'home' без изменения файла home_controller.rb
+
+
+rails g integration_test name_test | добавит  интегрированный(относительно вывода в браузере) теств test/integration/name_test.rb
+rails g tastunit scaffold article | создаст test/control/article_controller_test.rb
+(in Rails 5 Unit tests создаются в для и в test/model)
+
+rails test
+rails stats
+
+
+https://github.com/academind-345590
+https://github.com/handlerorto5-0
+https://github.com/KVexcavator
+
+
+rails g migration ConverAttachmentToPolymorhic
+конфертирование в полиморфные
+class ConverAttachmentToPolymorhic < ActiveRecord::Migration[6.0]
+  def change
+    remove_index :attachments, :quetion_id
+    rename_column :attachments, :quetion_id, :attachmentable_id
+    add_index :attachments, :attachmentable_id
+
+    add_column :attachments, :attachmentable_type, :string 
+    add_index :attachments, :attachmentable_type
+  end
+end
+
+# execute generator, namespaced to "api" for Post model
+rails g scaffold_controller api/posts --api --model-name=Post
+
+
+
+

@@ -1,0 +1,27 @@
+sudo rm -rf /var/lib/apt/lists/*
+sudo apt-get clean
+sudo apt-get update
+-------------------------------------------------------------
+W: GPG error: http:/something.something Release: The following signatures couldn’t be verified because the public key is not available: NO_PUBKEY XXXXXXXXXXXXXXXX
+
+Здесь числа после NO_PUBKEY и есть ключ. Скопируйте их и выполните в терминале команду
+
+sudo apt-key adv --recv-key --keyserver keyserver.ubuntu.com XXXXXXXXXXXXXXXX
+
+sudo apt-get update
+--------------------------------------------------------------
+sudo apt list --upgradable
+sudo apt upgrade
+--------------------------------------------------------------
+to remove failing repositories:
+ sudo apt-get update | grep "Failed"
+ example:
+ :~# apt-get update  | grep "Failed"
+W: Failed to fetch http://ppa.launchpad.net/upubuntu-com/web/ubuntu/dists/trusty/main/binary-amd64/Packages  404  Not Found
+
+W: Failed to fetch http://ppa.launchpad.net/upubuntu-com/web/ubuntu/dists/trusty/main/binary-i386/Packages  404  Not Found
+
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+
+sudo add-apt-repository --remove ppa:upubuntu-com/web
+-----------------------------------------------------------------------

@@ -1,0 +1,8 @@
+HTML LocalStorage - локальная ячейка для хранения данных на ПК полбзователя
+function something(){
+	var x=window.localStorage.setItem('key');
+	window.localStorage.getItem{'key', 'value'};
+	alert(x);
+}
++++++++++++++++++++++++++++++++++++
+key.indexOf('string') -есть ли "string", возвращает позицию первой буквы

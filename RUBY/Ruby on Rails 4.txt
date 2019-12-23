@@ -1,0 +1,737 @@
+﻿создание собственную локальную версию сводной документации Rails API
+> rails new dummy_app
+> cd dummy_app
+dummy_app> rake doc:rails
+doc/api на рабочий стол, каталог удалить
+Адаптеры MySQL и SQLite  можно загрузить в виде RubyGems , mysql2 и sqlite3 (gem_server)
+====================================================================
+отладочные команды:
+rake test -ошибки бд
+rake test:models - запустить только блочные тесты
+rake db:test:prepare
+$ gem list --local rails -все установленные версии Rails
+rails --version - какая версия Rails запускается по умолчанию
+$ rails _4.0.0_ --version - настройка версии по умолчанию
+rails console
+в конмоли p.errors.inspect просмотр деталей ошибки
+=====================================================================
+Начало работы с проектом:
+Настройки окружения development.test.prodution в /config/unviroment
+sass.blogdown.com/post/7081811
+======================================================
+проект
+work> rails new name_progect - создание нового проекта
+work> cd name_progect - пореход в папку проекта
+depot> dir /w - просмотр папки проекта
+--------------------------------------------------
+В GitHub и нужной лиректории создать чистве папки с отдинаковым названием
+>rails new something
+--------------------------------------------------
+Для старых версий Rails, в Gemfile 
+em 'tzinfo-data', platforms: [...:x64_mingw]
+----------------------------------------------
+dundle install, bundle update
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+контроллеры
+demo> rails generate controller home index - создание контроллера home с методом(action) index, методы будут в классе
+=======================================================
+для записи в таблицу в app/controllers/contacts_controllers.rb
+def create
+   @contact=Contact.new(contact_params)
+   @contact.save
+ end
+=======================================================
+сущности
+> rails g model Articly title:string text:text -
+========================================================
+БД sqlite3
+sqlite3 development.sqlite3 - в папке db , далее .table и пр. SQL-запросы
+=========================================================
+запуск и отладка
+depot> rake db:rollback - отмена миграции
+db:migrate.redo - повторное использование миграции
+http://localhost:8808 -доступ к описанию всех API-функций Rails
+depot> rails server(start rails server) - запск сервера , теперь можно просмотреть localhost:3000
+depot> rake db:seed -заполнения таблицы products тестовыми данными
+===========================================================================
+ActiveRecord
+start rails concole - консоль  (т.ж. gem tux sinatra) 
+Contact.all-select*from  
+Contact.attribute_names-какие есть поля в таблице
+-------------------------------------------------------
+CRUD - create., read, update, delete
+CREATE:
+new-> .save , .create
+READ:
+.find, .all, .where
+UPDATE:
+.update(something_params)
+DELETE:
+.destroy
+
+==========================================================================
+маршруты routes.rb
+rake routes - получить список маршрутов
+Создать корневой маршрут-root , в config/rootes.rb | get '/'=>'home#index
+resources :articles - добавит URL по REST-cоглашению
+resource :contacts, only [:new, :create], path_names: {:new => ''} - добавит URL по REST-cоглашению? для единичой сущности, с определением доступных методов. path_names изменяет пути url(в примере /contacts/new заменяется /contacts)
+=====================================================================
+REST-соглашение  о  использовани URL
+Пример resources :photos - для юзера существуют множество фотографий 
+Метод HTTP	Путь	           Контроллер#Экшн	 Использование     
+GET	       /photos	         photos#index	     отображает список всех фото
+GET	       /photos/new	     photos#new	       возвращает форму HTML для создания нового фото
+POST	     /photos	         photos#create	   создает новое фото
+GET	       /photos/:id	     photos#show	     отображает определенное фото
+GET	       /photos/:id/edit	 photos#edit	     возвращает форму HTML для редактирования фото
+PATCH/PUT	 /photos/:id	     photos#update	   обновляет определенное фото
+DELETE	   /photos/:id	     photos#destroy	   удаляет определенное фото
+
+Пример resource :profile - для юзера существует один профиль
+Метод HTTP	Путь	           Контроллер#Экшн	  Использование
+GET	        /profile/new	   profiles#new	      возвращает форму HTML для создания нового геокодера
+POST	      /profile	       profiles#create	  создает новый геокодер
+GET	        /profile	       profiles#show	    отображает один и только один ресурс геокодера
+GET	        /profile/edit	   profiles#edit	    возвращает форму HTML для редактирования геокодера
+PATCH/PUT	  /profile	       profiles#update	  обновляет один и только один ресурс геокодера
+DELETE	    /profile	       profiles#destroy	  удаляет   профиль
+===========================================================================
+Виды связей таблиц:
+Один ко многим  1 - *
+Article              Comment
+has_many:coments     belongs_to:article
+id                   id, article_id
+Один ко одному  1 - 1
+Order                Address
+has_one:address      belongs_to:order
+                     order_id
+Многие ко многим * - *
+Tag                                 Article
+has_and_belongs_to_many:articles    has_and_belongs_to_many:tags
+автоматически создаётся таблица с tag_id и article_id
+----------------------------------------------------------------------
+Полиморфные ассоциации
+в rails это когда одна модель (Comment) принадлежит множеству сушностей (Post, Imale и пр.)
+Пример сооздания, есть посты, картинки и одинаковое комментирование:
+1.не выполняя мграции
+1.1 rails g model Comment content:text
+1.2 rails g model Post content:text
+1.3 rails g model Image url:string
+2. связывание Post,Image и Comment 
+2.1 в модели Comment
+belongs_to :commentable, polimorphic: true
+*commentable - условное соглашение о мменовани полиморфных связей,
+обязательно только окончание "able"
+*polimorphic: true- указатель на вид свяи
+2.2 в моделях Post, Image
+has_many :comments, as: :commentable
+2.3 добавить в db/migrate/...create_comment.rb 
+t.references :commentable, polimorphic: true
+3. bundle exec rake db:migrate !!!!
+4. тестирование в консоли - start rails console
+post=Post.create(content: 'post one')
+image_1=Image.create(url: 'one.jpg')
+image_2=Image.create(url: 'two.jpg')
+post.comments.create(content: 'comment one to post one')
+...делаем еще коментариев, идум папку db ->sqlite3 development.sqlite3
+красоту наводим .headers on  .mode column
+select*from comments;
+select*from posts; или images
+=============================================================================
+Создание статической страницы
+контроллер-> акшион (new-create, edit-update, destroy)-> views-> routers
+1) rails controller pages - cоздать контроллер
+2) в pages_controller.rb 
+	def about
+	end
+3) в routes.rb  get 'about' => 'pages#about' - путь
+4) в видах создать about.html.erb
+=========================================================================
+Создание сущности
+rails model -> rake db:migrate -> контроллер -> акшион (index, new-create, edit-update, destroy)->views
+Пример реализации комментариев к статье (один-ко-многим)
+1) rails g model Comment author:string body:text article:references
+2) rake db:migrate
+Примечание: sqlite3 development.sqlite3
+.tables .mode_columns .header_on 
+select * from articles
+pragma table_info(articles)-вывести инфомацию о таблице
+3)models/article.rb
+	has_many :comments
+4)настройка вложенного маршрута в routers
+resources :articles do
+	resources :comments
+end
+5) rails g controller Comments -создание контроллера
+6) добавление акшенов (поле булет на странице статьи, поэтому здесь только метод create)
+def create
+	@article=Article.find(params[:article_id])
+	@article.comments.create(comment_params)
+	redirect_to article_path(@article)
+end
+private
+def comment_params
+	params_require(:comment), permit(:author,:body)
+end
+7) добавить в views/article/show.html.rb
+<% form_fo ([@article,@rticle.comment.boild]) do |f| %>
+даст URL /article/13/comments (см коллекция)
+8) там же добавить для отображения всех комментариев
+<% @article.comments.each do |article| %>...
+==========================================================================
+формбилдер - используются в видах с адресами заданными RAST в routes 
+пример views/contact/new.html.erb:
+<%= form_for :contact, url: contacts_path do |f| %>
+(url запись вместо '/сontacts' для переброски в RAST c методом post)
+  <p>
+    <% if @contact && @contact.errors.any? %>
+      <h2><%= pluralize(@contact.errors.count, "error") %> prohibited this contact 
+          from being saved: </h2>
+      <ul>
+        <% @contact.errors.full_messages.each do |msg| %>
+          <li>
+            <%= msg %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </p>
+  <p>
+    <%= f.label :email %><br>
+    <%= f.text_field :email %>
+  </p>
+  <p>
+    <%= f.label :message %><br>
+    <%= f.text_area :message %>
+  </p>
+  <p>
+    <%= f.submit "Send message"%>
+  </p>
+<% end %>
+дл вывода в виде хеша после выполнения post в articles_controller.rb
+def create
+    render plain: params[:article].inspect
+end
+(plain чистый текст)
+==================================================================
+синтаксис
+---------------------------------------------------------------
+хелперы , книга Rails 4 стр 367
+<%= debug(papams)%> - список параметров. для ртладки
+<%= simple_format(@str)%> - подстанавливает HTML-теги
+<%= truncate (@str, length:20)%> - обрубает строку
+<%= %>
+--------------------------------------------------------------
+Вывод времени создания
+<time><%= post.create_at.to_date.strftime("%d %B, %Y") %></time>
+---------------------------------------------------------------
+ Post/Redirect/Get (PRG) pattern. - Ипользование render или redirect_to
+ cм ссылку https://stackoverflow.com/questions/7493767/are-redirect-to-and-render-exchangeable
+    if @product.save
+      format.html { redirect_to(@product, :notice => 'Product was successfully created.') }
+    else
+      format.html { render :action => "new" }
+------------------------------------------------------------------------
+ссылки 
+<%= link_to "Show all", atricle_path %>
+для повторного не срабатывания ссылки в article_controller.rb
+redirect_to @article(экземпляр) создаст /article/5
+Кнопка назад
+<%= link_to "Back", :back, class ...%>
+--------------------------------------------------------------
+Шаблоны для вставки на другие страницы
+там где надо исполнить:
+<%= render 'form' %>
+в видах созлать _form.html.erb с нужным содержанием
+если указать <%= render @posts %>, rails будет искать _post.html.erb,
+при етом .each do |...|- ьлок цкла писать не надо, rails cам его выполнит
+--------------------------------------------------------------
+Пример action#snow
+ в контролере
+def show
+ @article=Atricle.find(params[:id])
+end
+ в views/show.html.erb
+<% @article.text %>
+--------------------------------------------------------------
+пример action#index вывод списка всех статей
+	в контролере
+def index
+	@articles=Article.all
+end
+ в views/index.html.erb
+<% @articles.each do |article| %>...
+ ссылка на конкретную статью
+<%= link_to "Show article", article_path(article)
+-------------------------------------------------------
+пример action#edit вывод списка всех статей
+	в контролере
+2) def edit
+	@article=Atricle.find(params[:id])
+end
+4) def update
+	@article=Atricle.find(params[:id])
+	if @article.save(contact_params)/или @post.update_attributes(post_params)
+    метод в виде указывать не придётсяы/
+     redirect_to @article
+   else
+     render action: "edit"
+   end 
+end
+3) создать views/edit.html.erb, скопировать форму из  new.html.erb.  
+ Браузер  не  знает метода PUT , для применения REST /article/id-PUT применяют патерн: 
+ в форме вида article_path(@article)- изменит значение акшена на /article/id;
+ там же, method: :put - изменит значение метода в форме;
+ итог: <%= form_for :article, url: article_path(@article), method: :put do |f|%>
+  1)ссылка на редактирование
+<%= link_to "Edit article", edit_article_path(article)
+-------------------------------------------------------------------------
+пример реалзаци удаления
+1) контроллер
+def destroy
+	@article=Article.find(params[:id])
+	@article.destroy
+	redirect_to articles_path
+end
+2)ссылка для удаления
+<%= link_to "Delete", article_path(article), method: :delete, data: {confirm: 'Are you sure ?'} %>
+--------------------------------------------------------------------
+Вывод заголовков в виде ссылок
+<% @post.eact do |post|%>
+  <%= link_to post.title, post_path(post) %>
+============================================================================
+
+Валидация app/models/contact.rb
+class Contact < ApplicationRecord
+  validates :message, presence: true
+end
+в app/controllers/contacts_controllers.rb
+	def new   
+	end
+ 	def create
+   @contact=Contact.new(contact_params)-
+   if @contact.save(contact_params)
+     redirect_to  @contact
+   else
+     render action: "new"
+   end   
+ 	end
+
+ private
+ def contact_params
+   params.require(:contact).permit(:email, :message)
+ end
+----------------------------------------------------------------
+стилизация сообщения об ощибке , добавить css в assets/stylesheet.aplication.css, 
+поле с ощибко получает id="field_with_errors"
+вывод ошибки в views/new.html.erb
+<% if @contact %>
+<%= @contact.errors.full_messages %>
+----------------------------------------------------------
+С использованием boostrap
+в видах
+<div class="alert alert-danger">
+    # количество ошибок
+    <h5><%= t('common.errors')%></h5>
+    <ul>
+      <% @post.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+----------------------------------------------------------
+Добавление flash, для вывода сообщений об ошибках
+1. post_controller.rb
+redirect_to @post, success: "Статья успешно обновлена!" или
+render :edit, danger: "Статья не обновлена!" 
+2. view/layout/application.erb
+<div class="col-auto">
+  <% flash.each do |name, message|%>
+    <div class="alert alert-<%= name%>">
+      <%= message %>
+    </div>
+  <% end %>
+</div>
+3. applicatio_controller.erb
+add_flash_types :success, :danger и другие из bootsrap и пр.
+==========================================================================
+SCAFFOLD создаёт модели, контролеры и пр. одним пакетом по шаблону
+Недостатки скаффолда:
+1. Нет валидации
+2. Нет аутентификации
+3. Тесты примитивные
+4. Много кода для новичков
+----------------------------------------------------------
+depot> rails generate scaffold Product 
+title:string 
+description:text 
+image_url:string 
+price:decimal - создание базы данных (для sqlite3)
+depot> rake db:migrate - добавление таблицы к БД
+-----------------------------------------------------------
+Пример использования:
+1. в примере будет две сущности User и Micropost
+2. rails g scaffold User name:string email:string
+bundle exec rake db:migration
+3. rails g scaffold Micropost content:text user_id:integer
+bundle exec rake db:migration
+4. Добавление валидации
+5. Добавление ассоциации
+User 1-* Micropost
+в модель User -> has_many :microposts
+в модель Micropost belonge_to :user
+6. Тест ДБ в консоли, start rails concole
+first_user=User.first - выбрать первого юзера
+first_user.micropost - выбрать посты первого юзера
+first_user.micropost.count - посчитать 
+first_user.micropost.length - взять из памяти количество
+first_user.micropost.first - первый пост первого юзера
+micropost=first_user.micropost.first 
+micropost.user - автор микропоста
+==========================================================================
+Наследование:
+в модели сущности наследуют от классов Activerecord::Base
+в контроллере от ApplicationController, тот от Activerecord::Base
+на практике вадно для DRY
+========================================================================
+Настройки рассылок :
+app/mailers/application_mailer.rb
+Два вида:
+transactional email - реагирует на события сайта, регистрация пользователя и пр.
+bulk emails - массрвая рассылка , чревато санкциями, гуглить пиратов bulk email messaging
+1. Проблемма, где взять SMTR -сервер
+админ даст - лучший вариант, не стоит массово рассылать ничего
+хостинги - , всё попадает в спам
+gmail - препятствуют массовым рассылкам
+postmarkapp.com- аренда отдалённого сайта
+========================================================================
+гем для авторизации - gem devise
+1) В Gemfile добавить gem "devise"
+ввести в консоли bundle
+команда rails g - показывает список генераторов
+2) rails g devise:install
+выполнить ручные настройки (отображённые в консоли)
+3) rails g devise User - создать миграцию
+выполнить rake db:migrate
+--------------------------------------------------------------------
+Пример использования , требуется заблокировать возможность добавления
+статей без авторизации
+1 этап) Задача, заблокировать доступ к статьям
+в article_contrjller.rb
+before_action :autenticate_user!
+2 этап) добавление входа и выхода
+в views/layout/aplication.html.erb
+<a href="/users/sign_in">Вход</a>
+<a href="/users/sign_out" data-mathod="delete">Выход</a>
+оптимизация ссылок
+<%= link_to "Sing out", destroy_user_session_path, method: :delete %> 
+<%= link_to "Sing in", new_user_session_path %> 
+(path- путь, можно скопировать введя несуществующий адрес)
+оптимизаця ссылок
+из локументации хелперы
+user_signed_in? - возвращает bool
+current_user - возвращает объект (.inspect -cодержимое увидеть)
+user_signed_in?-> Sign Out ->else ->Sign In, current_user.email
+3 этап) Задача, подставлть имя активнго пользователя в приветствие
+3.1 задача-добавить в существующую таблцу users поля username
+rails g migration add_username - создать миграцию
+в db/migrate/..._add_username
+ def change
+    add_column :users, :username, :string
+ end
+где, имя_таблицы, имя_столца, тип
+rake db.migrate
+3.2 добавленин уникального индекса для имени
+rails g migration add_username_index
+в db/migrate/..._add_username_index
+def change
+    add_index :users, :username, unique: true
+end
+rake db.migrate
+3.3 определить поведение гема devise(код из док-ции devise)
+в application_controller.rb
+before_action :configure_permitted_parameters, if: :devise_controller?
+  protected
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
+  end
+3.4 редактирование формы (см. док-цию devise)
+rails g devise:views - создаст виды (просмотр неверный адресс)
+в views/devise/registration.html.erb - добавить поле с менем
+ <%= f.text_field :username,  autocomplete: "username" %>
+3.5 в views/layout/aplication.html.erb заменить
+current_user.username
+этап 4) Задача, подставлть имя активнго пользователя в формы ввода
+4.1 оптимизация доступа с авторизацией
+в article_controller.rb изменить
+before_action :authenticate_user!, :only=>[:new,:create]
+в comment_controller.rb изменить
+before_action :authenticate_user!, :only=>[:create]
+
+============================================================================
+Локализация и интернационализация
+1. Изменение локализации по умолчанию
+config/application.rb
+module ...
+	class ...
+		config.i18n.default_locale = :ru
+		config.time_zone = 'Moscow'
+в config/locale/ru.yml - создать (не должен быть пустой)
+2. config/locale/activerecord.ru.yml - для активрекорд (вывод сообщений ошибок и пр.)
+ru:
+	models:
+		post:
+	attributes:
+		post:
+			title: '...'
+3. Заголовки, заменить на <%= I18n.t('post.new.title')%>
+короткая запись t.('...')
+в config/locales/ru.yml
+ru:
+	new:
+		post:
+			title: "...."
+-----------------------------------------------------------
+Локализация кнопок и ссылок
+1. если к кнопке написать t.('.submit') - влоденность перевода должна соответствовать пути нахождения данного файла, для post.new -> post.new.submit
+2. Вариативность надписи на кнопке с "Добавить"" на "Изменить"
+в ru.yml
+form:
+	submit:
+		'%{action} статью'
+в form.html.erb
+ ... t.(.submit, action: post.new_record? ? "Создать" : "Изменить")
+ --------------------------------------------------------------
+ Изображения
+ Непременно условие, установить ImageMagick - проверить convert -v
+Для загрузки и обработки файлов 
+gem carrierwave с github и по инмтрукци
+Для редактрования изображений на лету из командной строки
+gem minimagick с github и по инструкции
+1. Создать аплоудер
+> rails generate uploader Image -создаёт файл
+app/uploader/image_uploader.rb - в нём раскомментировать
+- create differen versions
+- add white list
+2. выполнить миграцию для добавления к посту картинки
+rails g migration add_image_to_post и rake db:migrate
+в app/model/post.rb указать
+mount_uploader :image, ImageUploader
+3. Редактировать форму
+<%= form_for @post, html: {multipart: true }...
+ <%= file_field :image ...
+4. Добавить в post_controller.rb
+в post_params включить :image
+5. Настройка изовражения в статье
+<%= image_tag(@post.image.url(:large), clacc: 'img-fluid') if @2post.image? %>
+4. стилизация, текст внизу
+.img-fluid
+	display: block
+	margin-bottom: 1em
+6. Отобразить эскиз в списке статей
+ <%= image_tag post.image.thumb.url, class: 'img-thumbnail' if post.image? %>
+-------------------------------------------------------------------
+Как пркрутить текстовый редактор
+gem trix или gem trix-rails 
+1. вместо text_area написать f.trix- editor, class: ...
+2. настройка функции добавления картинок
+2.1 rails g model Picture image:string и rake db:migrate
+2.2 в app/model/picture.rb (усли есть gem carrewave)
+mount_uploader :image, ImageUploader
+2.3 создать picturea_controller.rb и в нём
+class PicturesController < ApplicationController
+
+  def create
+    @picture = Picture.new(image_params)
+    @picture.save
+    respond_to do |format|
+      format.json { render :json => { url: @picture.image.url(:large), picture_id: @picture.id}}
+    end    
+  end
+
+  def desrtoy
+    @picture = Picture.find(params[:id])
+    @picture.destroy
+    respond_to do |format|
+      format.json { render json: { status: :ok }}
+    end    
+  end
+
+  private
+
+  def image_params
+    params.require(:picture).permit(:image)
+  end
+   
+end
+2.4 создать app/assets/javascripts/pictures.coffee в нём
+document.addEventListener "trix-attachment-add", (event) ->
+  attachment = event.attachment
+  if attachment.file
+    return sendFile(attachment)
+  return
+
+document.addEventListener "trix-attachment-remove", (event) ->
+  attachment = event.attachment
+  deletefile attachment
+
+sendFile = (attachment) ->
+  file = attachment.file
+  form = new FormData
+  form.append 'Content-Type', file.Type
+  form.append 'picture[image]', file
+  xhr = new XMLHttpRequest
+  xhr.open 'POST', '/pictures', true
+
+  xhr.upload.onprogress = (event) ->
+    progress = undefined
+    progress = event.loaded / event.total * 100
+    attachment.setUploadProgress progress
+
+  xhr.onload = ->
+    response = JSON.parse(@responseText)
+    attachment.setAttributes
+      url: response.url
+      picture_id: response.picture_id
+      href: response.url
+
+  xhr.send form
+
+deleteFile = (n) ->
+  $.ajax
+    type: 'DELETE'
+    url: '/pictures/'+ n.attachment.attributes.values.picture_id
+    cache: false
+    contentType: false
+    processData: false
+
+return
+2.5 в application_controller.rb
+	protect_from_forgery prepend: true (вместо with: :exeption в старых версиях RoR)
+2.6 в views/show.html.erb
+ <%= @post.body.html_safe %>
+2.7  в config/routers.rb добавить
+	resources :pictures, only: [:create,:destroy]
+-----------------------------------------------------------------------------------
+ТЕГИ
+1. Создание моделей
+1.1 создать модели
+rails g model tag name:string
+rails g model tegging post:belongs_to  tag:belongs_to
+1.2 app/nodel/post.rb добавить отношения
+	has_many :taggings
+	has_many :tags, through: :taggings
+1.3. app/madel/tag.rb добавить отношения
+	has_many :taggings
+	has_many :posts, through: :taggings
+1.4 app/views/posts/_form.html.erb добавить поле
+<div class="form-group">
+    <%= f.label :all_tags %>
+    <%= f.text_field :all_tags, class: "form-control" %>
+ </div>
+1.5 в posts_controller.rb в post_psrams добавить :all_tags
+1.6 выполнить миграцю rake db:migration
+1.7 app/model/post.rb добавить два метода (где tag.map(&:name) то же tag.map{|tag| tag.name})
+def all_tags
+    self.tags.map(&:name).join(', ')
+end
+
+def all_tags=(names)
+  self.tags = names.split(',').map do |name|
+    Tag.where(name: name.strip).first_or_create!
+  end
+end
+2. Настройка вывода тегов в списке статей
+2.1 app/views/posts/ _post.html.erb добавить секцию
+<section class="footer-summary">
+  <%= raw post.tags.map(&:name).map{ |t| link_to t, tag_path(t), class: 'badge badge-primary'}.join(' ')  %>
+</section> 
+2.2 config/routers.rb добавить путь
+   resources :tags, only: [:show]
+2.3 cоздать tags_controller.rb и в нём
+class TagsController < ApplicationController
+  def show
+    @tag = Tag.find_by(name: params[:id])
+    @posts = @tag.posts
+  end  
+end
+2.4 в app/views сщздать папку tags в ней show.html.erb  с содержанием
+<h1><%= @tag.name %></h1>
+<% if @tag.posts.empty? %>
+  <h1>Статей нет</h1>
+<% else %>
+  <%= render @tag.posts %>
+<% end %>
+3. Вывод и стилизациия облака тегов
+3.1 app/models/tag.rb добавить функцию запроса к БД
+def self.counts
+  self.select("name, count(taggings.tag_id) as count").joins(:taggings).group("taggings.tag_id")
+end
+3.2 app/assets/stylesheets добавить файл tegs.sass в нём создать стилм тегов
+.tag1
+  font-size: 1.0em
+.tag2
+  font-size: 1.2em
+.tag3
+  font-size: 1.4em
+.tag4
+  font-size: 1.6em
+.tag5
+  font-size: 1.8em
+3.3 app/views/layout/appllication.html.erb добавить вывод тегоа
+<% tag_cloud(Tag.counts, %w{tag1 tag2 tag3 tag4 tag5}) do |tag, css_class| %>
+  <%= link_to tag.name, tag_path(tag.name), class: css_class %>
+<% end %>
+3. app/helpers cоздать  posts_helper.rb в нём модуль
+module PostsHelper
+  def tag_cloud (tags, classes)
+    max = tags.sort_by(&:count).last
+    tags.each do |tag|
+      index = tag.count.to_f / max.count * (classes.size-1)
+      yield(tag, classes[index.round])
+    end    
+  end  
+end
+---------------------------------------------------------------------
+Коменитование, с помощью внешней библиотеки DIQUS
+1. disqus.com залогнтся, зарегстрпироваться
+выбрать - я хочу подключить мой сайт
+выбрать - я не вижу моего фрейморка, перейти к унмверсальному коду, скопровать
+2. app/views/posts сщздать вид _disqus.html.erb и вставить код
+3. app/views/posts/show.html.erb  подключть отоюражение
+<%= render 'disqus' %>
+4. app/views/posts/_disqus.html.erb раскоментировать рекомендованные конфигураци
+4.1 this.page.identifier = <%= @post.id %>;  заменить
+4.2. продолжить регистрацию на сайте, жмём:
+configure - complete sepup - dusmiss setup - edit setting , перейти на вкладку Advenced
+в поле Trusted Donains вводим localhost.com ( или боевой)
+this.page.url = 'request.base.url + request.original_fullpath %>'; по боевому
+this.page.url = 'http://localhost.com<% = request.original_fullpath %>'; для разработки
+-------------------------------------------------------------------------
+постранчная навигация
+1. gem will_paginate подключить
+2. posts_controllers.rb изменить
+def index
+    @posts = Post.paginate(:page => params[:page], :per_page => 5)
+end (5 кол-во статей на странице)
+3. Добавить локадизацию, если необходимо
+4. Подключениие к bootstrap
+4.1 гуглим ootstrap_pagination_helper.rb длф послейней rails 
+и сохранить в config/initiazes , перезагрузить сервер
+4.2 app/views/posts/index.html.erb добавить
+<%= will_paginate @posts, renderer: 'BootstrapPaginationHelper::LinkRenderer' %>
+4.3 app/assets/stylesheets сjздать для стилизации pagination.sass
+5. автоматическая загрузка статей, при прокрутке (пока не получилось)
+5.1 app/assets/javascript добавить pagination.coffe , обработчик для отслежвания прокрутки
+5.2 app/views/index.html.erb обеснуть вывод
+<section id='posts'>
+  <%= render @posts %>
+</section>
+5.3 в app/views/posts создать index.js.erb
+5.3 в app/views/posts создать _delimiter.html.erb
+----------------------------------------------------------------------
+
+==========================================================================
+Насстройка проверок ввода и блочных тестов
+depot> rake test:models - перезапустить только блочные тесты
+

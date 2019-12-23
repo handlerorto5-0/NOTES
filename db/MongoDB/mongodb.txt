@@ -1,0 +1,10 @@
+sudo systemctl status mongodb - проверка работы служб
+mongo --eval 'db.runCommand({ connectionStatus: 1 })' - диагностика служб
+sudo systemctl stop mongodb - остановка сервера
+sudo systemctl start mongodb - запуск после остановки
+sudo systemctl restart mongodb - перезапуск сервера
+
+sudo systemctl disable mongodb -по умолчанию MongoDB запускается вместе с запуском сервера, но эту предустановку можно изменить 
+sudo systemctl enable mongodb - снова нужно добавить службу в автозагрузку
+
+

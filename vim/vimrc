@@ -1,0 +1,17 @@
+call plug#begin('~/.vim/plugged')
+
+
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+
+
+call plug#end()
+ 
+set number
+set expandtab
+set tabstop=2
+set hlsearch
+set incsearch
+
+"mapping
+
+map <C-n> :NERDTreeToggle<RC>

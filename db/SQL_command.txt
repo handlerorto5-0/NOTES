@@ -1,0 +1,306 @@
+РАЗДЕЛ 1.Создание БД:
+
+CREATE DATABASE user; создать БД
+CREATE DATABASE user DEFAULT CHARACTER SET utf8; создать БД с кодировкой
+SOW DATABASES;вывод имён баз данных
+DROP DATABASE user; удалить БД
+USE user; вызов БД
+SELEST mysql.User.Name , mysql.User.Lastname FROM mysql.User; Извлечение Name и Lastname из таб User без предвар вызова БД
+
+Типы полей:
+
+1. Целые числа пркфиксINT[UNSIGNED]флаг не числовых
+TINYINT   -128/127
+SMOLLINT  -32 768/32 768
+NEDIUNINT -8 388 608/8 388 607
+INT       -2 147 483 648/2 147 483 647
+BIGINT    -9 223 372 036 854 775 808/9 223 372 036 854 775 808
+
+2.Вещественные числа ИмяТипа [(length,decimals)] [UNSIGNED]-шмрина-кол-во знаков
+FLOAT    число с плавающей точкой небольшой точности
+DOUBLE   число с плавающей точкой двойной точности точности
+REAL     то же
+DECIMAL  дробное число хран-ся, как строка
+NUMERIC  то же
+
+3.Строки
+VARCHAR (length) [BINARY] длина  , с учётом пегистра
+TINYTEXT    макс 255 симв
+TEXT        макс 65 535 симв
+MEDIUMTEXT  макс 16 777 215 симв
+LONGTEXT    макс 4 294 967 295 симв
+
+4.Бинарные данные
+TINYBLOB    макс 255 симв
+BLOB        макс 65 535 симв
+MEDIUMBLOB  макс 16 777 215 симв
+LONGBLOB    макс 4 294 967 295 симв
+
+5Дата и время
+DATE      дата в формате ГГГГ-ММ-ДД
+TIME      время в формате ЧЧ:ММ:СС
+DATATIME  дата и время в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС
+TIMESTAMP дата и время в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС, обновляются INSERT|UPDATE
+
+6.Перечисления, указывает допустимые знвчения строк и чисел
+ENUM(value1,value2,...)
+
+7.Множество, в поле может содержаться несколько значений, не более 64
+SET(value1,value2...)
+
+8.Модификаторы и флаги типов
+NOT NULL             обязательная инициализация при записи
+PRIMARY KEY          первичный ключ для ссылок
+AUTO_INCRENENT       уникальное значение
+DEFAULT 'значение'   значение по умолчанию
+
+РАЗДЕЛ 2.Создание и удаление таблиц
+
+CREATE TABLE table_name [(create_definition,...)];
+SHOW TABLES;
+DESCRIBE table_name; просмотр структуры таблиц
+
+РАЗДЕЛ 3.Изменение таблмц
+ALTER TABLE table-name alter_cpec; изм структуру таблиц, добав/йдал столбцы, индексы. имена.
+
+Основные преобразования:
+ADD lastname [FIRST|AFTER name] добавление столбца
+ADD INDEX [name] (col,..) добавление индекса name столбцу col.По ум индекс col-col
+ADD PRIMARY KEY (col,...) делает перв ключом столбец или группу
+CHANGE old new type замена столбца old на new с типом type
+DROP col удаление col
+DROP PRIMARY KEY удаление ключа
+DROP INDEX name удаление индекса
+
+Примеры ALTER TABLE:
+ALTER TABLE forums ADD test int(10)AFTER name; добавить столбец
+ALTER TABLE forums CHENGE test new_test TEXT; переименновать столбец
+ALTER TABLE forums CHENGE new_test new_test INT(5) NULL; изменение типа столбца
+ALTER TABLE forums DROP new_test; удалить столбец
+DROP TABLE forums; удалить таблицу
+
+РАЗДЕЛ 4.Вставка числовых значений в таблицу.
+
+Cинтаксис вставки записи- INSERT.
+INSERT [IGNORE] [INTO] tb1 [(col_name,...)] VALUES (expression,..)
+Пример:
+CREATE TABLE tbl (
+  id INT(11) NOT NULL DEFAULT '5',
+  id_cat INT(11) DEFAULT NULL
+);
+INSERT INTO tbl VALUES (10, 20);в порялке следования столбцов
+INSERT INTO tbl (id_cat, id) VALUES (10, 20);залать порядок
+INSERT INTO tbl (id) VALUES (30);укакать столбец
+INSERT INTO tbl () VALUES (); срабоьают NULL и DEFAULT
+Алтьернативный синтаксис в MySQL:
+INSERT INTO tb1 SET id=10, id_cat=50;
+INSERT INTO tb1 SET id=10;
+
+РАЗДЕЛ 5.Вставка строковых значений в таблицу.
+Пример:
+CREATE TABLE catalogs (
+  catalog_id INT(11) NOT NULL,
+  name TINYTEXT NOT NULL
+);
+INSERT INTO catalogs VALUES (1,"Память \"DDR\""); !экранировать кавычки
+SELECT*FROM catalogs;
+
+РАЗДЕЛ 6.Вставка календарных значений.
+Пример:
+CREATE TABLE tb1(
+	id INT(11) NOT NULL,
+	putdata DATETIME NOT NUL,
+	lastdate DATE NOT NUL
+);
+INSERT INTO tb1 
+  VALUES (1,'2016-01-03 0:00:00','2016-01-03');
+INSERT INTO tb1 
+  VALUES (2,NOW(),NOW());NOW ф-я SQL текущее время
+INSERT INTO tb1 
+  VALUES (3,'2016-01-03 0:00:00'- INTERVAL 3 WEEK ,
+  NOW()+INTERVAL 3 MONTH);+/- интервал
+Временные интервалы:
+Тип:                  Формат ввода:
+NICROSECOND           xxxxxx
+SECOND                ss
+MINUTE                mm
+HOUR                  hh
+DAY                   DD
+WEEK                  WW
+MONTH                 MM
+QUARTER               QQ
+YEAR                  YY
+SECOND_MICROSECOND   'ss.xxxxxx'
+MINUTE_MICROSECOND   'mm:ss.xxxxxx'
+MINUTE_SECOND        'mm:ss'
+HOUR_MICROSECOND     'hh:mm:ss.xxxxxx'
+HOUR_SECOND          'hh:mm:ss'
+HOUR_MINUTE          'hh:mm'
+DAY_MICROSECOND      'DD hh:mm:ss.xxxxxx'
+DAY_SECOND           'DD hh:mm:ss'
+DAY_MINUTE           'DD hh:mm'
+DAY_HOUR             'DD hh'
+WEAR_MONTH           'YY-MM'
+
+РАЗДЕЛ 7.Вставка уникальных значений.
+PRIMARY KEY или столбец с индексом UNIQUE, не могут иметь повтор значений.
+Пример:
+CREATE TABLE tbl (
+  id INT(11) NOT NULL,
+  name TINYTEXT NOT NULL,
+  PRIMARY KEY (id)
+);
+INSERT INTO tbl VALUES (1, 'Видеоадаптеры');
+INSERT INTO tbl VALUES (1, 'Видеоадаптеры');
+//ERROR
+INSERT IGNORE INTO tb1 VALUES (1,'Видеоадаптеры');игнор ошибок
+
+РАЗДЕЛ 8.Механмзм AUTO_INCREMENT.
+id формируется автоматически
+CREATE TABLE tbl (
+  id INT(11) NOT NULL AUTO_INCREMENT,
+  name TINYTEXT NOT NULL,
+  PRIMARY KEY (id)
+);
+INSERT INTO tbl VALUES (NULL, 'Процессоры');
+INSERT INTO tbl VALUES (NULL, 'Материнские платы');
+INSERT INTO tbl VALUES (NULL, 'Видеоадаптеры');
+
+РАЗДЕЛ 9.Многострочный оператор INSERT.
+CREATE TABLE catalogs (
+  catalog_id INT(11) NOT NULL AUTO_INCREMENT,
+  name TINYTEXT NOT NULL,
+  PRIMARY KEY (catalog_id)
+);
+INSERT INTO catalogs VALUES 
+(NULL, 'Процессоры'),
+(NULL, 'Материнские платы'),
+(NULL, 'Видеоадаптеры'),
+(NULL, 'Жесткие диски'),
+(NULL, 'Оперативная память');
+Или то же:
+INSERT INTO catalogs (name) VALUES 
+('Процессоры'),
+('Материнские платы'),
+('Видеоадаптеры'),
+('Жесткие диски'),
+('Оперативная память');
+
+РАЗДЕЛ 10.Удаление записей.
+TRUNCATE TABLE - удаление всех записей из таблицы
+DELETE - удаление записей из таблицы
+Синтаксис :
+DELETE FROM tb1
+WHERE where_definition
+ORDER BY
+LIMIT rows
+Пример :
+DELETE FROM catalog WHERE id>2;
+DELETE FROM catalog ; удалятся все записи из таблицы
+DELETE FROM catalog ; макс кол-во уничтожений
+TRUNCATE TABLE catalog; быстрее
+
+РАЗДЕЛ 11.Обновление записей UPDATE и REPLACE.
+Синтаксис UPDATE:
+UPDATE [IGNORE] tb1
+SET col1=expr1 [,col2=expr2...]
+[WHERE where_difinition]
+[ORDER BY...]
+[LIMIT rows]
+Пример:
+UPDATE catalogs SET name='Процессоры (Intel)'
+WERE name='Процессоры';
+REPLACE аналог INSERT,но заменяет запись с таким же PRIMARY KEY
+Синтаксис REPLACE:
+REPLACE [INTO] tb1 [(col-name,...)] 
+VALUES (expression,..),(...),...
+Пример:
+REPLACE INTO catalogs VALUES 
+(4, 'Сетевые адаптеры'),
+(5, 'Програмное обеспечение'),
+(6, 'Мониторы'),
+(7, 'Перифирия'),
+(8, 'CD-RW/DVD');
+  
+контакценация  
+UPDATE `gb` SET `text`= CONCAT( text, "!")
+UPDATE `gb` SET `text`= CONCAT( text, "!") WHERE id=4
+
+
+РАЗДЕЛ 12.Выборка двнных SELECT.
+Примеры:
+SELECT catalog_id FROM catalogs; выбрать все , из таб catalogs
+SELECT * FROM catalogs; то же
+SELECT name, catalog_id FROM catalogs; отсортирует результат по name
+Условная выборка, примеры:
+SELECT*FROM catalogs WHERE catalog_id > 2;
+
+Лог опер:>,<,>=,<=,=,<>|!=,<=>
+Исключающий ИЛИ-XOR = (a AND (NOT b))OR((NOT a)AND b)
+
+SELECT*FROM catalogs WHERE catalog_id>2 AND|OR catalog_id<=4;
+SELECT*FROM catalogs WHERE catalog_id>2 AND|OR catalog_id<=4;
+SELECT NOT catalog_id>2 FROM catalogs;
+
+Интервал, исключение интервала:
+SELECT*FROM catalogs WHERE catalog_id  BETWEEN 3 AND 4;
+SELECT*FROM catalogs WHERE catalog_id  NOT BETWEEN 3 AND 4;
+
+Диапазон:
+SELECT*FROM catalogs WHERE catalog_id  IN(1,2,3);
+SELECT*FROM catalogs WHERE catalog_id  NOT IN(1,2,3);
+SELECT*FROM catalogs WHERE name='Процессоры';
+
+Оператор LIKE:
+expr LIKE pat
+% - любое кол-во символов или из отсутствие
+_ - один символ
+SELECT*FROM catalogs WHERE name LIKE '%ы';
+SELECT*FROM catalogs WHERE name NOT LIKE '%ы';
+
+Псевдонимы столбцов:
+Назнвчение новощо имени столбцу AS:
+SELECT catalog_id, name, DATE_FORMAT(putdata, '%d,%m,%Y')
+	AS printdata;
+ - где DATE_FORMAT функция, результат а столбце printdata
+
+Cортировка записей ORDER BY:
+SELECT catalog_id, name FROM catalogs ORDER BY catalog_id;
+SELECT catalog_id, name FROM catalogs ORDER BY name;
+SELECT catalog_id, name FROM catalogs ORDER BY name DESC;в обратном порядке
+Пример сортировеи по нескольким столбцам:
+CREATE TABLE tbl (
+  id_catalog int(11) NOT NULL,
+  putdate datetime NOT NULL
+);
+INSERT INTO tbl VALUES (5, '2016-01-04 05:01:58');
+INSERT INTO tbl VALUES (3, '2016-01-03 12:10:45');
+INSERT INTO tbl VALUES (4, '2016-01-10 16:10:25');
+INSERT INTO tbl VALUES (1, '2016-12-20 08:34:09');
+INSERT INTO tbl VALUES (2, '2016-01-06 20:57:42');
+INSERT INTO tbl VALUES (2, '2016-12-24 18:42:41');
+INSERT INTO tbl VALUES (5, '2016-12-25 09:35:01');
+INSERT INTO tbl VALUES (1, '2016-12-23 15:14:26');
+INSERT INTO tbl VALUES (4, '2016-12-26 21:32:00');
+INSERT INTO tbl VALUES (3, '2016-12-25 12:11:10');
+сначала по catalog_id, потом по putdate
+SELECT*FROM tb1 ORDER BY catalog_id,putdate;
+SELECT*FROM tb1 ORDER BY catalog_id,putdate DESC;
+SELECT*FROM tb1 ORDER BY catalog_id DESC,putdate DESC;
+
+Вывод записей в случайном порядке:
+SELECT catalog_id, name FROM catalogs ORDER BY RAND();
+SELECT catalog_id, name FROM catalogs ORDER BY RAND() LIMIT 1;одну
+
+Ограничение выблоки LIMIT:
+SELECT catalog_id, name FROM catalogs ORDER BY catalog_id DESC LIMIT 2; первые две записи
+SELECT catalog_id, name FROM catalogs ORDER BY catalog_id DESC 
+	LIMIT 2,2; начало позиция кол-во записей
+
+Вывод уникальных значений DISTINCT(по умолчанию ALL):
+SELECT DISTINCT catalog_id FROM tb1 ORDER BY catalog_id;
+SELECT DISTINCT catalog_id FROM tb1 GROUP BY catalog_id ORDER BY catalog_id; гркппировка по catalog_id
+
+
+
+
