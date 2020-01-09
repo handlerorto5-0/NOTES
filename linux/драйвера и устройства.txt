@@ -2,3 +2,9 @@
 canon
 cnijfilter - printer
 scangearmp - scaner
+-----------------------------------
+Как создать ISO образ диска в Ubuntu
+genisoimage -V label_iso -r -o ~/name.iso /media/cdrom0
+-V label_iso - это метка будущего образа, 
+-o ~/name.iso - указываем куда поместить ISO-образ,
+/media/cdrom0 - это источник 

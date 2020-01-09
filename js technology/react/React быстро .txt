@@ -1,0 +1,26 @@
+node server 
+установить глобально
+npm i -g node-static
+запустить из папки
+static
+http://localhost:8080
+================================
+стр 100
+установка Babel CLI - версия для примеров из книги
+npm rm -g babel-cli - удалить гдобальную версию
+npm init - создаст в папке package.json
+npm i babel-cli@6.9.0 babel-preset-react@6.5.0 --save-dev
+
+проверить работоспособность версии:
+$ ./node_modules/.bin/babel --version
+
+для преобразования JSX-файла js/script.jsx в js/script.js
+./node_modules/.bin/babel js/script.jsx -o js/script.js
+или добавить в packege.json
+"build": "./node_modules/.bin/babel js/script.jsx -o js/script.js"
+ и npm run build
+-------------------
+последняя версия
+https://www.npmjs.com/package/babel-preset-react-app
+=====================================================
+

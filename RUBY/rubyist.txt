@@ -1,0 +1,4 @@
+irb
+require "bundler"
+puts $:.grep(/bundler/) даст путь от home
+------------------------------------------
