@@ -1,0 +1,93 @@
+=================================
+Rails with tailwind
+--------------------------------
+rails new tailwindy --webpack
+--------------------------------
+cd tailwindy
+--------------------------------
+yarn add tailwindcss
+--------------------------------
+./node_modules/.bin/tailwind init
+--------------------------------
+mkdir app/javascript/css
+--------------------------------
+./node_modules/.bin/tailwind init app/javascript/css/tailwind.js
+--------------------------------
+edit app/javascript/css/application.css
+--------------------------------
+within app/javascript/packs/application.js
+import "../css/application.css"
+--------------------------------
+within application.html.erb
+<head>
+...
+<%= javascript_pack_tag "application" %>
+<%= stylesheet_pack_tag "application" %>
+--------------------------------
+within .postcssrc.yml
+... (at end)
+tailwindcss: './app/javascript/css/tailwind.js'
+-------------------------------
+rails g scaffold User name
+	within routes
+	resurces :users
+	root to: 'users#index'
+rm app/assets/stylesheets/scaffolds.scss
+-------------------------------
+within veiw/users/_form.html.erb
+...
+<div class="actions">
+	<%= form.submit class: 'bg-indigo text-white hover:bg-indigo-dark px-4 py-2 rounded' %>
+<div/>
+
+или
+
+<%= form.submit class: 'btn btn-purple' %>
+app/javascropt/css/application.css
+.btn{
+	@apply .px-4 .py-2 .rounded;
+}
+.btn-purple{
+	@apply .bg-indigo .text-white;
+}
+.btn-purple:hover{
+	@apply .bg-indigo-dark
+}
+-------------------------------------
+======================================
+tailwind-1 project to learn
+live-server
+npm install -g live-server
+=======================================
+rails 6 & Tailwind
+---------------------------------------
+yarn add tailwindcss@next
+---------------------------------------
+within app/javascript/stylesheets/applocation.scss
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+-------------------------------------
+within app/javascript/applocation.js
+require('stylesheets/application.scss')
+------------------------------------
+within application.html.erb
+<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+-------------------------------------
+update postcss.config.js
+require('tailwindcss'),
+require('autoprefixer'),
+-------------------------------------
+команды компиляции
+bin/webpack
+./bin/webpack-dev-server
+-------------------------------------
+rails g controller welcome home app --no-assets --no-helper
+Rails.application.routes.draw do
+  get 'welcome/home'
+  get '/app', to: 'welcome#app', as: 'app'
+  root 'welcome#home'
+end
+=====================================

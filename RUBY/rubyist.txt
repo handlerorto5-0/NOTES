@@ -2,3 +2,29 @@ irb
 require "bundler"
 puts $:.grep(/bundler/) даст путь от home
 ------------------------------------------
+методы объектов
+object_id - вывод id
+respond_to? - есть ли метод?
+send (synonym: __send__ ) - вызвать метод
+
+if ticket.respond_to?(request)
+	puts ticket.send(request)
+else
+	puts "No such information available"
+end
+-----------------------------------------
+Required and optional arguments
+obj.one_arg(x)  obj.multi_args(*x) two_or_more(a,b,*c)
+--------------------------------------------
+Default values for arguments
+default_args(a,b,c=1)
+-------------------------------------------
+Order of parameters and arguments
+mixed_args(a,b,*c,d)  args_unleashed(a,b=1,*c,d,e)
+------------------------------------------
+метод dup, который дублирует объект
+change_string(s.dup)
+заморозить объект, что предотвращает его дальнейшее изменение
+s.freeze
+метод clone. Это очень похоже на dup.
+Разница в том, что если клонируете замороженный объект, клон также будет заморожен, тогда как если дублировать замороженный объект, дубликат не заморожен
