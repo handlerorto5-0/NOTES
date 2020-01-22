@@ -42,9 +42,9 @@ if (err) throw err;
 ------------------------------------------------------
 простой echo server, отслеживает появление данных и выводит в консоль
 const net = require('net');
-cinst server = net.createServer(soxket => {
+cinst server = net.createServer(soсket => {
     socket.on('date', data =>{      - socket.once - один раз
-        socket.wtire(sata);
+        socket.wtire(data);
     });
 });
 server.listen(8888);

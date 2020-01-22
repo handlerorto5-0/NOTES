@@ -1,0 +1,5 @@
+book Effective Testing with RSpec 3 (Ruby 2.4, RSpec 3.6)
+cd box/rspec_3
+=========================================================
+gem install rspec -v 3.6.0
+rspec --version

@@ -1,10 +1,11 @@
 ======================================================================
 # Disable RVM from trying to install necessary software via apt-get
-rvm autolibs disable
+rvm autolibs disable  (enable) rvm autolibs rvm_pkg
 # Then try installing Ruby:
 rvm install ruby 2.5.1
 rvm use 2.5.1 --default
 ruby -v
+rvm reinstall ruby-2.5.1
 --------------------------------------------------------------------
 rvm gemset create qna
 rvm use 2.6.3@qna
