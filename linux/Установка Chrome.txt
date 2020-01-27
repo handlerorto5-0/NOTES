@@ -1,0 +1,18 @@
+Установка Google Chrome на Ubuntu 18.04 LTS из командной строки
+---------------------------------------------------------------
+Сначала вам нужно создать source list файл для браузера. Выполните следующую команду для создания source list файла для chrome:
+sudo nano /etc/apt/sources.list.d/google-chrome.list
+ 
+Создав исходный файл, скопируйте следующую строку APT и вставьте её в файл google-chrome.list, который вы создали выше:
+deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main
+После обновления файла списка Chrome сохраните его и выйдите из файла. Теперь выполните следующую команду, чтобы вы могли загрузить ключ подписи Google.
+wget https://dl.google.com/linux/linux_signing_key.pub
+Добавим ключ для проверки пакета deb Google Chrome, используйте следующую команду.
+sudo apt-key add linux_signing_key.pub
+ Теперь пришло время обновить список пакетов и установить Google Chrome на Ubuntu 18.04 LTS.
+sudo apt update
+sudo apt install google-chrome-stable
+==================================================
+Как удалить Google Chrome
+Системы на базе Debian. Введите sudo dpkg -r google-chrome-stable.
+Прочие системы. Введите sudo rpm -e google-chrome-stable.

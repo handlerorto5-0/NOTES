@@ -3,3 +3,42 @@ cd box/rspec_3
 =========================================================
 gem install rspec -v 3.6.0
 rspec --version
+=========================================================
+rspec runner
+---------------------------------------------------------
+The Documentation Formatter
+rspec --format documentation
+gem coderay
+rspec -fd
+---------------------------------------------------------
+Identifying Slow Examples
+rspec --profile 2  - список двух самых медленных
+--------------------------------------------------------
+Running Just What You Need
+rspec spec/unit/specific_spec.rb
+---------------------------------------------------------
+Running Examples by Name
+rspec -e milk -fd
+---------------------------------------------------------
+Running Specific Failures
+rspec ./spec/coffee_spec.rb:25
+---------------------------------------------------------
+Rerunning Everything That Failed
+RSpec.configure do |config|
+	config.example_status_persistence_file_path = 'spec/examples.txt'
+end
+rspec
+rspec --only-failures
+--------------------------------------------------------
+Focusing Specific Examples
+• context becomes fcontext
+• it becomes fit
+• describe becomes fdescribe
+config.filter_run_when_matching(focus: true)
+config.example_status_persistence_file_path = 'spec/examples.txt'
+rspec
+
+Tag Filtering
+context 'with milk', focus: true do
+rspec --tag last_run_status:failed
+----------------------------------------------------------------

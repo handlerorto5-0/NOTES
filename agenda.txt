@@ -12,7 +12,7 @@ book Learn javascript with p5.js   | 101
 --------------------------------------------------------------
 book Mastering Ruby Closures       | 20
 --------------------------------------------------------------
-book Effective Testing with RSpec 3| 8 (Ruby 2.4, RSpec 3.6)
+book Effective Testing with RSpec 3| 33 (Ruby 2.4, RSpec 3.6)
 -------------------------------------------------------------
 Metaprogramming Ruby               | 15
 -------------------------------------------------------------- 
@@ -35,4 +35,9 @@ Node.js в действии                 | 62  (box/node_in_action)
 Мардан А. - React быстро           | 144
 --------------------------------------------------------------
 Tailwind letstart                  | 3 урок прошёл (box/style)
+https://tailwindcss.com/course/hover-focus-and-active-styles/
 --------------------------------------------------------------
+проект rails-devise-react-tailwind
+https://www.youtube.com/watch?v=B0SxxHAImhc
+https://github.com/DakotaLMartinez/rails-react-devise-tutorial
+https://github.com/monetizedesign/tailwind_devise
