@@ -42,3 +42,17 @@ Tag Filtering
 context 'with milk', focus: true do
 rspec --tag last_run_status:failed
 ----------------------------------------------------------------
+================================================================
+box/expense_traker - sinatra проект
+----------------------------------------------------------------
+dependency injection (DI for short) DI in Ruby is as simple
+as passing an argument to a method
+class API < Sinatra::Base
+	def initialize(ledger:)
+		@ledger = ledger
+		super()
+	end
+end
+# Later, callers do this:
+app = API.new(ledger: Ledger.new)
+-----------------------------------------------------------------
