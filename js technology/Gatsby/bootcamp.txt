@@ -1,0 +1,8 @@
+Чтобы набрать знак Копирайт на компьютере, надо нажать и удержать клавишу «Alt» и на цифровой панели справа набрать 0169.
+------------------------------------------------------
+Error: Cannot find module 'react'
+rm -Rf node_modules package-lock.json
+npm install
+npm install core-js@3
+------------------------------------------------------
+links.mead.io/gatsbystyles

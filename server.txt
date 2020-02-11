@@ -1,0 +1,10 @@
+
+node server 
+установить глобально
+npm i -g node-static
+запустить из папки
+static
+http://localhost:8080
+-------------------------------
+live-server
+npm install -g live-server

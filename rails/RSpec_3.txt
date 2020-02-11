@@ -56,3 +56,6 @@ end
 # Later, callers do this:
 app = API.new(ledger: Ledger.new)
 -----------------------------------------------------------------
+gem 'sequel'
+gem 'sqlite3'
+irb
