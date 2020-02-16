@@ -1,4 +1,14 @@
-﻿
+﻿(ubuntu)
+sudo apt update
+sudo apt install git
+git --version
+(github keygen)
+ssh-keygen
+enter all
+cat ~/.ssh/id_rsa.pub
+copy key from terminal
+
+
 работа с GIT
 настройками конфигурации
 depot> git config --global --add user.name "Sam Ruby"
