@@ -25,6 +25,7 @@ CTRL-W {Navigation key – j, k, h, l}
 перемещаться Ctr+w
 открыть и выполнить
 :term ruby exemple.ru
+выйти , закрыть Ctr+D или exit, переключить режим v, :q
 -----------------------------
 <Leader> key is \ , but lots of people prefer to set it to the , key. You can set
 the leader key by putting this in your vimrc file:
