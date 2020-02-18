@@ -1,0 +1,31 @@
+ПРОВЕРКА ДИСКА НА БИТЫЕ СЕКТОРЫ В LINUX
+
+sudo fdisk -l   показать список разделов
+
+sudo badblocks -sv /dev/sda
+sudo badblocks -v /dev/sda1 > badsectors.txt
+-v — подробный вывод информации о результатах проверки.
+/dev/sda1 — раздел, который мы хотим проверить на битые секторы.
+> badsectors.txt — выводим результат выполнения команды в файл badsectors.txt
+
+sudo e2fsck -l badsectors.txt /dev/sda1
+sudo fsck -l badsectors.txt /dev/sda1
+sudo fsck.ext2 -l badsectors.txt /dev/sda
+
+umount /dev/sda
+sudo fsck -f -c /dev/sda
+«-f» делает процесс принудительным, то есть проводит его, даже если HDD помечен как работоспособный;
+«-c» находит и помечает бэд-блоки;
+«-y» — дополнительный вводимый аргумент, который сразу же отвечает Yes на все вопросы системы. Вместо него можно ввести «-p», он проведёт проверку в автоматическом режиме
+---------------------------------------------------
+Программы
+
+GParted
+sudo apt-get install gparted
+
+Safecopy
+спасти как можно больше выживших файлов
+sudo apt install safecopy
+sudo safecopy /dev/sda /home/
+В данном случае мы переносим данные с диска sda в папку home
+---------------------------------------------------

@@ -1,8 +1,32 @@
 vim без плагинов
 --------------------------------
+:help
+:help key-notation
+-------------------------------
 set path +=** -поиск внутри папки
 set wildmenu - читает совпадения TAB
 команды
 :find any.txt, :*ny.txt, :*.txt
 :b - поиск в буфере
 ---------------------------------
+разделить окно
+:split <filename> горизонтально
+:vsplit <filename>  вертикально
+:q закрыть активное окно
+--------------------------------
+переключмтся между окнами
+CTRL-W {Navigation key – j, k, h, l}
+-------------------------------
+выполнить shell команду 
+:!date
+-------------------------------
+открыть окно терминала наверху
+:terminal
+перемещаться Ctr+w
+открыть и выполнить
+:term ruby exemple.ru
+-----------------------------
+<Leader> key is \ , but lots of people prefer to set it to the , key. You can set
+the leader key by putting this in your vimrc file:
+let mapleader = ','
+-----------------------------

@@ -3,6 +3,7 @@
 rvm autolibs disable  (enable) rvm autolibs rvm_pkg
 # Then try installing Ruby:
 rvm install ruby 2.5.1
+rvmsudo rvm install 1.9.2
 rvm use 2.5.1 --default
 ruby -v
 rvm reinstall ruby-2.5.1
