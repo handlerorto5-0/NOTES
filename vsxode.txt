@@ -14,6 +14,8 @@ Beautify
 Rainbow Brackets
 NPM
 Auto Close Tag
+Auto Rename Tag
+
 Color Highlight
 Color Picker
 Babel JavaScript
