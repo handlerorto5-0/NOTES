@@ -31,20 +31,12 @@ rails new .
 rails server
 =================================================================
 --------------------------------------------------------------
-_I. Установка RVM_
-1. Для установки вам понадобятся curl и git 
-  (apt-get install git curl)
-  
-2. Скачивание скрипта установки с сервера и запуск (от имени вашего пользователя)
-     $ bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
-     
-3. После установки нужно добавить информацию об установленном приложении rvm в bash
-   Дописывает в конфигурационный файл bash строчку, которая проверяет наличие директории с rvm и если всё ок, запускает программу
-  $ echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function'>>~/.bash_profile
-
-В файле $HOME/.bashrc заменяем строчку [ -z "$PS1" ] && return на if [[ -n "$PS1" ]]; then 
-Т.к. мы используем if, то в конце файла проставьте fi, это позволяет запускать программы в неинтерактивном режиме, 
-а rvm как раз является примером такой программы
+_I. Установка RVM_to Ubuntu 18.10
+https://github.com/rvm/ubuntu_rvm
+sudo apt-get install software-properties-common
+sudo apt-add-repository -y ppa:rael-gc/rvm
+sudo apt-get update
+sudo apt-get install rvm
 
 4. Проверяем как прошла установка
   $ rvm -v

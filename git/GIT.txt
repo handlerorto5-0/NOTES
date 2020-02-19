@@ -21,7 +21,7 @@ depot> git commit -a -m 'Validation!' - обединение add и commit
 depot> git checkout . - откат
 
 
-git config --global --add user.name "KVstudent"
+git config --global --add user.name "KVexcavator"
 git config --global --add user.email "str_token@mail.ru"
 git config --global --add core.editor "sublime_text.exe"
 git config --global --list - Проверить конфигурацию

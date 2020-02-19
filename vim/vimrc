@@ -1,36 +1,37 @@
 " :wq
-  2 " Reload .vimrc and :PlugInstall to install plugins and :q
-  3 call plug#begin('~/.vim/plugged')
-  4 
-  5 " On-demand loading
-  6 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-  7 "colorThemes
-  8 Plug 'morhetz/gruvbox'
-  9 "require a mouse
- 10 Plug 'tpope/vim-rails'
- 11 
- 12 call plug#end()
- 13 
- 14 "sets
- 15 set splitbelow
- 16 set mousehide " прячет курсор мыши во время набора текста
- 17 set number
- 18 set expandtab
- 19 set tabstop=2
- 20 syntax on
- 21 colorscheme gruvbox
- 22 set background=dark
- 23 set hlsearch " to search string :/pattern n-next
- 24 set incsearch
- 25 set autowrite "save all file :wall
- 26 set laststatus=2 "status bar
- 27 set ch=3 " высота комстроки
- 28 set statusline=Filename:%t\ Line:\ %l\ Col:\ %c "status line
- 29 let mapleader=',' "set <Leader> key
- 30 "end sets
- 31 
- 32 "mappings
- 33 "open navpanel Ctrl+n
- 34 map <C-n> :NERDTreeToggle<CR>
- 35 "end mappings
+" Reload .vimrc and :PlugInstall to install plugins and :q
+call plug#begin('~/.vim/plugged')
+" On-demand loading
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+"colorThemes
+Plug 'morhetz/gruvbox'
+"require a mouse
+Plug 'tpope/vim-rails'
+call plug#end()
+
+"sets
+syntax on
+colorscheme gruvbox
+
+set splitbelow
+set mousehide " прячет курсор мыши во время набора текста
+set number
+set expandtab
+set tabstop=2
+set background=dark
+set hlsearch " to search string :/pattern n-next
+set incsearch
+set autowrite "save all file :wall
+set laststatus=2 "status bar
+set ch=3 " высота комстроки
+set statusline=Filename:%t\ Line:\ %l\ Col:\ %c "status line
+
+"end sets
+
+"mappings
+let mapleader=',' "set <Leader> key
+"open navpanel Ctrl+n
+map <C-n> :NERDTreeToggle<CR>
+
+"end mappings
 

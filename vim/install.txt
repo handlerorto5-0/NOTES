@@ -1,3 +1,39 @@
-install
+install vim and neovim Ubuntu 18
+---------------------------
+sudo apt-get install fuse libfuse2 git python3-pip ack-grep -y
+--------------------------
+vim --version
+sudo apt-get install vim
+vim --version ,if < 7 version
+sudo add-apt-repository ppa:jonathonf/vim
+sudo apt update
+$ sudo apt install vim
+
+mkdir -p ~/.vim/pack/bundle/start
+mkdir -p ~/.vim/undo
+touch .vimrc
+
+sudo apt-get install neovim
+If that doesn’t work
+sudo add-apt-repository ppa:neovim-ppa/stable
+sudo apt-get install neovim
+
+add aliases to bush
+# Use Neovim as "preferred editor"
+export VISUAL=nvim
+# Use Neovim instead of Vim or Vi
+alias vim=nvim
+alias vi=nvim
+
+mkdir -p ~/.config/nvim
+Next, create and save a ~/.config/nvim/init.vim file with the following contents:
+set runtimepath^=~/.vim runtimepath+=~/.vim/after
+let &packpath = &runtimepath
+source ~/.vimrc
+
+test  pip
+:py3 print('hello')
+pip3 install --user --upgrade neovim
+nvr -h
 ---------------------------
 https://github.com/junegunn/vim-plug
