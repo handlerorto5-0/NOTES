@@ -41,7 +41,7 @@ https://tailwindcss.com/course/composing-utilities-with-apply 07.02
 --------------------------------------------------------------
 Gatsby video                       | 01.06.51   box/gatsby 09/02
 --------------------------------------------------------------
-Modern Vim                         | 23  20/02/20
+Modern Vim                         | 39  22/02/20
 --------------------------------------------------------------
 проект rails-devise-react-tailwind
 https://www.youtube.com/watch?v=B0SxxHAImhc

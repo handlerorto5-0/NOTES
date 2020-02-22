@@ -37,3 +37,16 @@ pip3 install --user --upgrade neovim
 nvr -h
 ---------------------------
 https://github.com/junegunn/vim-plug
+-----------------------------
+Installing and Configuring fzf
+это интерактивный фильтр Unix для командной строки, который можно использовать с любым списком; файлы, история команд, процессы, имена хостов, закладки, коммиты git и т. д.
+cd .vim/pack/bundle/start
+git clone https://github.com/junegunn/fzf
+.vim/pack/bundle/start/fzf/install --bin
+export PATH=$PATH:.vim/pack/bundle/start/fzf/bin
+fzf --help в консоли
+:FZF в vim
+nnoremap <C-p> :<C-u>FZF<CR> в .vimec
+" Фильтрация по расширениям (Modern Vim book table p.26):
+" /tocj<CR> откроет например table-of-contents.js
+" /toch<C-v> откроет в директории table-of-contents.hbs в вертикальном окне

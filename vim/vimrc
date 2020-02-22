@@ -1,30 +1,66 @@
 " :wq
 " Reload .vimrc and :PlugInstall to install plugins and :q
 call plug#begin('~/.vim/plugged')
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-dispatch'
 " On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 "colorThemes
 Plug 'morhetz/gruvbox'
 "require a mouse
 Plug 'tpope/vim-rails'
+" ruby
+Plug 'vim-ruby/vim-ruby'
+" Emmet: inter html:5_and press <c-y>,
+Plug 'mattn/emmet-vim'
+let g:user_emmet_install_global = 0
+autocmd FileType html,css,eruby,xml EmmetInstall
+" quickly move cursor, try <Leader>pattern
+Plug 'easymotion/vim-easymotion'
 call plug#end()
 
 "sets
 syntax on
 colorscheme gruvbox
-
-set splitbelow
-set mousehide " прячет курсор мыши во время набора текста
-set number
-set expandtab
-set tabstop=2
 set background=dark
-set hlsearch " to search string :/pattern n-next
+
+" кол-во символов пробелов, которые будут заменять \t
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+set et            " автозаменa по умолчанию
+set wrap          " переносить длинные строки
+set ai            " автоотступы для новых строк
+set cin           " отступы в стиле Си
+" поиск и подсветкa результатов поиска и совпадения скобок
+set showmatch
+set hlsearch      " to search string :/pattern n-next
 set incsearch
-set autowrite "save all file :wall
-set laststatus=2 "status bar
-set ch=3 " высота комстроки
+set ignorecase
+" табы в начале строки точками
+set listchars=tab:··
+set list
+" Занять окном с vim максимально большое пространство на экране
+if has("gui_running")
+set shell=/bin/bash
+set ruler            " Show file stats
+au GUIEnter * :set lines=99999 columns=99999
+endif
+
+set visualbell       " Blink cursor on error instead of beeping (grr)
+set encoding=utf-8   " Encoding
+set splitbelow       " :split внизу
+set mousehide        " прячет курсор мыши во время набора текста
+set number           " нумерация строк
+set autowrite        "coхраняет все файлы :wall
+set laststatus=2     "status bar
+set wildmenu         " доступные варианты над командной строкой при использовании автодополнения
+set ch=3             " высота комстроки
 set statusline=Filename:%t\ Line:\ %l\ Col:\ %c "status line
+set lz               " ленивая перерисовка экрана при выполнении скриптов
 
 "end sets
 

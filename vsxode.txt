@@ -25,3 +25,5 @@ VSCode Ruby
 endwise
 Ruby Solargraph
 Gem Lens
+
+SynthWave '84 - VS Code theme
