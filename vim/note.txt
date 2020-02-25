@@ -1,0 +1,4 @@
+note for Ruby progect
+gem install solargraph
+solargraph socket
+solargraph bundle

@@ -50,3 +50,24 @@ nnoremap <C-p> :<C-u>FZF<CR> в .vimec
 " Фильтрация по расширениям (Modern Vim book table p.26):
 " /tocj<CR> откроет например table-of-contents.js
 " /toch<C-v> откроет в директории table-of-contents.hbs в вертикальном окне
+---------------------------------------------
+Форматирование js
+In Vim, there is a special gq (:help format) command that formats the code
+
+npm install -g prettier
+
+gq is quite handy as it can be combined with the text objects:
+gqgq format current line
+gqip format paragraph
+gggqG format the whole file
+
+" FORMATTERS
+au FileType javascript setlocal formatprg=prettier
+au FileType javascript.jsx setlocal formatprg=prettier
+au FileType typescript setlocal formatprg=prettier\ --parser\ typescript
+au FileType html setlocal formatprg=js-beautify\ --type\ html
+au FileType scss setlocal formatprg=prettier\ --parser\ css
+au FileType css setlocal formatprg=prettier\ --parser\ css
+nnoremap <F5> mzgggqG`z
+----------------------------------------------
+

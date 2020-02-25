@@ -1,14 +1,21 @@
-sudo service mongod start
-sudo service mongod stop
-sudo service mongod status
-sudo service mongod restart
+Создание Базы Данных в MongoDB
+
 mongo
- use name_db
+ use kv_base
  db
  show dbs
- db.new_collection.insert({key: "value"}) - пока нет записи, БД не сохраняется
- db.createUser({
-    user: "name"
-    pwd: "password"
-    roles: [{ role: "readWrite", db: "name_db"}]
+ db.any.insert({any: "any"}) - пока нет записи, БД не сохраняется
+ db.createUser({            создать нового пользователя
+    user: "excavator",
+    pwd: "password",
+    roles: [{ role: "readWrite", db: "kv_base"}]
  })
+ show collections           просмотреть все коллекции в выбранной базе
+ db.new_collection.find()   получить все документы
+ db.dropDatabase()          удалить выбранную базу
+
+ ----------------------------------------------------------
+ Create a new directory named data_mongo , which will contain the Mongo database
+ mongod --port 27017 --dbpath data_mongo 
+ Open another Terminal
+ mongo --port 27017 to connect a Mongo shell to the instance

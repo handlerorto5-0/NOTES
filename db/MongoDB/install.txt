@@ -1,3 +1,6 @@
+#ubuntu
+https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+
 sudo systemctl status mongodb - проверка работы служб
 mongo --eval 'db.runCommand({ connectionStatus: 1 })' - диагностика служб
 sudo systemctl stop mongodb - остановка сервера
