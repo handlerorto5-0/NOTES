@@ -1,0 +1,45 @@
+mkdir dist
+cd dist
+touch index.html
++index.html +++++
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello Webpack</title>
+  </head>
+  <body>
+    <div>
+      <h1>Hello Webpack</h1>
+    </div>
+    <script src="./bundle.js"></script>
+  </body>
+</html>
+++++++++++++++++
++ src/index.js +++++
+console.log('Hello Webpack Project.');
+++++++++++++++++
+npm install --save-dev webpack webpack-dev-server webpack-cli
++ package.json ++++
+"start": "webpack-dev-server --mode development",
+afrer config 
+"start": "webpack-dev-server --config ./webpack.config.js --mode development",
++++++++++++++++++++
+touch webpack.config.js  -in root
++webpack.config.js ++++
+module.exports = {
+  // 1
+  entry: './src/index.js',
+  module: {},
+  // 2
+  output: {
+    path: __dirname + '/dist',
+    publicPath: '/',
+    filename: 'bundle.js'
+  },
+  // 3
+  devServer: {
+    contentBase: './dist'
+  }
+};
++++++++++++++++++++++++++++++
+

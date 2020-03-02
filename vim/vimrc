@@ -9,6 +9,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-dispatch'
 " On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+autocmd vimenter * NERDTree
 "colorThemes
 Plug 'morhetz/gruvbox'
 "rails
@@ -21,6 +22,7 @@ Plug 'tpope/vim-endwise'
 Plug 'mattn/emmet-vim'
 let g:user_emmet_install_global = 0
 autocmd FileType html,css,eruby,xml EmmetInstall
+let g:user_emmet_leader_key='<C-Z>
 " quickly move cursor, try <Leader>pattern
 Plug 'easymotion/vim-easymotion'
 "insert or delete brackets, parens, quotes in pair.

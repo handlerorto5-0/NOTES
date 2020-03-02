@@ -1,11 +1,40 @@
-pg_config --version | Server version
-psql -V | Client version
-установка
-sudo apt-get install postgresql postgresql-client 
-Уcтaнaвливaem пapoль для aдmиниcтpaтopa
-пoдkлючaemcя k CУБД oт иmeни aдmиниcтpaтopa:
-sudo -u postgres psql
-3344
+https://www.postgresql.org/download/linux/ubuntu/
+Готово. Теперь вы можете запустить сервер баз данных:
+
+    pg_ctlcluster 11 main start
+
+Ver Cluster Port Status Owner    Data directory              Log file
+11  main    5432 down   postgres /var/lib/postgresql/11/main /var/log/postgresql/postgresql-11-main.log
+
+sudo systemctl status postgresql.service
+sudo systemctl enable postgresql.service
+sudo systemctl disable postgresql.service
+sudo systemctl start postgresql.service
+sudo systemctl stop postgresql.service
+sudo systemctl restart postgresql.service
+
+sudo -i -u postgres -переключиться на учетную запись postgres
+passwd postgres - 3344 
+createdb test2
+psql test2
+\q выход
+\h команды
+\l таблицы
+\c namedb -подключится к базе
+\d посмщтреть базу
+sudo adduser kv-2 Создайте одноименного с ролью пользователя Ubuntu
+
+sudo -u postgres createuser --interactive
+User
+passwd User  (kv-2 нет пароля)
+sudo -i -u User  
+createdb Userdb
+psql
+sudo -u <роль> psql <имя_БД>
+
+
+
+---------------------------------------------------
 Coздaem тecтoвyю бaзy дaнных, тecтoвoгo пoльзoвaтeля
  и пpeдocтaвляem пoльзoвaтeлю дocтyп k бaзe дaнных.
 postgres=# CREATE DATABASE sample_database; 
@@ -13,6 +42,7 @@ CREATE DATABASE
 postgres=# CREATE USER sample_user WITH password 'sample_password';
  CREATE ROLE 
 postgres=# GRANT ALL privileges ON DATABASE 
-sample_database TO sample_user; GRANT postgres=# q
+sample_database TO sample_user; GRANT 
+postgres=# q
 
 

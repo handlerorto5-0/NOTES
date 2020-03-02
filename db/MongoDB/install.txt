@@ -1,5 +1,6 @@
 #ubuntu
-https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+sudo apt update
+sudo apt install -y mongodb
 
 sudo systemctl status mongodb - проверка работы служб
 mongo --eval 'db.runCommand({ connectionStatus: 1 })' - диагностика служб
@@ -9,5 +10,15 @@ sudo systemctl restart mongodb - перезапуск сервера
 
 sudo systemctl disable mongodb -по умолчанию MongoDB запускается вместе с запуском сервера, но эту предустановку можно изменить 
 sudo systemctl enable mongodb - снова нужно добавить службу в автозагрузку
+
+_________________________________________________________________
+Mongo daemon process in your terminal, use the following command:
+mongod
+open Robomongo
+создать сщеединение
+в папке с проектом touch initData.js и добавить данные
+$ mongo
+> show dbs
+$ mongoimport --db local --collection articles --jsonArray initData.js --host=127.0.0.1
 
 

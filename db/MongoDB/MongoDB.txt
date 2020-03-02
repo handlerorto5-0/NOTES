@@ -11,7 +11,7 @@ mongo
     roles: [{ role: "readWrite", db: "kv_base"}]
  })
  show collections           просмотреть все коллекции в выбранной базе
- db.new_collection.find()   получить все документы
+ db.any.find()   получить все документы
  db.dropDatabase()          удалить выбранную базу
 
  ----------------------------------------------------------

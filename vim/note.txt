@@ -2,3 +2,16 @@ note for Ruby progect
 gem install solargraph
 solargraph socket
 solargraph bundle
+-----------------------------
+NERDTree
+" https://github.com/scrooloose/nerdtree
+Plug 'scrooloose/nerdtree'
+Что бы запускать его каждый раз при запуске vim — добавляем autocmd vimenter * NERDTree.
+Для вызова-скрытия менюшки по комбинации клавиш — добавляем map <C-n> :NERDTreeToggle<
+ set mouse=a
+CR> (или меняем Ctrl+n на свою):
+для отображения скрытых файлов — Shitf+i:   let NERDTreeShowHidden=1
+Что бы создать файл из NERDTree — вызываем меню клавишей m:
+Клавишей a — добавляем новый элемент. Если это файл — то просто указываем имя, если директория — добавляем в конце обратный слеш «/«
+:help NERD_tree.txt
+------------------------------

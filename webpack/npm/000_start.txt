@@ -1,0 +1,19 @@
+mkdir my-project
+cd my-project
+npm init -y
+mkdir src
+cd src
+touch index.js
++ index.js
+console.log('Hello Project.');
++
++ package.json
+{
+  ...
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  ...
+}
++
