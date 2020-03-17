@@ -59,3 +59,65 @@ app = API.new(ledger: Ledger.new)
 gem 'sequel'
 gem 'sqlite3'
 irb
+==================================================================
+RSpec ядро
+----------------------------------------------------------------
+вместо it exemple , specify , или настроить свои алиасы (стр 111)
+----------------------------------------------------------------
+hooks: before, after, around
+можно вынести хуки в spec/spec_helper.rb или spec/support
+RSpec.configure do |config|
+	config.around(:example) do |ex|
+		original_env = ENV.to_hash
+		ex.run
+		ENV.replace(original_env)
+	end
+end
+around hooks поддерживает только :example scope
+scope хуков аргументы запускать: :example(:each) - в каждом тесте, :context(:all)-один раз для группы , :suite - один раз перед тестированием
+require 'fileutils'
+RSpec.configure do |config|
+	config.before(:suite) do
+		# Remove leftover temporary files
+		FileUtils.rm_rf('tmp')
+	end
+end
+------------------------------------------------------------------
+подключение хелперов:
+module APIHelpers
+	include Rack::Test::Methods
+	def app
+		ExpenseTracker::API.new
+	end
+end
+RSpec.describe 'Expense Tracker API', :db do
+	include APIHelpers
+	# ...
+end
+автоматически
+RSpec.configure do |config|
+	config.include APIHelpers
+end
+-------------------------------------------------------------------
+Sharing Example Groups:
+RSpec.shared_context 'API helpers' do
+	include Rack::Test::Methods	
+	before ...
+end
+RSpec.describe 'Expense Tracker API', :db do
+	include_context 'API helpers'
+end 
+или автоматом
+RSpec.configure do |config|
+	config.include_context 'API helpers'
+end
+
+RSpec.shared_examples 'KV store' do |kv_store_class|
+	it ...
+end
+require 'hash_kv_store'
+require 'support/kv_store_shared_examples'
+RSpec.describe HashKVStore do
+	it_behaves_like 'KV store', HashKVStore
+end
+---------------------------------------------------------

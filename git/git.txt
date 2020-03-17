@@ -5,6 +5,10 @@ git commit -m "first commit"
 git remote add origin git@github.com:academind-345590/datacenter.git
 git push -u origin master
 ============================================================================
+откатиться к последнему кдммиту
+git add .
+git reset --hard
+==========================================================================
 только если совсем все испортили в рабочей ветке
 git checkout -btopic-branch
 <действительно все испортили>

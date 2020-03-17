@@ -29,3 +29,15 @@ sudo apt install safecopy
 sudo safecopy /dev/sda /home/
 В данном случае мы переносим данные с диска sda в папку home
 ---------------------------------------------------
+errors so sudo apt update
+
+Ошибка GPG: http://dl.google.com/linux/earth/deb stable Release: Следующие подписи не могут быть проверены, так как недоступен открытый ключ: NO_PUBKEY 78BD65473CB3BD13
+лечение
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
+или ручками обновить
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+
+'i386'
+Нужно добавить строгое указание использовать лишь 64 бита - [arch=amd64]
+sudo sed -i -e 's/deb http/deb [arch=amd64] http/' "/dl.google.com/linux/earth/deb"
+(пока не работает , но путь вроде верный, не может найти  таког файла)

@@ -46,3 +46,142 @@ rtquire "English" - для использования полных(понятн�
 --------------------------------------------------
 ruby -e 'p Kernel.private_instance_methods.sort'
 --------------------------------------------------
+ruby -cw filename.rb
+-------------------------------------------------
+Exception name: 190
+RuntimeError      raise
+NoMethodError     a.some_unknown_method_name
+NameError         a = some_random_identifier
+IOError           STDIN.puts("Don't write to STDIN!")
+Errno::error      File.open(-12)
+TypeError         a = 3 + "can't add a string to a number!"
+ArgumentError     def m(x); end; m(1,2,3,4,5)
+ZeroDivisionError   100/0
+--------------------------------------------------
+binding.irb   вставитьв код для отладки
+--------------------------------------------------
+irb
+>> fh = File.open("/tmp/display.out", "w")
+=> #<File:/tmp/display.out>
+>> "Hello".display(fh)
+=> nil
+>> fh.close
+=> nil
+>> puts(File.read("/tmp/display.out"))
+Hello
+--------------------------------------------------
+def combine_names(first_name, last_name)
+first_name + " " + last_name
+end
+names = ["David", "Black"]
+puts combine_names(*names)
+--------------------------------------------------
+inspect:
+"I am a String object".methods
+String.methods.sort
+str.methods.include?(:shout)
+str.singleton_methods
+Enumerable.instance_methods.sort
+MyClass.private_instance_methods
+-------------------------------------------------
+Строки:
+негативный поиск знаков с строке:
+string.count("^aey. ")
+string.count("ag-m", "^l") считает "а" и "g-m", ероме "l"
+Трансформация:
+string.rjust(25,'.')
+"...........David A. Black"
+string.ljust(25,'><')
+"David A. Black><><><><><>"
+"The middle".center(20, "*")
+"*****The middle*****"
+strip, rstrip, lstrip
+chop, chomp
+clear,replace, delete
+"David A. Black".crypt("34")
+=> "347OEY.7YRmio"
+"abc".succ
+"abd"
+Конверсия и кодировка:
+>> "100".to_i(17)
+=> 289
+oct, hex, to_s, to_str, to_f,to_r, to_c, to_sym
+str.encode!("US-ASCII")
+str.encoding
+-----------------------------------------------------
+СИМВОЛЫ:
+"a".to_sym
+:a
+"Converting string to symbol with intern....".intern
+Symbol.all_symbols.grep(/abc/)
+=> [:abc]
+"abc".send(:upcase) - some_object.send(method_name.to_sym)
+----------------------------------------------------
+ЧИСЛОВЫЕ ОБЪЕКТЫ:
+0x12
+=> 18  -16 ричное число
+012
+=> 10  -8 рсное число
+---------------------------------------------------
+ВРЕМЯ И ДАТА:
+require 'date'
+Date.parse("April 24 1705").england.strftime("%B %d %Y")
+Date.today
+Date.new(1959,2,1)
+Date.parse("2003/6/9")
+Date.parse("03/6/9")
+Date.parse("November 2 2013")
+Date.parse("Nov 2 2013")
+Date.parse("2 Nov 2013")
+
+Time.new
+Time.at(100000000) в сек с 1 января 1970
+Time.mktime(2007,10,3,14,3,6)
+=> 2007-10-03 14:03:06 -0400
+
+require 'time'
+Time.parse("March 22, 1985, 10:35 PM")
+=> 1985-03-22 22:35:00 -0500
+
+DateTime.new(2009, 1, 2, 3, 4, 5)
+=> 2009-01-02T03:04:05+00:00
+DateTime.now
+=> 2018-12-15T19:02:29-05:00
+DateTime.now
+=> 2018-12-15T19:02:29-05:00
+
+year, month, day, hour, minute, second  - time or date/time obj.method
+sunday?, saturday?, friday?
+
+Specifier   Description
+%Y          Year (four digits)
+%y          Year (last two digits)
+%b, %B      Short month, full month
+%m          Month (number)
+%d          Day of month (left-padded with zeros)
+%e          Day of month (left-padded with blanks)
+%a, %A      Short day name, full day name
+%H, %I      Hour (24-hour clock), hour (12-hour clock)
+%M          Minute
+%S          Second
+%c          Equivalent to "%a %b %d %H:%M:%S %Y"
+%x          Equivalent to "%m/%d/%y"
+
+Date.today.rfc2822
+DateTime.now.httpdate
+
+Time has to_date and to_datetime methods, 
+Date has to_time and to_datetime, 
+DateTime has to_time and to_date .
+
+Time object  +,- в секундах
+date/time objects +,-  d дни, >> <<  месяцы
+
+>> d = Date.today
+>> puts d.next
+>> puts d.next_year
+>> puts d.next_month(3)
+>> puts d.prev_day(10)
+upto and downto
+>> next_week = d + 7
+>> d.upto(next_week) {|date| puts "#{date} is a #{date.strftime("%A")}" }

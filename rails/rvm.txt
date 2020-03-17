@@ -1,4 +1,4 @@
-======================================================================
+d======================================================================
 # Disable RVM from trying to install necessary software via apt-get
 rvm autolibs disable  (enable) rvm autolibs rvm_pkg
 # Then try installing Ruby:
@@ -42,6 +42,14 @@ sudo apt-get install rvm
   $ rvm -v
   rvm 1.6.20 by Wayne E. Seguin (wayneeseguin@gmail.com) [https://rvm.beginrescueend.com/]
   если вы видите версию rvm, значит всё ОК 
+
+gem update --system
+gem -v
+echo "gem: --no-document" >> ~/.gemrc   опционально
+
+rvmsudo gem install bundler -v 1.5.0
+gem install bundler -v 1.17.3
+bundle _1.17.3_ install
 
 ---------------------------------------------------------
 _II Работа разными версиями Руби_

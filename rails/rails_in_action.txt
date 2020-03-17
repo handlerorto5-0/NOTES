@@ -1,0 +1,23 @@
+$ ruby -v ruby 2.2.1p85 (2015-02-26 revision 49769) [x86_64-linux]
+$ gem -v 2.4.6
+$ rails -v Rails 4.2.0
+-------------------------------------------------------------------
+http://localhost:3000/projects/not-here   (404 rails native)
+rake assets:precompile
+rake db:migrate RAILS_ENV=production
+config/environments/production.rb file change this line,
+config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
+to this:
+config.serve_static_files = true
+SECRET_KEY_BASE=`rake secret` rails s -e production
+http://localhost:3000/projects/not-here
+git add .
+git reset --hard
+--------------------------------------------------------------------
+get :show, params: { id: "not-here" }        -spec перейти 404
+--------------------------------------------------------------------
+Installing Bootstrap
+gem "bootstrap-sass"
+gem "simple_form"
+rails g simple_form:install --bootstrap
+--------------------------------------------------------------------

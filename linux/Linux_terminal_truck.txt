@@ -111,3 +111,15 @@ curl ­­data "title=Example 2" http://localhost:3000/articles
 еобходимо перенести большой файл
 split -a 1 -d -b 4000M sample.iso sample.iso.part
 cat sample.iso.part* > sample.iso
+-----------------------------------------------
+узнать доменное имя и параметры
+nslookup www.yandex.ru
+nslookup --type=XXX yandex.ru
+A - адрес IPv4
+AAAA - адрес IPv6
+CNAMP - ПСЕвдоним
+MX - адрес почтового сервера
+SRV - адреса и порты сетевых сервисов
+NS- адреса DNS в зоне
+PTR - доменное имя
+--------------------------------------------------

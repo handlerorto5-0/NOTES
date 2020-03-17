@@ -1,0 +1,71 @@
+Interactive Eli­xir (IEx) - интерактивная оболочка 
+необходимо установить Erlang в системе, а затем Eli­xir
+-----------------------------------------------------------------
+Latest Erlang and Elixir on Ubuntu 18.04 LTS:
+
+wget -O- https://packages.erlang-solutions.com/ubuntu/erlang_solutions.asc | sudo apt-key add -
+echo "deb https://packages.erlang-solutions.com/ubuntu bionic contrib" | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+sudo apt update
+sudo apt -y install erlang
+erl - start  Erlang shell
+
+$ cat hello.erl
+% This is a test Hello World Erlang Code
+-module(hello).
+-import(io,[fwrite/1]).
+-export([helloworld/0]).
+
+helloworld() ->
+   fwrite("Hello, Erlang World!\n").
+
+$ erl
+1> c(hello).
+{ok,hello}
+2> hello:helloworld().
+Hello, Erlang World!
+ok
+3>
+
+------------------------------------------------------
+sudo apt-get install elixir
+elixir -v
+------------------------------------------------------
+Запуск:
+mix new first_app - создаст новый, пустой проект
+cd first_app
+iex -S mix - запуск оболочки IEx
+Ctrl+C , a - выйти из оболочки
+h() - справка
+
+Навигация по тексту и истории команд:
+Ctrl+A курсор в начало строки
+Ctrl+E – в конец
+Ctrl+T поменять местами два символа
+v(N), где N – номер строки с командой
+
+Навигация по файлам:
+pwd() некущий каталог
+cd ".." , cd "first_app", ls(), clear()
+
+Операции:
++,-,*,/
+
+Вызов функций:
+div(200,15) получить целочисленный результат деления
+rem(200, 15) получить остаток
+round 200/15 преобразовать вещественное число в целое
+trunc() просто отбросить дробную часть
+4*v(9) cослаться на предыдущую команду по номеру строки
+v(-1) вернет предыдущий результат, v(-2) – результат, полученный перед предыдущим, и так далее.
+
+модуль math языка Erlang, содержащий классический набор функций, поддерживаемых научным калькулятором
+:math.pi(), :math.sin(), :math.cos()
+:math.pow(2,16) два в 16 степени
+
+
+СОВЕТЫ:
+
+
+поместите последовательности команд в файлы с расширени-
+ем .exs (от Eli­xir script). Если вызвать функцию c() и передать ей такой
+файл, Eli­xir выполнит все команды, находящиеся в файле

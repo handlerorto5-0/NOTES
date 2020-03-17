@@ -1,0 +1,47 @@
+анонимные функции:
+
+создать функцию, вычисляющую скорость падающего объекта на определенном расстоянии от точки сброса, выраженном в метрах:
+fall_velocity = fn (distance) -> :math.sqrt(2 * 9.8 * distance) end
+вызов 
+fall_velocity.(2000)
+mps_to_kph = fn(mps) -> 3.6 * mps end
+mps_to_kph.(fall_velocity.(2000))
+
+& оператор захвата, вместо fn применяется &, вместо именованных параметров – параметры вида &1, &2
+fall_velocity= &(:math.sqrt(2 * 9.8 * &1))
+
+модули:
+Eli­xir, кроме самых простых вычислений,определяет свои функции в компилируемых модулях.
+Каждый модуль должен находиться в отдельном файле с расширением .ex, name_of_module.ex
+
+mix new ch02/ex1-drop --app drop
+Mix выберет drop в качестве имени приложения и создаст в подката-
+логе lib файл с именем drop.ex
+defmodule Drop do
+	def fall_velocity(distance) do
+		:math.sqrt(2 * 9.8 * distance)
+	end
+...
+end
+
+def mps_to_mph(mps), do: 2.23693629 * mps  «однострочный» синтаксис
+
+Если требуется ограничить доступность каких-то функций рамками модуля, ключевое слово defp вместо def
+
+
+компиляцией кода на Eli­xir:
+iex -S mix  создаст каталог _build
+iex(2)> recompile  повторно скомпилировать
+iex(1)> c("drop.ex") в ручную
+
+вызов функций в iex:
+iex(2)> Drop.fall_velocity(20)
+iex(3)> Drop.mps_to_mph(Drop.fall_velocity(20))
+
+
+синтаксис: Имя_модуля.имя_функции/арность. Арность (ari­ty) – это количество аргументов, принимаемых функцией, в случае
+с Drop.fall_velocity это 1:
+iex(1)> fun=&Drop.fall_velocity/1
+iex(2)> fun.(20)
+
+

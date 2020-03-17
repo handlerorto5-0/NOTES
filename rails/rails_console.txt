@@ -3,3 +3,9 @@ irb загрузка файлов
 irb I .  ,ввести require "name_file" (без .rb)
 rdoc name_file.rb - создать документацию
 --------------------------------------------------------------
+react console || react c
+reload!
+Project.create!(name: "Sublime Text 3")
+Project.delete_all
+project = Project.create
+project.errors
