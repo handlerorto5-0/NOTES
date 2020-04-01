@@ -42,7 +42,7 @@ $. - исполняемая строка
 $0 - имя исполняемого файла
 $: - исполняемая директории
 $$ - id процесса
-rtquire "English" - для использования полных(понятных $LOAD_PATH instead of $:) имён
+require "English" - для использования полных(понятных $LOAD_PATH instead of $:) имён
 --------------------------------------------------
 ruby -e 'p Kernel.private_instance_methods.sort'
 --------------------------------------------------
@@ -147,8 +147,6 @@ DateTime.new(2009, 1, 2, 3, 4, 5)
 => 2009-01-02T03:04:05+00:00
 DateTime.now
 => 2018-12-15T19:02:29-05:00
-DateTime.now
-=> 2018-12-15T19:02:29-05:00
 
 year, month, day, hour, minute, second  - time or date/time obj.method
 sunday?, saturday?, friday?
@@ -185,3 +183,131 @@ date/time objects +,-  d дни, >> <<  месяцы
 upto and downto
 >> next_week = d + 7
 >> d.upto(next_week) {|date| puts "#{date} is a #{date.strftime("%A")}" }
+---------------------------------------------------------
+hash = { red: "ruby", white: "diamond", green: "emerald" }
+hash.each_with_index {|(key,value),i| puts "Pair #{i} is: #{key}/#{value}"}
+
+try_convent:
+Array (to_ary), Hash (to_hash), IO (to_io), Regexp (to_regexp),String (to_str)
+obj = Object.new
+Array.try_convert(obj) => nill
+def obj.to_ary; [1,2,3]; end 
+Array.try_convert(obj) => [1, 2, 3]
+def obj.to_ary; "Not an array!"; end 
+Array.try_convert(obj) => TypeError
+---------------------------------------------------------
+ARRAY:
+Array.new
+Array.new(3, "adc") - "abc" один и тот же объект
+Array.new(3) {"abc"} - "abc" разные объекты
+a = []
+Array(string) -> ["A string"] , если string = "A string"
+у строк нет to_a, его надо определять явно
+def string.to_a; split(/ /); end тогда разобьёт по пробелу ["A", "string"]
+>> %w(David\ A.\ Black is a Rubyist.)
+=> ["David A. Black", "is", "a", "Rubyist."]
+>> %W(Joe is #{2018 - 1981} years old.)
+=> ["David", "is", "37", "years", "old."]
+%i(a b c) - [:a, :b, :c]
+d = "David" 
+%I("#{d}") - [:"\"David\""]
+
+articles = array.values_at(0,3) создаст массив из элементов другого массива
+articles = array..dig(0,1,1) создаст массив из элементов вложенного массива
+
+unshift, push | <<  добавить элементы в массив
+shift, pop удалить из массива
+
+concat,+, replace, flatten, reverse, join, uniq, compact
+
+a = %w(one two three)
+a * "-"
+"one-two-three"
+
+Method name/sample call                 Meaning
+a.size (synonyms: length, count)   Number of elements in the array
+a.empty?                           True if a is an empty array; false if it has any elements
+a.include?(item)                   True if the array includes item; false, otherwise
+a.count(item)                      Number of occurrences of item in array
+a.first(n=1)                       First n elements of array
+a.last(n=1)                        Last n elements of array
+a.sample(n=1)                      n random elements from array
+-------------------------------------------------------------------------------
+HASHES
+h={}
+h=Hash.new
+Hash["Connecticut", "CT", "Delaware", "DE" ]
+=> {"Connecticut"=>"CT", "Delaware"=>"DE"}
+Hash[ [[1,2], [3,4], [5,6]] ]
+=> {1=>2, 3=>4, 5=>6}
+[[1,2],[3,4]].to_h
+=> {1=>2, 3=>4}
+
+state_hash["New York"] = "NY"
+state_hash.[]=("New York", "NY")
+state_hash.store("New York", "NY")
+
+state_hash.fetch("Nebraska", "Unknown state")
+state_hash.values_at("New Jersey","Delaware")
+state_hash.fetch_values("New Jersey", "Wyoming")
+
+h={ foo: { bar: "baz" } }
+h.dig(:foo, :bar)
+=> "baz"
+
+h = Hash.new(0)   0 значение по умолчанию
+h = Hash.new {|hash,key| hash[key] = 0 } не сущ.ключ тогда равен 0
+
+h1.update(h2), h3 = h1.merge(h2)
+
+h.select {|k,v| k > 1 }, h.reject {|k,v| k > 1 }
+
+compact, invert, clear, replace
+
+Method name/Sample call  Meaning
+h.has_key?(1)            True if h has the key 1
+h.include?(1)            Synonym for has_key?
+h.key?(1)                Synonym for has_key?
+h.member?(1)             Synonym for has_key?
+h.has_value?("three")    True if any value in h is "three"
+h.value?("three")        Synonym for has_value?
+h.empty?                 True if h has no key/value pairs
+h.size                   Number of key/value pairs in h
+
+add_to_city_database("New York City",
+state: "New York",
+population: 7000000,
+nickname: "Big Apple")  метод создания хеша
+
+def m(a: 1, b: 2, **c) в с попавдёт хаш преданых аргументов
+-----------------------------------------------------------------------
+RANGES
+r = Range.new(1,100), Range.new(1,100,true)
+r = 1..100, r = 1...100
+r.begin, r.end, r.exclude_end?
+r.cover?("a")
+r.include?("a")
+-----------------------------------------------------------------------
+SETS
+require "set"
+names = ["David", "Yukihiro", "Chad", "Amy"]
+name_set = Set.new(names) {|name| name.upcase }
+
+tri_state = Set.new(["New Jersey", "New York"])
+tri_state << "Connecticut"
+tri_state.delete("Connecticut")
+tri_state.add?("Pennsylvania") если нет добавить
+
+ intersection , aliased as &
+ union , aliased as + and |
+ difference , aliased as -
+
+tri_state.merge(["New York"])
+state_set.merge(state_hash.keys)
+
+tiny_states.subset?(small_states)
+small_states.superset?(tiny_states)
+
+
+
+
