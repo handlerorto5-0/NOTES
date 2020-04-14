@@ -44,4 +44,36 @@ iex(3)> Drop.mps_to_mph(Drop.fall_velocity(20))
 iex(1)> fun=&Drop.fall_velocity/1
 iex(2)> fun.(20)
 
+|> оператор конвейера (pipe operator), который иногда называют прямым конвейе­ром (pipe forward), позволяет передать выражение в первом аргументе следующей функции
+fall_velocity(meters) |> mps_to_mph
+вместо mps_to_mph(fall_velocity(meters))
+
+импортировать в модуль или функуию с арностью 1
+import :math, only: [sqrt: 1]
+import :math, except: [sin: 1, cos: 1]
+
+fall_velocity(distance, gravity \\ 9.8) - значение по умолчанию
+
+# однострочный комментарий
+@doc """ многострочный коментарий """ 
+iex>h Drop
+iex(2)>h Drop.fall_velocity получить инфу из @doc
+@spec fall_velocity(number()) :: float()
+спецификация сообщает, что функция может принимать любые числа (number()) – целые или вещественные, – но результат всегда является вещественным (float()) числом
+iex> s(Drop.fall_velocity) получить инфу из @spec
+iex> s(Drop) - все спецификации, присутствующие в модуле Drop
+@vsn 0.1 доп информация о версии модуля
+ExDoc распознает разметку Markdown (http://daringfireball.net/projects/markdown/)
+=============================================================================
+Атомы, кортежи и сопоставление с образцом
+Атомы- тип данных, насинаются с :, содержат _,@, значениями являются оги сами
+:test, :this_atom, :me@home, :"today is good day"
+Drop.fall_velocity(:mars, 20)
+
+Логические атомы true - false, операторы and, or, not true
+guards ограничители  def fall_velocity(:earth, distance) when distance >= 0 do
+
+
+
+
 

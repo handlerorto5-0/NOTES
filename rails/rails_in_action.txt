@@ -21,4 +21,5 @@ gem "bootstrap-sass"
 gem "simple_form"
 rails g simple_form:install --bootstrap
 --------------------------------------------------------------------
-a@mail.ru 123456
+a@mail.ru 123456 admin@mail.ru password viewer@mail.ru password
+--------------------------------------------------------------------

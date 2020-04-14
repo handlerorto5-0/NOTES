@@ -1,0 +1,32 @@
+python3 -V
+sudo apt-get update
+sudo apt-get install idle3
+>idle
+# comment
+-----------------------------------------------------------
+Встоенные модули: https://docs.python.org/3/py-modindex.html
+репозиторий сообщества http://pypi.python.org
+
+import sys 
+sys.platform
+sys.version
+
+import os
+os.getcwd()
+os.environ
+os.getenv('HOME')
+
+import datetime
+datetime.date.today()
+datetime.date.today().day   (month, year)
+datetime.date.isoformat(datetime.date.today())
+
+import time
+time.strftime(“%I:%M”)
+time.strftime("%A %p")
+
+import html
+html.escape("This HTML fragment contains a <script>script</script> tag.")
+html.unescape("I &hearts; Python's &lt;standard library&gt;.")
+
+
