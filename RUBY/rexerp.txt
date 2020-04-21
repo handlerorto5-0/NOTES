@@ -1,0 +1,258 @@
+Writing regular expressions:
+
+//.class      -> Regexp
+%r{}.class    -> Regexp
+------------------------------------------------------
+Boolean:
+
+/abc/.match?("The alphabet starts with abc.")
+"The alphabet starts with abc.".match?(/abc/)
+
+puts "Match!" if /abc/ =~ "The alphabet starts with abc."
+puts "Match!" if "The alphabet starts with abc." =~ /abc/
+-------------------------------------------------------
+To get MatchData:
+
+/abc/.match("The alphabet starts with abc.")  -> #<MatchData "abc">
+/abc/.match("def") -> nil
+"The alphabet starts with abc" =~ /abc/  вернёт индекс начала шаблона в строке
+--------------------------------------------------------
+Symbols in Ruby regular expressions
+
+Symbol            Meaning
+//, %r{}    Экземпляр Regexp class
+=~          Высислить если совпадение сушествует
+.           Сравнить символ, кроме \n
+\           Прмеченный символ не вычисляемый, как есть
+[ ]         окружают сharacter class; соотв одному из символов [ and ]
+^           1. Отрицание символа или класса символов; соответствует чему-либо кроме того, что следует ^
+            2. Совпадение в начале линии
+\d          Цифра
+\D          Не цифра
+\w          Цифра, буква, подчёркивание
+\W          Не цифра, буква, подчеркивание
+\s          Пробельный символ (space, tab, newline)
+\S          Не пробельный символ (space, tab, newline)
+{ }         Соответствует символу (классу символов) определенное количество раз
+$           Совпадение в конце линии
++           Соответствует одному или нескольким вхождениям символа(класса символов)
+*           Соответствует нулю или нескольким вхождениям символа(класса символов)
+----------------------------------------------------------------
+^ $ ? . / \ [ ] { } ( ) + *  спец символы которые можно экранировать \
+/Mrs?\./ ищем Mrs. или Mr.
+-----------------------------------------------------------------
+/.ejected/.match?("%ejected")
+%r{[dr]ejected}
+/[A-Fa-f0-9]/
+%r{[^A-Fa-f0-9]}
+================================================================
+Соответствие, захват подстроки и MatchData
+
+regex.match?(string)
+string.match?(regex)
+
+захват:
+/[A-Za-z]+,[A-Za-z]+,Mrs?\./.match("Peel,Emma,Mrs.,talented amateur")
+#<MatchData "Peel,Emma,Mrs.">
+Одна подстрока
+/([A-Za-z]+),[A-Za-z]+,(Mrs?\.)/.match("Peel,Emma,Mrs.,talented amateur")
+#<MatchData "Peel,Emma,Mrs." 1:"Peel,Emma,Mrs.">
+puts $1 вернёт Peel,Emma,Mrs.
+Две подстроки
+/([A-Za-z]+),[A-Za-z]+,(Mrs?\.)/.match("Peel,Emma,Mrs.,talented amateur")
+#<MatchData "Peel,Emma,Mrs." 1:"Peel" 2:"Mrs.">
+puts "Dear #{$2} #{$1},"
+
+захват в массив:
+у MatchData есть метод string возвр всю строку передаваемую для сравнения
+если rgx = %r{()()} и m=rgx.match(any_str) то можно вызвать:
+m[0] весь r, m[1] первый и тд  начиная с 1
+или m.captures[index] (index  совпадения начиная с 0)
+m[1] == m.captures[0]
+
+порядок захвата:
+/((a)((b)c))/.match("abc") скобки отчитываются слева
+
+Поименнованный захват:
+re = %r{(?<first>\w+)\s+((?<middle>\w\.)\s+)(?<last>\w+)}
+m = re.match("David A. Black")
+m[:first]
+m.named_captures вернёт хеш
+
+re = /(?<first>\w{3})\s+((?<last>\w{3}),?\s?)((?<suffix>\w+\.?)?)/
+m = re.match "Joe Leo, Jr."
+m.named_captures
+m[:suffix]
+
+Дополнительные методы
+m.pre_match
+m.post_match
+m.begin() в аргументе номер сообщения
+m.end()  тж
+
+The global MatchData object $~
+
+==============================================================
+Тонкая настройка регулярных выражений с квантификаторами, якорями и модификаторами:
+------------------------------------------------------------------
+Квантификаторы позволяют указать, сколько раз подряд что-то соответствовало.
+Ноль или один
+/Mrs?\.?/        s и точки модет не быть
+\d\d?            цифры ьодет не быть
+Ноль или много
+/<\s*\/\s*poem\s*>/   в теге могут быть пробелы
+Один или много
+/\d+/
+Жадные(не жадные) вантификаторы
+* и + жадные:
+string = "abc!def!ghi!"
+/.+!/.match(string)[0]    -> "abc!def!ghi!"    жадный
+/.+?!/.match(string)[0]   -> "abc!"            не жадный
+/(\d+?)/.match("Digits-R-Us 2345")[1] -> "2"   не жадный
+/(\d+)(5)/.match("Digits-R-Us 2345")           не жадный
+
+Количество повторений:
+/\d{3}-\d{4}/
+/\d{1,10}/    один или более, до 10, повторений
+/\d{3,}/      три или более
+
+Ограничение в круглых скобках:
+/([A-Z]){5}/.match("David BLACK") -> #<MatchData "BLACK" 1:"K"> Упс!
+([A-Z]{5})/.match("David BLACK")  -> #<MatchData "BLACK" 1:"BLACK">
+---------------------------------------------------------------------
+Якоря позволяют указать, что совпадение происходит в определенной структурной точке строки (начало строки, конец строки, на границе слова и т. д.). 
+начало линии ( ^ ) конец линии ( $ )
+comment_regexp = /^\s*#/
+comment_regexp.match(" # Pure comment!") -> #<MatchData " #">
+
+Nota  Regexp anchors      Description          Example
+^     Begin line          /^\s*#/              "# A Ruby comment line"
+$     End line            /\.$/                "one\ntwo\nthree.\nfour"
+\A    Begin str           /\AFour score/       "Four score"
+\z    End str             /from the earth.\z/  "from the earth."
+\Z    End str, exclud-
+      ing a final newline
+      character, if any   /from the earth.\Z/  "from the earth.\n"
+\b    Word boundary       /\b\w+\b/            "!!!word***" (matches "word")
+
+Ожидание следующего
+Допустим идем блок цифр с точкой в конце:
+str = "123 456. 678"
+m = /\d+(?=\.)/.match(str)
+m[0] вернёт 456 , то что перед точкой
+негативнное ожидание впереди(?!\.)
+
+нулевая видимость (?:def) не попадёт в MatchData
+
+Ожидание предыдущего
+re = /(?<=David )BLACK/  BLACK только eсли впереди David
+re = /(?<!David )BLACK/  BLACK только если впереди нет David
+
+Условие сравнения
+re = /(a)?(?(1)b|c)/ "b" если поймано первое сравнение, в противном случае, иякать  "c"
+re.natch("ab") вернёт #<MatchData "ab" 1:"a">
+re.match("b") вернёт nil
+re.match("c") вернёт #<MatchData "c" 1:nil>
+ещё пример
+rgx_my_name =/(?<pre>Vayche)?(?(<pre>)slav|Slava)/
+---------------------------------------------------------------------
+Модификаторы похожи переключатели вы можете щелкнуть, чтобы изменить поведение двигателя регулярных выражений; например, делая его нечувствительным к регистру или изменяя способ обработки пробелов.
+
+/abc/i  игнорировать регистр
+
+m включение для кфантификатора(".") поиска \n 
+str = "This (including\nwhat's in parens\n) takes up three lines."
+m = /\(.*?\)/m.match(str)
+вернёт (including\nwhat's in parens\n)
+.*? патерн не жадности
+
+x игнормрует пробельные символы, помогает писать код патерна в несколько линий и добавлять коментарии, для удобства
+/
+	\((\d{3})\)    # 3 digits inside literal parens (area code)
+		\s         # One space character
+	(\d{3})
+		-
+	(\d{4})
+/x
+-------------------------------------------------------------
+Взаимная конвертация строк в регулярные выражения
+
+Строку в регвыр:
+str = "a.c"
+"a.c"
+re = /#{Regexp.escape(str)}/   вернёт /a\.c/
+Regexp.new('(.*)\s+Black')
+Regexp.new(Regexp.escape("Mr. David Black")) 
+вернёт /Mr\.\ David\ Black/
+
+Регвыр в строку:
+/abc/.inspect  => "/abc/"
+-----------------------------------------------------
+Общие методы, которые используют регулярные выражения
+
+Поиск с условием:
+array.find_all {|e| e.size > 10 and /\d/.match(e) }
+
+String#scan сравнивает строку слева на право, возвращает массив
+"testing 1 2 3 testing 4 5 6".scan(/\d/)
+=> ["1", "2", "3", "4", "5", "6"]
+
+str = "Leopold Auer was the teacher of Jascha Heifetz."
+violinists = str.scan(/([A-Z]\w+)\s+([A-Z]\w+)/)
+[["Leopold", "Auer"], ["Jascha", "Heifetz"]]
+violinists.each do |fname,lname|
+	puts "#{lname}'s first name was #{fname}."
+end
+
+Расширение strscan
+require 'strscan'
+ss = StringScanner.new("Testing string scanning")  создание сканера
+ss.scan_until(/ing/)   сканирует пока не совпадёт
+ss.pos   возвращает позицию
+ss.peek(7)  смотрит следующие 7 байт после позиции
+ss.unscan   сброс сканера
+ss.skip(/Test/)  сдвиг позиции
+ss.rest  часть строки справа от позиции
+
+String#split разрубает строку на массив 
+"Ruby".split(//)
+=> ["R", "u", "b", "y"]
+
+line = "first_name=david;last_name=black;country=usa"
+record = line.split(/=|;/)
+["first_name", "david", "last_name", "black", "country", "usa"]
+record = Hash[*line.split(/=|;/)]
+
+"a,b,c,d,e".split(/,/,3)
+=> ["a", "b", "c,d,e"]
+
+sub/sub! и gsub/gsub!
+sub принимает regexp и строку, заменяет первое соипадение строкой
+"typigraphical error".sub(/i/,"o")
+=> "typographical error"
+>> "capitalize the first vowel".sub(/[aeiou]/) {|s| s.upcase }
+=> "cApitalize the first vowel"
+gsub заменяет все совпадения
+"capitalize every word".gsub(/\b\w/) {|s| s.upcase }
+=> "Capitalize Every Word"
+Поймать и заменить:
+"aDvid".sub(/([a-z])([A-Z])/, '\2\1')
+=> "David"
+"double every word".gsub(/\b(\w+)/, '\1 \1')
+=> "double double every every word word"
+
+===
+puts "Match!" if re.match(string)
+puts "Match!" if string =~ re
+puts "Match!" if re === string
+
+Enumerable#grep  фильтрует
+>> ["USA", "UK", "France", "Germany"].grep(/[a-z]/)
+=> ["France", "Germany"]
+тоже самое
+["USA", "UK", "France", "Germany"].select {|c| /[a-z]/ === c }
+или с блоком
+>> ["USA", "UK", "France", "Germany"].grep(/[a-z]/) {|c| c.upcase }
+=> ["FRANCE", "GERMANY"]
+[1,2,3].grep(/1/) вернёт пустой массив
+
