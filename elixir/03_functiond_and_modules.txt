@@ -45,7 +45,8 @@ iex(1)> fun=&Drop.fall_velocity/1
 iex(2)> fun.(20)
 
 |> оператор конвейера (pipe operator), который иногда называют прямым конвейе­ром (pipe forward), позволяет передать выражение в первом аргументе следующей функции
-fall_velocity(meters) |> mps_to_mph
+fall_velocity(meters) 
+|> mps_to_mph
 вместо mps_to_mph(fall_velocity(meters))
 
 импортировать в модуль или функуию с арностью 1

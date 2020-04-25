@@ -1,6 +1,8 @@
 $ ruby -v ruby 2.2.1p85 (2015-02-26 revision 49769) [x86_64-linux]
 $ gem -v 2.4.6
 $ rails -v Rails 4.2.0
+--------------------------------------------------------------------
+a@mail.ru 123456 admin@mail.ru password viewer@mail.ru password
 -------------------------------------------------------------------
 http://localhost:3000/projects/not-here   (404 rails native)
 rake assets:precompile
@@ -20,6 +22,3 @@ Installing Bootstrap
 gem "bootstrap-sass"
 gem "simple_form"
 rails g simple_form:install --bootstrap
---------------------------------------------------------------------
-a@mail.ru 123456 admin@mail.ru password viewer@mail.ru password
---------------------------------------------------------------------
