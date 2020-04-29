@@ -1,0 +1,136 @@
+Navigating the current line
+Go to beginning of line	Ctrl - A
+Go to end of line	Ctrl - E
+Go to next word	Alt - F
+Go to previous word	Alt - B
+Toggle your cursor between its current position and the beginning of line	Ctrl - X - X
+
+Deleting and editing text
+Delete current character	Ctrl - D
+Delete previous word	Ctrl - W
+Delete next word	Alt - D
+Edit the current command in your text editor	Ctrl - X Ctrl - E
+Undo previous action(s)	Ctrl - -
+
+Cutting and pasting
+Cut current word before the cursor	Ctrl - W
+Cut from cursor to end of line	Ctrl - K
+Cut from cursor to start of line	Ctrl - U
+Paste the cut buffer at current position	Ctrl - Y
+
+Controlling the terminal
+Clear the terminal screen	Ctrl - L	clear
+Close the terminal screen	Ctrl - D	exit
+Send current command to the background.	Ctrl - Z	
+
+Редактирование мз командной строки
+$ cat ~/.inputrc
+set editing-mode vi  # or emacs
+
+Поиск в истории комонд
+$ <Ctrl-R>
+(reverse-i-search): echo <Ctrl-R> <Enter>
+$ echo "hello world"
+hello world
+выйти из поиска 
+Ctrl - C or Ctrl - G
+(~/.bash_history for bash and ~/.zsh_history for zsh by default) там хранится история
+
+Переписать историю
+$ secret-command --password 1234qwerty  # oh no! that should not be in my history!
+$ grep secret-command $HISTFILE
+secret-command --password 1234qwerty
+$ sed -i '/secret-command/d' $HISTFILE  # deletion of history line containing 'secret-command'
+$ grep secret-command $HISTFILE
+$ # it's not in history anymore
+или посмотреть последние n
+$ history | tail -n 5
+  496  mkdir test
+  497  secret-command --password 1234qwerty
+  498  cd
+  499  man history
+  500  history | tail -n 5
+или удалить из истории
+$ history -d 497
+$ history | tail -n 7
+  496  mkdir test
+  497  cd
+  498  man history
+  499  history | tail -n 5
+  500  history -d 497
+  501  history | tail -n 7
+
+Избегать истории
+Просто введите префикс вашей команды через пробел.
+$  secret-command --password 1234qwerty  # notice the space at the start of the command!
+$ history | tail -n 2
+  502  history | tail -n 7
+  503  history | tail -n 2
+----------------------------------------------------------------
+Расширения оболочки
+
+Указатели событий:
+!-n вызывает команду по номеру , начиная от последней(отсюда команда !!)
+
+Замена команд:
+^ строка1 ^ строка2 используется для повторения предыдущей команды, в которой строка1 заменяется на строку2.
+$ cat ./myfile
+Just a file full of junk
+$ ^cat^rm
+$ rm ./myfile
+
+Указатели на слова:
+на первое !^
+$ touch first.txt second.txt last.txt
+$ vim !^
+$ vim first.txt
+на последнее !$
+$ touch first.txt second.txt last.txt
+$ vim !$
+$ vim last.txt
+
+Комбинирование указателей: [EVENT DESIGNATOR]:[WORD DESIGNATOR]
+$ touch first.txt second.txt last.txt
+$ vim !!:2
+$ vim second.txt
+
+Расширение тильды
+~	Your home directory
+~+	Your current working directory
+~-	Your previous working directory
+$ ls ~
+
+Расширение пути:
+$ mv *.jpg pics
+$ ls */*
+ls */*.jpg
+$ ls **
+$ ls **/
+
+Расширение скобки:
+$ mkdir ~/test/{pics,sounds,sprites}
+$ mkdir ~/test/{pic,sound,sprite}s
+$ touch ~/test/sounds/noise-{1..5}.mp3
+$ touch ~/test/pics/pic{1..10..2}.jpg
+
+Расширение команд:
+$ cat <<EOF > aboutme
+My name is $(whoami)
+and I live in $HOME
+EOF
+$ cat aboutme
+My name is br
+and I live in /home/br
+
+-----------------------------------------------------------
+Примеры:
+Moving a pattern of files contained in directories and subdirectories
+$ mv **/*.{jpg,mp3} ~/assets/
+Renaming multiple directories
+$ for dir in */; do
+    mv "$dir" "$(echo "$dir" | tr '[:lower:]' '[:upper:]')"
+  done
+
+
+
+
