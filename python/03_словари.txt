@@ -1,0 +1,21 @@
+3 Словари
+person1 = { 'Name': 'Ivan Ivanov',
+            'Gender': 'Male',
+            'Occupation': 'Researcher',
+            'Home Planet': 'Betelgeuse Seven' }
+
+person1['Name'] доступ к данным
+person1['Age'] = 22  добавить пару
+
+Итерации:
+for key in person1:
+	print (key, 'has value', person1[key],'.')
+
+for k in found:
+    print(k, 'was found', found[k], 'time(s).')
+sorted(dict) сортирует по алфавиту
+for k in sorted(found):  
+    print(k, 'was found', found[k], 'time(s).')
+items() — возвращает список пар ключ/значение
+for k, v in sorted(found.items()):
+    print(k, 'was found', v, 'time(s).')

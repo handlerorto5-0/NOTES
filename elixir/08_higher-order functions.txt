@@ -1,0 +1,48 @@
+Функции высшего порядка и генераторы списков
+-------------------------------------------------
+Функции высшего порядка (higher-order functions), или функции, принимающие в аргументах другие функции.
+-------------------------------------------------
+Простые функции высшего порядка
+
+defmodule Hof do
+	def tripler(value, function) do
+		3 * function.(value)
+	end
+end
+my_function = fn(value) -> 20 * value end
+Hof.tripler(6, my_function)
+Hof.tripler(6, fn(value) -> 30 * value end)
+ampersand_function = &(20 * &1)
+Hof.tripler(6, ampersand_function)
+Hof.tripler(6, &(20 * &1))
+замыкание, первое знасение х, сохранится в функции
+x = 20
+my_function3 = &(x* &1)
+x= 0
+Hof.tripler(6, my_function3) вернёт 360
+использование модулей
+Hof.tripler(:math.pu, &:math.cos(&1))
+
+-------------------------------------------------------------
+Создание списков
+получить список значений, не соответствующих условию, Enum.partition/2, возвращает кортеж, включающий соответствующие и не соответст­вующие значения в двух отдельных списках
+
+list comprehensions- генераторы списков, List и Enum принимают функцию и список и выполняют некоторые операции с ними
+list = [1, 2, 4, 8, 16, 32]
+
+Получение информации о списке Enum.each/2
+print = fn(value) -> IO.puts(" #{value}") end
+Enum.each(list, print)
+
+Обработка элементов списка с помощью функций Enum.map/2
+square = &(&1 * &1)
+Enum.map(list, square)
+– с применением генераторов списков:
+for value <- list, do: value * value
+for value <- 1..3, do: value * value с генератором
+
+Фильтрация значений в списках Enum.filter/2
+four_bits = fn(value) -> (value >= 0) and (value < 16) end
+Enum.filter(list, four_bits)
+– с применением генераторов списков:
+for value <- list, value >= 0, value < 16, do: value

@@ -1,0 +1,80 @@
+Типы(вернее их отсутствие)
+
+Erlang строго типизирован. что то вроде 6+"1" не прокатит
+-------------------------------------------------------
+Преобразование типов:
+
+erlang:list_to_integer("64").
+erlang:integer_to_list(43).
+erlang:list_to_float("54.32").
+erlang:atom_to_list(true).
+erlang:list_to_bitstring("hi there").
+erlang:bitstring_to_list(<<"hi there">>).
+
+Список встроенных фунций приведения к типу:
+atom_to_binary/2
+binary_to_existing_atom/2
+bitstring_to_list/1
+iolist_to_binary/1
+iolist_toatom/1
+list_to_bitstring/1
+list_to_integer/2
+pid_to_list/1
+term_to_binary/1
+atom_to_list/1
+binary_to_list/1
+float_to_list/1
+integer_to_list/1
+list_to_atom/1
+list_to_existing_atom/1
+list_to_pid/1
+port_to_list/1
+term_to_binary/2
+binaty_to_atom/2
+binary_to_term/1
+fun_to_list/1
+integer_to_list/2
+list_to_binary/1
+list_to_float/1
+list_to_tuple/1
+ref_to_list/1
+tuple_to_list/1
+
+Встроенные фунции проверки типов:
+is_atom/1
+is_bitstring/1
+is_float/1
+is_integer/1
+is_pid/1
+is_record/3
+is_binary/1
+is_boolean/1
+is_function/1
+is_list/1
+is_port/1
+is_reference/1
+is_biltin/3
+is_function/2
+is_number/1
+is_record/2
+is_tuple/1
+
+my_function(Exp) when is_binary(Exp) -> Выражение;
+также в защитных выражениях, применяют:
+abs(Число)
+bit_size(ДвоичнаяСтрока)
+byte_size(ДвоичнаяСтрока)
+element(N, Кортеж)
+float(Терм)
+hd(Список)
+length(Список)
+node()
+node(Pid | Ref | Port)
+round(Число)
+self()
+size(Кортеж | БитоваяСтрока)
+tl(Список)
+trunc(Число)
+tuple_size(Кортеж)
+
+

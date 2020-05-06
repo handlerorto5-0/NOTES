@@ -1,0 +1,129 @@
+Список ключей всегда хранит данные последовательно и может содержать повторяющиеся ключи.
+atomic_weights = [hydrogen: 1.008, carbon: 12.011, sodium: 22.99]
+ages = [david: 59, simon: 40, cathy: 28, simon: 30]
+
+Keyword.get/3 извлекает значение из списка по заданному ключу(в 3-м аргументе значение по умолчанию)
+Keyword.get(atomic_weights, :carbon, 0)
+Keyword.get_values(ages, :simon) арность 2
+
+Keyword.has_key?/2 позволяет проверить наличие ключа в списке:
+Keyword.has_key?(atomic_weights, :carbon)
+
+Keyword.put_new/3 добавляет новое значение. Если ключ уже существует, его значение остается без изменений:
+Keyword.put_new(atomic_weights, :helium, 4.0026)
+
+Keyword.put/3 изменяет значение существующего ключа. Если ключ отсутствует, он будет создан.
+Keyword.put(ages, :chung, 19)
+
+Keyword.delete/2 удаляет все записи с указанным ключом. Удалить только первую запись можно с помощью Keyword.delete_first/2:
+Keyword.delete(ages, :simon)
+-----------------------------------------------------------------
+Списки кортежей с несколькими ключами
+
+atomic_info = [{:hidrogen, :H, 1.008},{:carbon, :C, 12.011},{:sodium, :Na, 22.99}]
+List.keyfind/4, List.keymember?/3, List.keyreplace/4, List.keystore/4 и List.keydelete/3.
+в третьем – индекс элемента в кортеже, который должен использоваться как ключ, где 0 соответствует первому элементу:
+List.keyfind(atomic_info, :H, 1)
+List.keyfind(atomic_info, :carbon, 0)
+
+List.keymember?(atomic_info, :Na, 1) возвр boolean
+List.keystore(atomic_info, :boron, 0, {:boron, :B, 10,081}) добавить в кортеж
+List.keyreplace(atomic_info, :B, 1, {:boron, :B, 10.81})
+List.keydelete(atomic_info3, :carbon, 0)
+
+----------------------------------------------------------
+Словари - HashDict устарело
+используют , если заранее известно что ключи будут уникальными
+
+Чтобы задействовать словарь, нужно явно создать его вызовом функции Map.new:
+planemo_hash = Enum.into([earth: 9.8, moon: 1.6, mars: 3.71], HashDict.new())
+HashDict.get(planemo_hash, :jupiter, 0) зн по умолч
+HashDict.put_new(planemo_hash, :jupiter, 99.9)
+HashDict.put(planemo_hash3, :jupiter, 23.1)
+HashDict.delete(planemo_hash4, :jupiter)
+-------------------------------------------------------------
+Отображения - Map
+new_map = %{}
+
+planemo_map = %{:earth => 9.8, :moon => 1.6, :mars => 3.71}
+planemo_map_alt = %{earth: 9.8, moon: 1.6, mars: 3.71}
+number_map=%{2 => "two", 3 => "three"}
+
+изменение отображений:
+%{planemo_map | earth: 12}
+%{planemo_map | earth: 12, mars:3}
+
+добавить в отображение еще одну пару ключ/значение
+Map.put_new(planemo_map, :jupiter, 23.1)
+
+Чтение отображений
+%{earth: earth_gravity}
+earth_gravity
+
+--------------------------------------------------------------
+Структуры
+
+defmodule Tower do
+  defstruct location: "", height: 20, planemo: :earth, name: ""
+end
+
+tower1 = %Tower{} вернёт по умолчанию
+tower2 = %Tower{location: "Grand Canyon"}
+tower5 = %Tower{planemo: :mars, height: 500, name: "Daga Vallis", location: "Valles Marineris"}
+tower5.name
+
+Использование структур в сопоставлениях с образцом
+%Tower{planemo: p, location: where} = tower5
+iex(8)> p
+:mars
+iex(9)> where
+"Valles Marineris"
+
+Метод сопоставления полной записи
+defmodule StructDrop do
+def fall_velocity(t = %Tower{}) do
+	fall_velocity(t.planemo, t.height)
+end
+def fall_velocity(:earth, distance) when distance >= 0 do
+	:math.sqrt(2 * 9.8 * distance)
+end ...
+StructDrop.fall_velocity(tower5)
+
+Метод извлечения полей структуры сопоставлением с образцом
+def fall_velocity(%Tower{planemo: planemo, height: distance}) do
+	fall_velocity(planemo, distance)
+end
+
+Метод одновременного сопоставления структуры целиком и отдельных ее компонентов
+def fall_velocity(t = %Tower{planemo: planemo, height: distance}) do
+	IO.puts("From #{t.name}'s elevation of #{distance} meters on #{planemo},")
+end
+
+---------------------------------------------------------------
+Добавление поведения в структуры с помощью протоколов
+defprotocol Valid do
+	@doc "Возвращает true, если данные можно считать допустимыми"
+	def valid?(data)
+end
+defmodule Planemo do
+	defstruct name: nil, gravity: 0, diameter: 0, distance_from_sun: 0
+end
+defimpl Valid, for: Planemo do
+	def valid?(p) do
+		p.gravity >= 0 and p.diameter >= 0 and
+		p.distance_from_sun >= 0
+	end
+end
+p = %Planemo{name: :weirdworld, gravity: -2.3}
+Valid.valid?(p)
+------------------------------------------------------------
+Расширение inspect протоколов
+defimpl Inspect, for: Tower do
+    import Inspect.Algebra   
+    def inspect(item, _options) do  
+      meters = concat(to_string(item.height), "m:")
+      msg = concat([meters, break, item.name, ",", break, item.location, ",", break, to_    string(item.planemo)])     
+    end                      
+ end
+
+ 
