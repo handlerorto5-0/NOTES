@@ -1,6 +1,7 @@
 $ ruby -v ruby 2.2.1p85 (2015-02-26 revision 49769) [x86_64-linux]
 $ gem -v 2.4.6
 $ rails -v Rails 4.2.0
+rvmsudo bundle
 --------------------------------------------------------------------
 a@mail.ru 123456 admin@mail.ru password viewer@mail.ru password
 -------------------------------------------------------------------

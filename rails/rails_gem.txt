@@ -2,7 +2,7 @@ Gemfile : gem '...', '^>...' - версия выше
 bundle install - установка
 bundle install --binstubs -установка в директорию /bin
 bundle outdated -  сведения о старых версиях
-bandle exec rake db:migrate - подключение своей версии rake
+bundle exec rake db:migrate - подключение своей версии rake
 ===========================================
 devise - регистрация и вход пользователей
 <div class="container">
