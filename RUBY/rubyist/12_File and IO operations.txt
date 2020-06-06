@@ -99,7 +99,7 @@ File.size("code/ticket2.rb")
 FileTest.size("code/ticket2.rb")
 File::Stat.new("code/ticket2.rb").size
 
-File или FileTest юез разницы:
+File или FileTest без разницы:
  Does a file exist?
 FileTest.exist?("/usr/local/src/ruby/README")
  Is the file empty?

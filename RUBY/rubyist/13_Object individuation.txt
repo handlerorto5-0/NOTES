@@ -1,0 +1,148 @@
+Object individuation
+============================================
+чтобы попасть внутрь тела определения одноэлементного класса исп спец запись:
+class << object
+# method and constant definitions here
+end
+class Ticket
+	class << self
+		def most_expensive(*tickets)
+			tickets.max_by(&:price)
+		end
+	end
+end
+
+подключение модулей:
+class C
+   def talk
+     puts "Hi from original class!"
+   end
+end
+
+module M
+  def talk
+    puts "Hillo from module!"
+  end
+end
+
+c = C.new
+c.talk
+class << c
+   include M
+end
+c.talk
+
+
+singleton_class method чтобы получить предков синглтона объекта
+string = "a string"
+string.singleton_class.ancestors
+
+-------------------------------------------------
+Модификация основных классов и модулей Ruby
+
+states = { "NY" => "New York", "NJ" => "New Jersey", "ME" => "Maine" }
+
+string = "Eastern states include NY, NJ, and ME."
+if string.gsub!(/\b([A-Z]{2})\b/) { states[$1] }
+	puts "Substitution occurred"
+else
+	puts "String unchanged"
+end
+
+string = "Eastern states include NY, NJ, and ME."
+while string.sub!(/\b([A-Z]{2})\b/) { states[$1] }
+	puts "Replacing #{$1} with #{states[$1]}..."
+end
+
+Метод tap (вызываемый для любого объекта) выполняет полезную задачу выполнения кода.
+"Hello".tap {|string| puts string.upcase }.reverse
+
+------------------------------------------------------
+Additive changes (присадки, добавки)
+
+Active Support library
+require 'active_support'
+даёт методы
+"person".pluralize -> "people"
+"little_dorritt".titleize -> "Little Dorritt"
+Time.now.to_s (работает без супорта)
+Time.now.to_s(:db) 
+Time.now.to_s(:number)
+Time.now.to_s(:rfc822)
+
+Pass-through overrides Сквозные переопределения
+class String
+	alias __old_reverse__ reverse
+	def reverse
+		$stderr.puts "Reversing a string!"
+		__old_reverse__
+	end
+end
+puts "David".reverse
+альтернативный синтаксис с alias_method
+class String
+	alias_method :__old_reverse__, :reverse
+end
+
+----------------------------------------
+Per-object changes with extend (Для каждого объекта изменения с расширением)
+
+Добавление футкционала объекту от расширения:
+module Secretive
+	def name
+		"[not available]"
+	end
+end
+class Person
+	attr_accessor :name
+end
+david = Person.new
+david.name = "David"
+david.extend(Secretive)
+
+Добавление методов класса щт расширения
+module Makers
+	def makes
+		%w{ Honda Ford Toyota Chevrolet Volvo }
+	end
+end
+class Car
+	extend Makers
+end
+Car.extend(Makers)
+p Car.singleton_class.ancestors
+
+Модификация ядра поведения от расширения:
+module GsubBangModifier
+	def gsub!(*args, &block)
+		super || self
+	end
+end
+str = "Hello there!"
+str.extend(GsubBangModifier)
+str.gsub!(/zzz/,"abc").reverse!
+puts str
+
+Using refinements to affect core behavior (Использование уточнений, чтобы повлиять на поведение ядра)
+Идея уточнения состоит в том, чтобы сделать временное, ограниченное изменение в классе
+module Shout
+	refine String do
+		def shout
+			self.upcase + "!!!"
+		end
+	end
+end
+class Person
+	attr_accessor :name
+	using Shout
+	def announce
+		puts "Announcing #{name.shout}"
+	end
+end
+david = Person.new
+david.name = "David"
+david.announce
+
+-------------------------------------------------
+BasicObject as ancestor and class (BasicObject как предок и класс)
+

@@ -241,9 +241,10 @@ gsub заменяет все совпадения
 => "double double every every word word"
 
 ===
-puts "Match!" if re.match(string)
-puts "Match!" if string =~ re
-puts "Match!" if re === string
+re = /string/
+puts "Match!" if re.match("string")
+puts "Match!" if "string" =~ re
+puts "Match!" if re === "string"
 
 Enumerable#grep  фильтрует
 >> ["USA", "UK", "France", "Germany"].grep(/[a-z]/)
