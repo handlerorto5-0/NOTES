@@ -100,7 +100,7 @@ david = Person.new
 david.name = "David"
 david.extend(Secretive)
 
-Добавление методов класса щт расширения
+Добавление методов класса oт расширения
 module Makers
 	def makes
 		%w{ Honda Ford Toyota Chevrolet Volvo }
@@ -145,4 +145,18 @@ david.announce
 
 -------------------------------------------------
 BasicObject as ancestor and class (BasicObject как предок и класс)
+
+Пример использования Builder , возвращает шаблон в тегах(rvmsudo gem install builder)
+require 'builder'
+	xml = Builder::XmlMarkup.new(target: STDOUT, indent: 2)
+	xml.instruct!
+	xml.friends do
+		xml.friend(source: "career") do
+		xml.name("Joe Leo")
+		xml.address do
+			xml.street("123 Main Street")
+			xml.city("Anywhere, USA 00000")
+		end
+	end
+end
 

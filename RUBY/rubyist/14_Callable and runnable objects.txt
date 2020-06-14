@@ -1,0 +1,132 @@
+Вызываемые и управляемые объекты
+================================
+Основные анонимные функции: класс Proc
+
+callable object , те которые вызываются с методом call
+Объекты Proc - это отдельный участок кода , который можно, создавать, хранить, передавать в качестве аргументов метода и выполнять методом вызова call.
+Лямбда - это объект Proc, но со слегка специальной внутренней инженерией.
+Объекты методов представляют методы, аналогично, хранить, передавать и выполнять.
+
+----------------------------------------
+Proc objects
+
+pr = Proc.new { puts "Inside a Proc's block" } или альт синтаксис  pr = proc { puts "Inside a Proc's block" }
+pr.call
+Блок не объект, а proc объект, хотя работают похоже
+p = Proc.new {|x| puts x.upcase }
+%w{ David Black }.each(&p)
+
+Block-proc преобразования
+
+поимка вызовом call
+def capture_block(&block)
+	puts "Got block as proc"
+	block.call
+end
+capture_block { puts "Inside the block" }
+использование Proc как оргумента
+p = Proc.new { puts "This proc argument will serve as a code block." }
+capture_block(&p)
+
+Hash # to_proc
+albums = { 1988 => "Straight Outta Compton", 1993 => "Midnight Marauders", 1996 => "The Score", 2004 => "Madvillainy", 2015 => "To Pimp a Butterfly" }
+albums[2015]
+[1988,1996].map(&albums)
+(1990..1999).map(&albums).compact
+
+Обобщение
+class Person
+	attr_accessor :name
+	def self.to_proc
+		Proc.new {|person| person.name }
+	end
+end
+d = Person.new
+d.name = "David"
+j = Person.new
+j.name = "Joe"
+puts [d,j].map(&Person)
+
+Использование Symbol # to_proc для краткости
+%w{ david black }.map {|str| str.capitalize }
+эквивалентно
+%w{ david black }.map {|str| str.public_send(:capitalize) }
+или с переключателем to_proc
+%w{ david black }.map(&:capitalize)
+
+Procs как замыкания
+def multiply_by(m)
+	Proc.new {|x| puts x * m }
+end
+mult = multiply_by(10)
+mult.call(12)  вернёт 120
+
+def make_counter
+	n = 0
+	return Proc.new { n += 1 }
+end
+c = make_counter
+puts c.call        -1
+puts c.call        -2
+d = make_counter
+puts d.call        -1
+puts c.call        -3
+
+Proc параметры и аргументы
+pr = Proc.new {|x| puts "Called with argument #{x}" }
+pr.call(100)  -  Called with argument 100
+pr.call(2,4,6) - Called with argument 2
+
+------------------------------------------
+Создание функций с помощью лямбды и ->
+
+lambda метод возвращает Proc объект
+lam = lambda { puts "A lambda!" }
+lam.call
+чуствительна к аргументам
+lam = lambda {|x| p x }
+lam.call(1) -1
+lam.call    -ArgumentError
+lam.call(1,2,3) -ArgumentError
+lambda требует явного создания. Везде, где Ruby создает объекты Proc  неявно, они обычные процы, а не лямбды
+return внутри лямбда запускает выход из тела лямбды в контекст кода
+
+синтаксис ->  THE " STABBY LAMBDA " CONSTRUCTOR , ->
+mult = ->(x,y) { x * y }
+mult.call(3,4)
+
+------------------------------------------------------
+Methods as objects  Методы, как объекты
+
+Захват объектов Метода
+class C
+	def talk
+		puts "Method-grabbing test!"
+	end
+end
+c = C.new
+meth = c.method(:talk)
+meth.owner  -C
+meth.call   -Method-grabbing test!
+отсоедините метод от объекта, а затем привяжите его к другому объекту
+class D < C
+end
+d = D.new
+unbound = meth.unbind
+unbound.bind(d).call
+или без экземпляров
+unbound = C.instance_method(:talk)
+
+-----------------------------------------
+The eval family of methods  Семейство методов Eval
+
+Выполнение произвольных строк как кода с помощью eval
+eval("2+2")  - 4
+
+print "Method name: "
+m = gets.chomp
+eval("def #{m}; puts 'Hi!'; end")
+eval(m) - Hi!
+
+Объект содержит tainted? метод, который возвращает true для потенциально небезопасных данных
+Установка $SAFE в 1(0 по умолч) не позволит Ruby запускать потенциально небезопасные методы, такие как eval.

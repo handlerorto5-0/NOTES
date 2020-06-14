@@ -15,8 +15,7 @@ Eli­xir, кроме самых простых вычислений,опреде
 Каждый модуль должен находиться в отдельном файле с расширением .ex, name_of_module.ex
 
 mix new ch02/ex1-drop --app drop
-Mix выберет drop в качестве имени приложения и создаст в подката-
-логе lib файл с именем drop.ex
+Mix выберет drop в качестве имени приложения и создаст в подкаталоге lib файл с именем drop.ex
 defmodule Drop do
 	def fall_velocity(distance) do
 		:math.sqrt(2 * 9.8 * distance)

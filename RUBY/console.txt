@@ -1,5 +1,6 @@
 irb --simple-prompt
 irb --simple-prompt --noecho
+irb --simple-prompt –I. -r name_file
 ---------------------------------------
 ruby -cw file.rb 
 ruby -c c2f.rb -проверяет синтаксис

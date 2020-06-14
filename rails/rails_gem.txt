@@ -1,3 +1,5 @@
+rvmsudo gem install bundler
+rvmsudo gem install builder
 Gemfile : gem '...', '^>...' - версия выше
 bundle install - установка
 bundle install --binstubs -установка в директорию /bin
