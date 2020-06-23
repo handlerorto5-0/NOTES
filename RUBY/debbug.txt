@@ -1,0 +1,56 @@
+==============================================
+Отладка
+==============================================
+добавить в начале проги и запускать с флагом --debug
+$DEBUG = (ARGV[0] == "--debug")
+будет выводить или результат или исключение
+------------------------------------------
+begin
+	raise 'A test exception.'
+rescue Exception => e
+	puts e.message
+	puts e.backtrace.inspect
+	# код ксправляющий поведение
+	retry
+end
+-------------------------------------------
+ошибки в лог
+require 'logger'
+$LOG = Logger.new($stderr) в данном случае будет выводить 
+в термнал, в файл за месяц Logger.new('this_month.log', 'monthly')
+def divide(numerator, denominator)
+	$LOG.debug("Numerator: #{numerator}, denominator #{denominator}")
+	begin
+		result = numerator / denominator
+	rescue Exception => e
+		$LOG.error "Error in division!: #{e}"
+		result = nil
+	end
+	return result
+end
+$LOG.level = Logger::ERROR чтобы лог игнорировал исключения,
+кроме ERROR или FATAL
+$LOG.datetime_format = '%Y-%m-%d %H:%M:%S'
+----------------------------------------------------------
+require 'test/unit' стр 755 ruby cookbook
+---------------------------------------------------------
+инспектирование состояния выполнения программы
+require 'debug' поместить внутри кода в точке 
+--------------------------------------------------------
+документирование
+rdoc name_file.rb: . 
+комментровать для разметки 770 ruby cookbook
+--------------------------------------------------------
+поиск медленных частей программы
+require 'profile'
+total = 0 в начале замера
+# какойто участок кода
+puts "Total: #{total}" в конце проги для вывода всех замеров
+-------------------------------------------------------
+сравнить скорость выполнения
+require 'benchmark'
+Benchmark.bm(5) do |timer|
+	timer.report('Array') { test_member?(array) }
+	timer.report('Hash') { test_member?(hash) }
+end
+------------------------------------------------------

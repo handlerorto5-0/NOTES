@@ -7,6 +7,11 @@ git reflog
 git reset HEAD@{index}
 # Машина времени к вашим услугам.
 
+переделать последний комит после запоздалого изменения(например в .gitignore) до push
+git add .gitignore
+git rm -r public/uploads/ticket/attachment/
+git commit --amend --reuse-message HEAD
+
 коммит поправить:
 # Внесите изменения
 git add . # или добавьте файлы по отдельности.

@@ -1,5 +1,8 @@
+https://learnyousomeerlang.com/  код к книге
 Help:
 erl -man list 
+вызов в erl:
+name_module:name_fin().
 ------------------------------------------------------
 Нюансы и нюансики:
 false и true атомы 0 == false вернёт false, 1 < false вернёт true

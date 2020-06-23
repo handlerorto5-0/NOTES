@@ -1,0 +1,105 @@
+установлен ли jQuery?
+yarn add jquery
+yarn add jquery-ujs
+in file.js
+import $ from ‘jquery’
+import {} from ‘jquery-ujs’
+webpack config:
+new webpack.ProvidePlugin({
+ $: “jquery”,
+ jQuery: “jquery”
+})
+turbolinks не мешает в rails 5.2
+----------------------------------------------------
+$(document).ready ->
+	$("#new_user")
+		.on "ajax:success", (event, data, status, xhr) ->
+			$(@).append xhr.responseText
+		.on "ajax:error", (event, xhr, status, error) ->
+			$(@).append "Something bad happened"
+----------------------------------------------------
+Ajax and JSON
+
+$(function() {
+	$("#update_draft_timesheets").on("ajax:success", function(event, data) {
+		$(data).each(function() {
+		var td = $('#client_' + this.id + ' .draft_timesheets_count')
+		td.html(this.draft_timesheets_count);
+		});
+	});
+});
+----------------------------------------------------
+Turbolinks
+Когда ссылка нажата, Turbolinks выполнит Ajax-запрос и замените содержимое текущей страницы на ответ тег <body>
+gem 'turbolinks'
+//= require turbolinks
+
+Disabling Turbolinks on Specific Links
+<a href="/" data-turbolinks="false">Disabled</a>
+
+Running JavaScript when a Page Loads
+document.addEventListener("turbolinks:load", function() {
+// ...
+})
+----------------------------------------------------
+Rails Recipes
+
+<%= link_to "Showing all (toggle)",
+people_path(:admin => true),
+:remote => true,
+:id => 'toggle' %>
+it compele
+<a href="/people?admin=true"
+data-remote="true"
+id="toggle">Showing all (toggle)</a>
+
+-----------------------------------------
+render a New Form on the Index View
+<div id="new-band"
+	<%= link_to "New Band", new_band_path, remote: true %>
+</div>
+new.js.erb
+$("#new-band a").parent().html("<%= j render 'form', band: @band %>")
+----------------------------------------
+jQuery to Delete (destroy) an Item
+view:
+<=% link_to "Destroy", nethod: :delete, data: {confirm: "Are you sure?", remote: true}, class: "delete" %>
+controller:
+def destroy
+	@band.destroy
+	respond_do do |f|
+		f.js
+		f.html {redirect_to bands_url, notise: "..."}
+		f.json { head :no_content}
+	end
+end
+view/bands/destroy.js.erb:
+$('.delete').bind('ajax:success', function(){
+	$(this).closest('tr').fadeOut();
+})
+-------------------------------------------------
+jQuery to Post a new Item to the Index Page
+
+index.html.erb:
+<table id="bands">
+	...
+</table>
+new.js.erb:
+$("#new-band a")hide().parent().append("<%= j render 'form', band: @band %>")
+в формае убрать local: true
+bands.controller.rb:
+def create
+	...
+	format.js
+	...
+end
+create.js.erb:
+$('#new-band form').remove();
+$('#new-band a').show();
+$('table#bands tbody').append("<%= j render @band %>")
+_bend.html.erb:
+<tr>
+	# та часть кода которую надо добавлять
+</tr>
+на её место заршиал кода в индексную страницу вставляется
+<%= render partial: "band", collection: @bends %> сокращ. <% render @bends %>

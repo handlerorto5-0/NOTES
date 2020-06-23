@@ -29,7 +29,15 @@ end
 
 # execute generator, namespaced to "api" for Post model
 rails g scaffold_controller api/posts --api --model-name=Post
-
+---------------------------------------------------------
+через терминал добавить данные в таблицу
+rails runner 'Person.create(:name => "John Doe", :email => "john@doe.com")'
+----------------------------------------------------------
+создать иодель , контролер
+rails generate resource Person name email
+----------------------------------------------------------
+удаление из модели
+rails g migration remove_attachment_from_tickets attachment:string
 
 
 

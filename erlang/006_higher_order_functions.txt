@@ -1,0 +1,72 @@
+В лямбда-исчислении всё является функцией
+
+синтаксис передачи функций, как аргумнгтов
+fun Модуль:Функция/Арность;
+hhfuns:add(fun hhfuns:one/0, fun hhfuns:two/0).
+
+Анонимные функции, для передачи на лету
+fun(Args1) ->
+	Выражение1, Выражение2, ..., ВыражериеN;
+	(Args3) ->
+	Выражение1, Выражение2, ..., ВыражериеN;
+	(Args3) ->
+	Выражение1, Выражение2, ..., ВыражериеN;
+end
+в консоли:
+Fn=fun()-> a end.
+hhfuns:map(fun(X) -> X+1 end, L).
+
+Пример в консоли:
+PrepareAlarm = fun(Room) ->
+		io:format("Alarm set in ~s.~n",[Room]),
+		fun() -> io:format("Alarm tripped in ~s! Call Batman!~n",[Room]) end
+end.
+AlarmReady = PrepareAlarm("bathroom").
+вернёт: Alarm set in bathroom.
+AlarmReady().
+вернёт: Alarm tripped in bathroom! Call Batman!
+
+Замыкание пример:
+math:pow(5,2).
+Base = 2.
+PowerOfTwo = fun(X) -> math:pow(Base,X) end.
+hhfuns:map(PowerOfTwo, [1,2,3,4]).
+
+Затенение переменной (shadouwed) определение новой переменной с тем же именем, что и переменная в родительской области видимости.
+
+Отображения:
+map(_, []) -> [];
+map(F, [H|T]) -> [F(H)|map(F,T)].
+
+Фильтры:
+filter(Pred, L) -> lists:reverse(filter(Pred, L,[])).
+filter(_, [], Acc) -> Acc;
+filter(Pred, [H|T], Acc) ->
+	case Pred(H) of
+		true -> filter(Pred, T, [H|Acc]);
+		false -> filter(Pred, T, Acc)
+	end.
+
+Свертка (fold) проход по всем елементам списка, и уменьшение списка до единственного результата
+fold(_, Start, []) -> Start;
+fold(F, Start, [H|T]) -> fold(F, F(H,Start), T).
+[H|T] = [1,7,3,5,9,0,2,3].
+hhfuns:fold(fun(A,B) when A > B -> A; (_,B) -> B end, H, T). вернёт 9
+
+Абстракции для списков
+lists:seq/2 создаст вписок из диапазона
+lists:map/2
+lists:filter/2
+lists:foldr/3, lists:foldl/3
+lists:all/2, lists:any/2  принимабт параметром параметр для сверки (предикат) и проводит проверку
+dropwhile/2 пропустит ел-ты списка, удовлетворяющий данный предикат
+takewhile/2 сохранит первые эл-ты списка, до тез пор пока не найдёт гнсовпадение
+partion/2 разделит список на два, с удовлетворяющими условию и прочие
+flatten/1
+flatlength/1
+flatmap/2
+merge/1
+nth/2
+nthtail/2
+split/2
+

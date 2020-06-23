@@ -1,4 +1,4 @@
-d======================================================================
+======================================================================
 # Disable RVM from trying to install necessary software via apt-get
 rvm autolibs disable  (enable) rvm autolibs rvm_pkg
 # Then try installing Ruby:

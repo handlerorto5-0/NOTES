@@ -15,4 +15,9 @@ irb --simple-prompt -r rbconfig
 ruby -e 'puts $:' - list of directories
 ----------------------------------------
 rake --tasks - вывод задач доступных в Rakefile
-------------------------------------------
+----------------------------------------
+вывод установленных гемов
+gem query  список установленных
+gem query --remote  список всех существующих
+gem query --remote --name-matches "test"
+

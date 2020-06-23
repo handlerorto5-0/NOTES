@@ -60,3 +60,17 @@ curl -XPOST http://127.0.0.1:9200/test/_open
 slim-rails
 config/application.rb
  g.template_ingine :slim
+=========================================
+настраию паботу selenium через cromium
+sudo apt-get install chromium-chromedriver
+chromedriver -v
+
+rails_helper.rb:
+require 'capybara'
+
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, :browser => :chrome)
+end
+
+bundle exec rake spec
+=================================================
