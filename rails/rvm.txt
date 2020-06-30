@@ -19,15 +19,17 @@ rails db:create:all
 -------------------------------------------------------------------
 use rvm to manage the Ruby versions installed on the system:
 rvm install ruby 2.6.2
-create a directory and navigate to that directory and create the following two files
-.ruby-version   with ruby-2.6.2
-.ruby-gemset   with  name-proget
+сoздать директорию, перейти, создать файлы
+.ruby-version   with ruby-2.6.2  если текущая не надо
+.ruby-gemset   with  name-proget 
 re-entering in the directory
 cd .  # выйти в корень и войти обратно, пока не появится уведомление
 install the desired rails version
 gem install rails -v 5.2.3
+rvmsudo gem install bundler -v 1.5.0
+gem install pg - не пощёл в со всеми установил предварительно
 create the rails application
-rails new .
+rails new .  параметры
 rails server
 =================================================================
 --------------------------------------------------------------

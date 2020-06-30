@@ -41,6 +41,22 @@ Running JavaScript when a Page Loads
 document.addEventListener("turbolinks:load", function() {
 // ...
 })
+<%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+ <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+ document.addEventListener('turbolinks:load', function(e) {
+  //code that should be run on each page load
+
+  $(document).on('ready', function() { // you can use the shortcut $(function() {
+    //code that should be run on each page load after jquery was initialized
+  }
+})
+----------------------------------------------------
+$(document).ready(function() {
+  $('[data-js-hide-link]').click(function(event){
+    $(this).parents('li').fadeOut(2000);
+    event.preventDefault(); 
+  });
+}
 ----------------------------------------------------
 Rails Recipes
 
@@ -103,3 +119,68 @@ _bend.html.erb:
 </tr>
 на её место заршиал кода в индексную страницу вставляется
 <%= render partial: "band", collection: @bends %> сокращ. <% render @bends %>
+
+---------------------------------------
+$('#my-image').attr('data-custom');
+
+$('[title]').attr('title', function(index, previousValue) {
+return previousValue + ' Я элемент ' + index +
+' и меня зовут ' + (this.id || 'unset');
+});
+
+$('input').attr({
+value: '',
+title: 'Пожалуйста, введите значение'
+});
+
+$('img').removeAttr('title alt');
+
+if ($('#legal-age').prop('checked') === false) {
+console.log('Флажок сейчас не установлен');
+}
+
+метод data()
+
+$('.class').data('lastValue');
+
+<input id="name" name="name" data-mandatory="true" />
+console.log(typeof $('#name').data('mansatory')); -> bollean
+
+<input id="level1" type="text" value="Я текст!" data-custom="foo" />
+console.log($('#level').data('custom')); -> foo
+
+$('#legal-age').removeData('foo bar');
+
+$.hasData(document.getElementById('legal-age'));
+
+$('.inject-me').load('/some-resource div');
+
+<div id="message"></div>
+$('#message').html('<p>Ваш баланс <b>1000$</b></p>');
+
+$('p').append('<b>какой-то текст<b>');
+
+Этот код создает новый объект jQuery, содержащий элемент div
+$('<div>Привет</div>');
+
+Получение элементов по индексу
+var imgElement = $('img[alt]')[0];
+var $firstPar = $('p').first();
+var 4firstPar = $('p:first');
+
+Назначение обработчиков событий в jQuery page 183 jQuery in action
+озволяет выбрать набор элементов и назначить
+им всем один и тот же обработчик в одной строке кода
+$('img').on('click', function(event) {
+alert('Привет!');
+});
+$('img').on('click', null, null, function() { ... });
+$('img').on('click', function() { ... });
+
+$('#my-button').on('click', {
+name: 'Джон Резиг'
+}, function (event) {
+console.log('Имя: ' + event.data.name);
+});
+
+$(document).on('mouseover', '#my-list li', function(event) {

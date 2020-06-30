@@ -1,0 +1,128 @@
+"дай ей упасть" let it crach
+-----------------------------------
+Ошибки компиляции
+возвращают варнинги
+------------------------------------
+Логические ошибки
+тестирование и инструменты отладки
+----------------------------------
+Ошибки времени выполнения
+
+Ошибки function_ckause(урвнение финкции)
+lists:sort(fffffff).
+** exception error: no function clause matching lists:sort(fffffff) (lists.erl, line 414)
+не совпало с обрзцом, зашитным устовием
+
+Ошиики case_clause (уравнение case)
+case "Unexpected Value" of
+	expected_value -> ok;
+	other_expected_value -> 'also ok'
+end.
+** exception error: no case clause matching "Unexpected Value"
+
+Ошибки if_clause
+if 2 > 4 -> ok;
+	0 > 1 -> ok
+end.
+** exception error: no true branch found when evaluating an if expression
+проверить все утверждения, либо добавить утверждение по умолчанию(true ->)
+
+Несовпадение образца (badmatch)
+[X,Y] = {4,5}.
+** exception error: no match of right hand side value {4,5}
+
+Ошибка неверных входных данных badarg
+erlang:binary_to_list("heh, already a list").
+** exception error: bad argument
+in function binary_to_list/1
+called as binary_to_list("heh, already a list")
+
+Функция не определена undef
+lists:random([1,2,3]).
+** exception error: undefined function lists:random/1
+или ошибка эквпорта
+или файл модуля не найден в списке директорий для поиска, добавить болше путей:
+code:add_patha("директория") | code:add_pathz('диретория')
+
+Невозможная фрифметика badarith
+5 + llama.
+** exception error: bad argument in an arithmetic expression
+in operator +/2
+called as 5 + llama
+
+Функция оказалась не функцией badfun
+hhfuns:add(one,two).
+** exception error: bad function one
+in function hhfuns:add/2
+
+Ошибка арности функции badarity
+F = fun(_) -> ok end.
+F(a,b).
+** exception error: interpreted function with arity 1 called with two arguments
+
+Достигнут лимит системы system_limit , много причин
+слишкои иного процессов
+слишком длиные атомы
+создано слишком много атомов
+слишком много параметров передано функции
+слишком много подключённых узлов и пр.
+
+------------------------------------
+Создание исключений
+
+Три вида исключений:
+ошибки error
+выходы процессов exit
+брошенные исключения throw
+
+error:
+erlang:error(Причина) - завершит процусс, вернёт распечптку стека вызовов функций
+erlang:error(badarith).
+exception error: bad argument in an arithmetic expression
+erlang:error(custom_error).
+exception error: custom_error
+
+exit:
+exit/1 "внутренние" выходы
+exit/2 "внешние" выходы
+процессы обинеивабтся сообшениями, посылают и слушают
+можно выбрать сто слушать, например
+exit signal - предсмертный выдох процесса
+erlang:error/1 возвращает стек вызовов на момент смерти
+
+throw:
+для обработки ошибок
+throw(permission_denied).
+** exception throw: permission_denied
+
+------------------------------------------
+Обработка исключений try ... catch
+
+try Expression of
+	SuccessfulPattern1 [Guards] ->
+		Expression1;
+	SuccessfulPattern2 [Guards] ->
+		Expression2
+catch
+	TypeOfError:ExceptionPattern1 ->
+		Expression3;
+	TypeOfError:ExceptionPattern2 ->
+		Expression4
+end.
+в части до catch , как в case ... of
+в части catch тип ошибки заменяется на error,throw или exit
+
+после  catch:
+try выражение of
+	образец -> выражение1
+catch
+	тип:исключение -> выражение2
+after % это будет исполнено в любом случае
+	выражение3
+end
+--------------------------------------
+catch -ловит все исключения дополнительно к обычным результатам вычиления выражения
+atch throw(whoa).
+whoa
+catch exit(die).
+{'EXIT',die}

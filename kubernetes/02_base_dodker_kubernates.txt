@@ -1,0 +1,71 @@
+===================================
+Создание, запуск и совместное использование образа контейнера
+
+----------------------------------
+Установка Docker на Ubuntu 18.04 
+http://docs.docker.com/engine/installation/
+
+sudo apt-get update 
+sudo apt-get install  apt-transport-https ca-certificates curl gnupg-agent  software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+
+переключиться из репозитория Ubuntu 18.04 в репозиторий Docker:
+apt-cache policy docker-ce
+
+установить Docker:
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+запросите её состояние:
+sudo systemctl status docker
+sudo docker run hello-world
+
+добавьте своего пользователя в группу docker:
+sudo usermod -aG docker ${USER}
+su - ${USER} или выйти из системы и войти
+Убедитесь, что пользователь добавлен в группу:
+id -nG
+добавить в группу docker пользователя
+sudo usermod -aG docker username
+
+команды Docker:
+docker [option] [command] [arguments]
+docker - список команд
+---------------------------------------
+Docker извлекла из хранилища Docker Hub в http://docker.io
+docker run busybox echo "Hello world"
+
+Запуск образов
+docker run <образ>
+Управление версиями образов контейнеров
+docker run <образ>:<тег>
+вывести список всех локально хранящихся образов
+docker images
+список всех запущенных контейнеров
+docker ps
+получение дополнительной информации о контейнере
+docker inspect kubia-container
+oстановка контейнера
+docker stop kubia-container
+=========================================
+Пример сщздания обрза:
+создали файл с прогой node_app.js
+в той папке создать Dockerfile , с:
+FROM node:7 - образ контейнера с тегом
+ADD node_app.js /node_app.js - добовить в образ
+ENTRYPOINT ["node", "node_app.js"] - определяет какой командой запускать(node node_app.js)
+
+поручаете Doc­ker создать образ с именем kubia на основе содержимого текущего каталога
+docker build -t kubia .
+список:
+docker images
+запустить:
+docker run --name kubia-container -p 8080:8080 -d kubia
+Она поручает платформе Docker запустить новый контейнер с именем kubia-container из образа kubia . Контейнер будет отсоединен от консоли (флаг -d ), имея в виду, что он будет работать в фоновом режиме. Порт 8080 на локальной машине будет увязан с портом 8080 внутри контейнера (пара-
+метр - p 8080:8080 ), так что вы можете получить доступ к приложению через http://localhost:8080 .
+
+curl localhost:8080
+docker ps
+docker inspect kubia-container

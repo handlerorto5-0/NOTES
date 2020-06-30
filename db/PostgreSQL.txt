@@ -1,3 +1,6 @@
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+
 https://www.postgresql.org/download/linux/ubuntu/
 Готово. Теперь вы можете запустить сервер баз данных:
 
@@ -13,7 +16,12 @@ sudo systemctl start postgresql.service
 sudo systemctl stop postgresql.service
 sudo systemctl restart postgresql.service
 
+Доступ к командной строке Postgres без переключения учетных записей
+sudo -u postgres psql
+Переключение на учетную запись postgres
 sudo -i -u postgres -переключиться на учетную запись postgres
+psql
+
 passwd postgres - 3344 
 createdb test2
 psql test2
@@ -21,7 +29,8 @@ psql test2
 \h команды
 \l таблицы
 \c namedb -подключится к базе
-\d посмщтреть базу
+\d посмотреть базу
+\du просмотр ролей
 sudo adduser kv-2 Создайте одноименного с ролью пользователя Ubuntu
 
 sudo -u postgres createuser --interactive
@@ -32,7 +41,7 @@ createdb Userdb
 psql
 sudo -u <роль> psql <имя_БД>
 
-
+rails rails = user pass
 
 ---------------------------------------------------
 Coздaem тecтoвyю бaзy дaнных, тecтoвoгo пoльзoвaтeля
