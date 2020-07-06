@@ -1,0 +1,15 @@
+Запуск образов
+docker run <образ>
+Управление версиями образов контейнеров
+docker run <образ>:<тег>
+вывести список всех локально хранящихся образов
+docker images
+список всех запущенных контейнеров
+docker ps
+получение дополнительной информации о контейнере
+docker inspect kubia-container
+oстановка контейнера
+docker stop kubia-container
+docker ps -a
+удалить контейнер
+docker rm kubia-container

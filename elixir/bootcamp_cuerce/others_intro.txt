@@ -1,0 +1,25 @@
+intro to Maps:
+colors = %{primary: "red", secondary: "blue"}
+primary_color = colors.primary
+%{secondary: secondary_color} = colors
+secondary_color -> "blue"
+
+Updating values in a Map:
+Map.put(colors, :primary, "orange") 
+%{colors | primary: "orange"} 
+Map.put(colors, :third_color, "green")
+все вернут копию colors
+
+Keyword Lists:
+iex(6)> colors = [{:primary, "red"}, {:secondary, "blue"}]
+[primary: "red", secondary: "blue"]
+iex(7)> colors[:primary]
+"red"
+iex(8)> colors = [primary: "red", secondary: "blue"]
+[primary: "red", secondary: "blue"]
+iex(13)> colors = [primary: "red", primary: "blue"]
+[primary: "red", primary: "blue"]
+Example use in application:
+query = User.find_where([shere: user.age > 10, where: user.subscribed == true])
+
+-----------------------------------------------------

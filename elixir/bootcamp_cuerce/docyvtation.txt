@@ -1,0 +1,36 @@
+create mix new name
+in mix.exs
+defp deps do
+	{:ex_doc, "~> 0.12"} ...
+in terminal
+mix deps.get
+
+add comments in lib/ name.ex
+@moduledoc """
+    Provides methods for creating and handling a ...
+"""
+in terminal
+mix docs
+open doc/index.html
+
+add function comments
+@doc """
+ Do something
+"""
+
+add argument comments
+@doc """
+	... `argument` do something ...
+"""
+
+add examples comment
+@doc """
+	...
+## Examples 
+(три отступа!)
+		iex> deck = Cards.create_deck
+		iex> {hand, deck} = Cards.deal(deck,1)
+		iex> hand
+		["Ace of Spades"]
+"""
+

@@ -1,0 +1,12 @@
+mix new
+/test/name_test.exs
+test "the truth" do
+   assert 1 + 1 == 2
+end
+mix test
+
+doctest Cards - возьмёт из документации example
+
+assert deck != Cards.shuffle(deck)
+то же самое с опровергнуть
+refute deck == Cards.shuffle(deck)

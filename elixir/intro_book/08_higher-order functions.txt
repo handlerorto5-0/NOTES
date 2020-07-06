@@ -46,3 +46,43 @@ four_bits = fn(value) -> (value >= 0) and (value < 16) end
 Enum.filter(list, four_bits)
 – с применением генераторов списков:
 for value <- list, value >= 0, value < 16, do: value
+
+--------------------------------------------------
+Проверка списков Enum.all?/2 и Enum.any?/2
+greater_than_ten? = &(&1 > 10)
+Enum.all?(list, greater_than_ten?)
+Enum.any?(list, greater_than_ten?)
+
+Разбиение списков
+Enum.partition/2 возвращает кортеж с двумя списками.
+Первый список содержит элементы из исходного списка, соответствующие условию, а второй – элементы, не соответствующие условию.
+compare = &(&1 > 10)
+Enum.partition(list, compare)
+
+Enum.take_while/2 и Enum.drop_while/2 создают новый список, содержащий часть исходного списка до или после граничного значения
+test = &(&1 < 4)
+Enum.drop_while([1, 2, 4, 8, 4, 2, 1], test)
+Enum.take_while([1, 2, 4, 8, 4, 2, 1], test)
+
+Свертка списков
+List.foldl/3 и List.foldr/3 дают возможность передать функцию, начальное значение аккумулятора и список
+разница между ними в направлении свёртки, первая с началф, вторая с конца
+sumsq = fn(value, accumulator) -> accumulator + value * value end
+List.foldl([2, 4, 6], 0, sumsq)  - с нулевым начальным значением
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

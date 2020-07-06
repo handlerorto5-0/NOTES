@@ -37,18 +37,6 @@ docker - список команд
 Docker извлекла из хранилища Docker Hub в http://docker.io
 docker run busybox echo "Hello world"
 
-Запуск образов
-docker run <образ>
-Управление версиями образов контейнеров
-docker run <образ>:<тег>
-вывести список всех локально хранящихся образов
-docker images
-список всех запущенных контейнеров
-docker ps
-получение дополнительной информации о контейнере
-docker inspect kubia-container
-oстановка контейнера
-docker stop kubia-container
 =========================================
 Пример сщздания обрза:
 создали файл с прогой node_app.js
@@ -63,9 +51,88 @@ docker build -t kubia .
 docker images
 запустить:
 docker run --name kubia-container -p 8080:8080 -d kubia
-Она поручает платформе Docker запустить новый контейнер с именем kubia-container из образа kubia . Контейнер будет отсоединен от консоли (флаг -d ), имея в виду, что он будет работать в фоновом режиме. Порт 8080 на локальной машине будет увязан с портом 8080 внутри контейнера (пара-
-метр - p 8080:8080 ), так что вы можете получить доступ к приложению через http://localhost:8080 .
+Она поручает платформе Docker запустить новый контейнер с именем kubia-container из образа kubia . Контейнер будет отсоединен от консоли (флаг -d ), имея в виду, что он будет работать в фоновом режиме. Порт 8080 на локальной машине будет увязан с портом 8080 внутри контейнера (параметр - p 8080:8080 ), так что вы можете получить доступ к приложению через http://localhost:8080 .
 
 curl localhost:8080
 docker ps
 docker inspect kubia-container
+
+Исследование работающего контейнера изнутри
+Запуск оболочки внутри существующего контейнера
+docker exec -it kub-container bash
+Вывод списка процессов внутри контейнера
+ps aux
+Процессы контейнера, работающие в хостовой ОС
+ps aux | grep app.js
+Контейнер имеет собственную полную файловую систему
+ls /
+выйти из контейнера
+exit
+
+Остановка и удаление контейнера
+docker stop kubia-container
+docker ps -a
+удалить контейнер
+docker rm kubia-container
+
+================================
+Отправка образа в хранилище образов
+Docker Hub ( http://hub.docker.com ), Quay.io, Google Container Registry
+
+http://hub.docker.com  id: exckv2
+
+Тегирование образа дополнительным тегом
+docker tag kubia exckv2/kubia
+docker images | head
+
+Передача образа в хранилище docker hub
+docker login
+docker push exckv2/kubia
+
+Запуск образа на другой машине
+docker run -p 8080:8080 -d exckv2/kubia
+
+======================================
+Настройка кластера Kubernetes
+список методов установки кластера Kubernetes
+http://kubernetes.io
+---------------------------------------------
+Oдно­узловой кластер Kubernetes на локальной машине с помощью minikube
+
+установка http://github.com/kubernetes/minikube
+sudo apt-get update -y
+sudo apt-get upgrade -y
+sudo apt-get install curl
+sudo apt-get install apt-transport-https
+Install VirtualBox Hypervisor
+sudo apt install virtualbox virtualbox-ext-pack
+Install Minikube
+wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo cp minikube-linux-amd64 /usr/local/bin/minikube
+sudo chmod 755 /usr/local/bin/minikube
+minikube version
+Управление Minikube
+minikube start (после перезагрузки bios virtualization enable)
+minikube pause
+minikube stop
+minikube config set memory 16384
+minikube addons list
+minikube start -p aged --kubernetes-version=v1.16.1
+minikube delete --all
+Установка клиента kubernetes (kubectl)
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+kubectl version -o json
+
+Проверка работы кластера и обмена информацией с kubectl
+kubectl config view
+kubectl cluster-info
+
+Вывод списка узлов кластера с помощью kubectl
+kubectl get nodes
+kubectl describe node gke-kubia-85f6-node-0rrx
+
+Создание псевдонима
+в файл ~/.bashrc
+alias k=kubectl
