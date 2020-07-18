@@ -136,3 +136,40 @@ kubectl describe node gke-kubia-85f6-node-0rrx
 Создание псевдонима
 в файл ~/.bashrc
 alias k=kubectl
+
+простой способ развертывания приложения
+kubectl create deployment kub --image=exckv2/kubia (--generator=run/v1)
+--> deployment.apps/kub created
+kubectl get pod kub
+
+Модуль (pod) – это группа, состоящая из одного или нескольких тесно связанных контейнеров, которые всегда будут выполняться вместе на одном рабочем узле и в одном пространстве имен Linux. Каждый модуль подобен отдельной логической машине с собственным IP-адресом, сетевым именем, процессами и т. д., выполняющей одно приложение.
+
+Вывод списка модулей
+kubectl get pods
+
+----------------------------
+Доступ к веб-приложению
+
+При создании службы с типом LoadBalancer будет создана внешняя подсистема балансировки нагрузки, и вы сможете подключаться к модулю через общедоступный IP-адрес подсистемы балансировки нагрузки.
+
+Создание объекта Service
+kubectl expose deployment kub --type=LoadBalancer --port=8080  --name kub-http (--generator=run/v1)
+--> service/kub-http exposed
+minikube tunnel
+
+Вывод списка служб
+kubectl get svc kubia-http
+kubectl get services
+
+Доступ к службе через внешний IP-адрес
+curl 10.96.28.205:8080  ( where 10.96.28.205 - EXTERNAL-IP)
+если исп minikube
+minikube service kub-http --url
+
+
+
+
+
+
+
+

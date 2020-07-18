@@ -8,13 +8,15 @@ Rails 4 in action                  | 324   9.4
 --------------------------------------------------------------
 Udemy - the-complete-elixir-and-phoenix-bootcamp-and-tutorial  4
 --------------------------------------------------------------
+[Udemy] [Александр Кочергин] React Hooks  21   code/medium_clone
+----------------------------------------------------------------
 book Mastering Ruby Closures       | 
 --------------------------------------------------------------
 Metaprogramming Ruby               | 
 -------------------------------------------------------------- 
 book javaScript ninja              | 375
 --------------------------------------------------------------
-The Well-Grounded Rubyist(2019)    | 461 (box/Rubyist) 08/06
+The Well-Grounded Rubyist(2019)    | 461 (box/Rubyist) 
 --------------------------------------------------------------
 Книга "Паттерны проектирования"    | 200
 --------------------------------------------------------------
@@ -26,7 +28,7 @@ Modern Vim                         | 39  22/02/20
 --------------------------------------------------------------
 MongoDB in action                  | 
 --------------------------------------------------------------
- Введение в Elixir                 | 139
+Введение в Elixir                 | 139
 --------------------------------------------------------------
 Head First: Learn to Code         | 179  code/python/first
  -------------------------------------------------------------
@@ -41,3 +43,10 @@ Erlang во имя добра               | 145
 https://www.youtube.com/watch?v=B0SxxHAImhc
 https://github.com/DakotaLMartinez/rails-react-devise-tutorial
 https://github.com/monetizedesign/tailwind_devise
+
+
+ожидаемые книги:
+Modern Front-End Development for Rails
+Docker for Rails Developers
+Rails 5 Test Prescriptions
+Node.js 8 the Right Way

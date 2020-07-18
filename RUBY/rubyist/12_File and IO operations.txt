@@ -29,7 +29,7 @@ if broken?
 	STDERR.puts "There's a problem!"
 end
 
-gets возвратит линию. getc returns возвратит один символ
+gets возвратит линию. getc возвратит один символ
 char = STDIN.getc
 line = STDIN.gets
 
@@ -52,7 +52,7 @@ f.getc возьмет символ из потока
 f.ungetc("X") заменит в потоке(пока файл открыт для чтения)
 
 f.readchar по одной начиная с позиции и при отсутствии возвр EOFError
-f.getbyte  итает по одной линии при отсутствии возвр nil
+f.getbyte  читает по одной линии при отсутствии возвр nil
 f.readbyte по одной начиная с позиции и при отсутствии возвр EOFError
 
 f.pos вернёт позицию начиная с 0
@@ -74,7 +74,7 @@ lines_of_text = File.readlines("myfile.txt")
 File objects are enumerable
 puts , print , or write on a File
 
-f = File.new("data.out", "w") "a"
+f = File.new("data.out", "w") или аргумент "a"
 f.puts "David A. Black, Rubyist"
 f.close
 

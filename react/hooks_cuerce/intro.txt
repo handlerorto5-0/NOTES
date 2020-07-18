@@ -1,0 +1,27 @@
+code/medium_clone
+email: "str_token@mail.ru"
+username: "ExcavatorKv2"
+12345678
+====================================
+Структура проекта (внутри папки /node_modules для использования путей, не относмиельных, а как у модуля)
+/node_modules
+	/pages
+		globalFeed.js
+			/components (для внутренних страницы)
+				feed.js
+		article.js
+		authentication.js
+	/components
+		topbar.js
+		pagination.js
+		feed.js
+	/hooks
+		useFetch.js
+	routes
+
+node -v
+yarn --version
+cd code
+yarn create react-app medium_clone
+убираем лишнее
+yarn add react-router-dom

@@ -1,4 +1,4 @@
-﻿(ubuntu)
+(ubuntu)
 sudo apt update
 sudo apt install git
 git --version
@@ -11,27 +11,21 @@ copy key from terminal
 
 работа с GIT
 настройками конфигурации
-depot> git config --global --add user.name "Sam Ruby"
-depot> git config --global --add user.email rubys@intertwingly.net
-depot> git config --global --list - Проверить конфигурацию
-depot> git init - инициализация
-depot> git add . - дабавление всех файлов
-depot> git commit -m "Depot Scaffold" - отправка
-depot> git commit -a -m 'Validation!' - обединение add и commit
-depot> git checkout . - откат
-
-
 git config --global --add user.name "KVexcavator"
 git config --global --add user.email "str_token@mail.ru"
 git config --global --add core.editor "sublime_text.exe"
 git config --global --list - Проверить конфигурацию
 git --version
 
-mkdir repo - создать папку
-cd repo - перейти в созданую папку
-git init - создать пустой депозитиарий
 
->node выов nodejs , выйти .exit
+git init - инициализация
+git add . - дабавление всех файлов
+git commit -m "Depot Scaffold" - отправка
+git commit -a -m 'Validation!' - обединение add и commit
+git checkout . - откат
+
+
+node выов nodejs , выйти .exit
 npm i npm@latest -g  обновить npm
 npm instal -g ungit установить глобально
 start ungit запуск в ком строке
