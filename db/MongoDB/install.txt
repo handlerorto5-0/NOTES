@@ -15,10 +15,13 @@ _________________________________________________________________
 Mongo daemon process in your terminal, use the following command:
 mongod
 open Robomongo
-создать сщеединение
+создать соединение
 в папке с проектом touch initData.js и добавить данные
 $ mongo
 > show dbs
 $ mongoimport --db local --collection articles --jsonArray initData.js --host=127.0.0.1
 
 
+351451922826-8sajrs40f3bindmqcuolk0am8ivctfkd.apps.googleusercontent.com
+
+Mj6TjDNTXZeTn2LXxIQ44Fx1

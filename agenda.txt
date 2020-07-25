@@ -9,7 +9,9 @@ Rails 4 in action                  | 324   9.4
 Udemy - the-complete-elixir-and-phoenix-bootcamp-and-tutorial  4
 --------------------------------------------------------------
 [Udemy] [Александр Кочергин] React Hooks  21   code/medium_clone
-----------------------------------------------------------------
+---------------------------------------------------------------- 
+node-with-react-fullstack   section 6.60 code/node-react/server
+---------------------------------------------------------------
 book Mastering Ruby Closures       | 
 --------------------------------------------------------------
 Metaprogramming Ruby               | 

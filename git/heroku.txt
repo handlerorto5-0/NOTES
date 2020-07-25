@@ -1,0 +1,9 @@
+git init
+heroku -v
+heroku ligin
+-> Creating app... done, ⬢ salty-bayou-00333
+https://salty-bayou-00333.herokuapp.com/ | https://git.heroku.com/salty-bayou-00333.git
+git remote add heroku https://git.heroku.com/salty-bayou-00333.git
+git push heroku master
+heroku open
+heroku logs

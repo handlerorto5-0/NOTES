@@ -1,0 +1,19 @@
+Google OAuth:
+
+Passport Library
+обрабатывае аутенфикацию с Express приложениями,
+поддерживает методы для email/password, Google, Facebook и пр.
+http://www.passportjs.org/
+выбираем стратегию и устанавливаем
+npm install --save passport
+npm install --save passport-google-oauth20
+там же инструкция
+
+console.developers.google.com
+сoздать проект (emaily-dev) и перейти
++ вклюсить API и сервисы
+Google+ API  включить
+Учетные данные
++ создать учётные данные
+OAuth client ID
+добавить название и http://localhost:5000
