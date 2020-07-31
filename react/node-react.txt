@@ -1,0 +1,27 @@
+-----------------------------------
+mLab
+emaily-dev
+excavator
+password12345
+
+mongodb+srv://excavator:password12345@cluster0.u5uvm.mongodb.net/emaily-dev?retryWrites=true&w=majority
+
+emaily-prod
+Username EXC
+Password 4555OIJHgfd25
+mongodb+srv://EXC:4555OIJHgfd25@cluster0.xppmr.mongodb.net/emaily-prod?retryWrites=true&w=majority
+
+75398475GFFdd react-dev
+
+
+google console.com
+
+351451922826-8sajrs40f3bindmqcuolk0am8ivctfkd.apps.googleusercontent.com
+
+Mj6TjDNTXZeTn2LXxIQ44Fx1
+
+---------------------------------------
+stripe.com
+test API keys
+Publishable key
+Secret key
