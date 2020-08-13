@@ -1,0 +1,21 @@
+git init
+git add origin master "link from your github account"
+git pull origin master
+git add "file name"
+git add -A // to add all files in the folder
+git stssh -T git@github.comatus 
+git commit -m "your message"
+git commit -a -m "your message" // to commit all the files
+git log
+git branch branchname
+git checkout branchname 
+git merge firstbranch
+git rebase branchname
+
+ssh-keygen
+cat 'path' // usually id_rsa.pub where the public key is saved
+ssh -T git@github.com проверить 
+
+git push origin branchname // to push any respective branch
+git push origin master // to push master branch 
+

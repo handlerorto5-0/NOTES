@@ -1,0 +1,9 @@
+docker run --name myname --rm -d anyname
+(-rm удвлится после запуска, -d отдаст консоль, --name своё имя для контейнера)
+docker stop name
+docker ps -a список контейнеров
+docker rm $(docker ps -a -q) удалить котейнеры
+docker images список образов
+docker rmi $(docker images -q) удaлить образы
+
+2 часть 53 мин

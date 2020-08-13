@@ -1,0 +1,123 @@
+ьожно получить подcказку elm repl
+
+анотация типов в коде:
+phoroListUrl : String
+
+анотация функций
+isEmpty : String -> Bool
+isEmpty str = str == "" 
+
+анотация записей
+selectPhoto : { description : String, data : String }
+selectPhoto = { description = "ClickedPhoto", data = "1.jpeg" }
+
+анотация списка
+[] : List String
+[[],[]] : List (List String)
+[{},{}] : List { url : String }
+
+анотация функций с перемннными типа
+Переменная типа представляет более одного возможного типа.
+для Array.fromList
+import Array exposing (Array)
+из массива можно получат элементы по позиции
+fromList : List elementType -> Array elementType
+
+У Elm есть три имени переменных типа, которые имеют особое значение: число, добавляемое и сопоставимое
+number , appendable , and comparable
+
+повторное использование анотаций с масками alias
+type alias Photo =
+	{ url : String }
+...
+  photos : List Photo
+
+  Html переменные типа
+  div [ onClick "foo" ] []   Html String
+  div [ onClick 3.14 ] []    Html Float
+  div [ onClick { x = 3.3 } ] []   Html { x : Float }
+
+анотация функций с множеством аргументов
+padLeft function - следит за тем, чтобы строки соответствовали определенной минимальной длине
+Если длина строки меньше заданной, padLeft добавляет символы-заполнители слева от нее, пока строка не достигнет этой длины.
+> String.padLeft 9 '.' "not!"
+".....not!" : String
+> String.padLeft 2 '.' "not!"
+"not!" : String
+Если мы вызываем padLeft, передавая только один из трёх аргументов, результатом будет функция, которая принимает оставшиеся аргументы и заканчивает работу.(карирование)
+padNineDots : String -> String
+padNineDots = String.padLeft 9 '.'
+
+String.padLeft Int -> Char -> String -> String
+String.padLeft 9 Char -> String -> String
+String.padLeft 9 '.' String -> String
+String.padLeft 9 '.' "not!" String
+
+=========================================
+Использование case-выражений и пользовательских типов
+
+case msg.description of
+	"ClickedPhoto" ->
+    	{ model | selectedUrl = msg.data }
+    "ClickedSurpriseMe" ->
+    	{ model | selectedUrl = "2.jpeg"}
+    _->
+    	model
+
+Перечисление возможностей с помощью пользовательских типов
+
+type ThumbnailSize
+	= Small
+	| Medium
+	| Large
+можно выбрать в коде
+chosenSize : ThumbnailSize
+chosenSize = Small
+
+RADIO BUTTON
+input [ type_ "radio", name "size" ] []
+
+Array.get, чтобы получить элемент в массиве
+никогда не возвращает undefined или null
+всегда возвращает значение контейнера, которое называется Maybe.
+Maybe - это контейнер, подобный List, за исключением того, что он может содержать не более одного элемента.
+Maybe Photo означает «либо Photo, либо вообще ничего».
+
+Just "1.jpeg" означает Maybe String
+type Maybe value
+	= Just value
+	| Nothing
+
+Генерация случайных чисел с помощью команд
+elm install elm/random
+import Random
+main =
+Browser.element
+	{ init = \flags -> ( initialModel, Cmd.none ), ...
+
+Random.Generator Bool
+randomPhotoPicker : Random.Generator Int
+randomPhotoPicker = Random.int 0 2
+
+Cmd 
+Команда - это значение, описывающее операцию Elm.
+В отличие от вызова функции, выполнение той же команды
+несколько раз могут иметь разные результаты.
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+первый элемент - это Model, а второй - это Cmd Msg
+
+() - в анотации означает любое
+getUltimateAnswer : () -> Int
+
+-----------------------------------
+Переменные типа представляют собой конкретные типы, которые еще не определены.
+Объявление псевдонима типа присваивает типу имя, так же как константа присваивает имя значению.
+Объявление типа определяет новый настраиваемый тип, которого раньше не было.
+Пользовательские типы могут содержать более гибкие данные, чем записи или кортежи.
+Варианты настраиваемого типа могут быть либо значениями, которые являются экземплярами этого настраиваемого типа, либо функциями, возвращающими экземпляры этого настраиваемого типа.
+Вы можете деструктурировать варианты настраиваемого типа в case-выражениях для извлечения их данных.
+Если вы не укажете резервную ветку _ -> в case-выражении, вы получите ошибку компилятора, если ваш код не обрабатывает все возможные случаи.
+Array.get предотвращает сбои во время выполнения, возвращая Maybe вместо обычного элемента.
+Тип () (известный как unit) является одновременно типом и значением. Единственное значение типа () - это значение ().
+Тип Program () Model Msg относится к программе Elm без флагов, тип модели которой - Model, а тип сообщения - Msg.

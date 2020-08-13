@@ -1,0 +1,83 @@
+=====================================
+Первое приложение:
+cd code/elm/PhotoGroove
+
+вызов функций Elm для разметки:
+node "button" [ class "funky", id "submitter"] [text "Submit"]
+эти записи эквивалентны
+node "img" [ src "logo.png" ] []
+	  img  [ src "logo.png" ] []
+br [] [] эдемент без атрибутов
+стиль запятая впереди
+
+создать проект :
+new directory PhotoGroove
+elm init
+src/PhotoGroove.elm
+старт сервера
+elm reactor
+http://localhost:8000/src/PhotoGroove.elm
+
+декларация модуля
+import PhotoGroove exposing (main)
+импорт зеачений при обнаружении
+import Html exposing (div, h1, img, text)
+вместо Html.div , Html.h1 , Html.img
+импортировать всё что обнаружишь
+import Html.Attributes exposing (..)
+
+Добавить разметку:
+вызов функций Elm для разметки:
+node "button" [ class "funky", id "submitter"] [text "Submit"]
+эти записи эквивалентны
+node "img" [ src "logo.png" ] []
+	  img  [ src "logo.png" ] []
+br [] [] эдемент без атрибутов
+стиль запятая впереди
+
+создать index.html
+<body>
+  <div id="app"></div>
+
+  <script src="app.js"></script>
+  <script>
+    Elm.PhotoGroove.init({node: document.getElementById("app")});
+  </script>
+</body>
+
+компиляция в js в терминале
+elm make src/PhotoGroove.elm --output app.js
+
+Представление состояния приложения с помощью модели
+initialModel =
+[ { url = "1.jpeg" }
+, { url = "2.jpeg" }
+, { url = "3.jpeg" }
+]
+main =
+view initialModel
+
+В Elm анонимная функция типа (\foo -> bar baz foo) может
+всегда переписываться как (bar baz)
+
+Обработка событий с сообщениями и обновлениями
+Сообщение - это значение, используемое для передачи информации из одной части систему в другую.
+import Html.Events exposing (onClick)
+update msg model =
+import Browser
+main =
+  Browser.sandbox
+	{ init = initialModel
+	, view = view
+	, update = update
+	}
+
+
+Модель представляет состояние нашего приложения.
+Функция просмотра принимает модель и возвращает список узлов Html.
+Пользовательские события, такие как щелчки, переводятся в значения сообщений.
+Сообщения проходят через функцию обновления для создания новой модели.
+После обновления новая модель отправляется в функцию просмотра для определения новый DOM.
+Browser.sandbox связывает воедино модель, просмотр и обновление.
+List.map - это функция высшего порядка, которая переводит один список в другой.
+Все функции Elm каррированы, что означает, что они могут применяться частично.

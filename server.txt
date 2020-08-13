@@ -1,4 +1,4 @@
-
+:
 node server 
 установить глобально
 npm i -g node-static

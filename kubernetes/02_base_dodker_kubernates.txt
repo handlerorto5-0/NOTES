@@ -33,6 +33,7 @@ sudo usermod -aG docker username
 команды Docker:
 docker [option] [command] [arguments]
 docker - список команд
+
 ---------------------------------------
 Docker извлекла из хранилища Docker Hub в http://docker.io
 docker run busybox echo "Hello world"

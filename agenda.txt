@@ -1,5 +1,11 @@
 видеокурс / книга                  | № или страница
 --------------------------------------------------------------
+Elm in Action                      |  74
+--------------------------------------------------------------
+REST API Development with Node.js  |  71
+--------------------------------------------------------------
+Чиннатамби К. - Изучаем React      |  154
+--------------------------------------------------------------
 Kubernetes в действии              |  81
 --------------------------------------------------------------
 Книга "Совершенный код"            |  124
@@ -8,9 +14,9 @@ Rails 4 in action                  | 324   9.4
 --------------------------------------------------------------
 Udemy - the-complete-elixir-and-phoenix-bootcamp-and-tutorial  4
 --------------------------------------------------------------
-[Udemy] [Александр Кочергин] React Hooks  21   code/medium_clone
+[Udemy] [Александр Кочергин] React Hooks  26   code/medium_clone
 ---------------------------------------------------------------- 
-node-with-react-fullstack   section 9 code/node-react/server
+node-with-react-fullstack   section 10.143 code/node-react/server 10.138 master with mailgun need return
 ---------------------------------------------------------------
 book Mastering Ruby Closures       | 
 --------------------------------------------------------------
@@ -52,3 +58,10 @@ Modern Front-End Development for Rails
 Docker for Rails Developers
 Rails 5 Test Prescriptions
 Node.js 8 the Right Way
+Learning React: Second Edition
+Integrating Elm with Rails
+Programming Elm
+Adopting Elixir
+
+“Practical Object-Oriented Design in Ruby” от Sandi Metz
+“Exceptional Ruby” от Avdi Grimm

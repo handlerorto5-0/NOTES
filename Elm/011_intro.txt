@@ -1,0 +1,136 @@
+Уствновка:
+node --version
+npm --version
+- инструменты командной строки
+if error EACCES https:// docs.npmjs.com/getting-started/fixing-npm-permissions
+npm install -g elm elm-test http-server-spa@1.3.0
+elm --version
+вызов турминала:
+elm repl
+:help :exit
+--------------------------------
+++ комбинирование строк
+// Целочисленное деление 49 // 10 ->4
+"","a","abc" строки , 'a' единичный символ ('','abc' нельзя)
+-- коментровать в одну строку
+{- коментировать 
+в несколько строк -}
+anyVar = 80 -> JS: const anyVar=80 , только camelCase
+True, False так пишутся
+/= вместо !==
+используется not функция вместо !
+---------------------------------------
+дважды жать интер в интерпритаторе
+--------------------------------------
+if-expression:
+if foo /= bar then "different" else "same"
+ветвление:
+if elfCount == 1 then
+	"elf"
+else if elfCount >= 0 then
+	"elves"
+else
+	"anti-elves"
+--------------------------------------------
+Функции:
+isPositive num = num > 0  определить
+isPositive 2  вызвать -> True
+передача много аргументов:
+pluralize singular plural count =
+|	if count == 1 then singular else plural
+<function>
+> pluralize "elf" "elves" 3
+"elves"
+----------------------------------------------
+Модуль - это именованный набор функций Elm и других значений.
+String.toLower "Why don't you make TEN louder?"
+String.toUpper "These go to eleven."
+String.fromFloat 44.1
+String.fromInt 531
+String.length "storm" , > 5 : Int
+String.fromChar someChar
+Char.isDigit "(800) 555-1234" , > "8005551234"
+
+> isKeepable character = character /= '-' опред функция
+> String.filter isKeepable "800-555-1234" фильтр из модуля 
+"8005551234"
+
+let-expressions:
+вводят в выражение именованные значения с заданной областью действия.
+> dash = '-'
+> isKeepable character = character /= dash
+> withoutDashes str = String.filter isKeepable str
+
+анонимные функции:
+\w h = w*h ,в js function(w, h) { return w * h; }
+> String.filter (\char -> Char.isDigit char) "(800) 555-1234" , > "8005551234"
+
+Операторы:
+В Elm операторы явл функциями:
+infix style: 7 - 3 == 4
+prefix style: (-) 7 3 == 4
+> divideBy = (/) , > <function>
+> negate 1 + negate 6 , > -7 : number
+
+Старшинство и порядок следования операторов:
+> (==) ((+) 3 4) ((-) 8 1) , > True : Bool
+
+============================================
+Коллекции: lists, records, tuples
+всегда неизменяемы - immutable
+--------------------------------------------
+Lists (списки):
+[ "one fish", "two fish" ] 
+мoжет first,length,iterate
+неизменяется, 
+нет полей и методов, работа с ним через List module,
+все элементы имеют один тип, согласованные типы элементов
+
+List.length [ 1, 2, 3 ]
+List.head [ "one fish", "two fish" ]
+[ 1, 2 ] ++ [ 3, 4 ]
+
+> List.filter (\num -> num > 0) [ -2, -1, 0, 1, 2 ] ,> [1,2]
+
+----------------------------------------------
+Records (записи):
+{ name = "Li", cats = 2 }
+набор именованных полей, каждое со связанным значением
+похожи на JSобъуект , но неизменяемы, используют = для разделения
+({ name = "Li", cats = 2 }).cats
+
+обновление 
+catLover = { name = "Li", cats = 2 }
+через создание новой
+withThirdCat = { catLover | cats = 3 } или { catLover | cats = 88, name = "LORD OF CATS" }
+-------------------------------------------
+Tuples (кортежи)
+имеет записи, доступ  осуществляется по позиции а не по имени.
+( "Tech", 9 )
+Tuple.first ( "Tech", 9 )
+Tuple.second ( "Tech", 9 )
+не поддерживает кортежи из более чем трех элементов
+
+Tuple destructuring Деструктуризация кортежа
+извлекает значения внутри кортежа и назначает их имена в текущей области
+(foo, bar) дедуструктуризирует кортеж, например (2, 3). В этом примере  foo будет 2, а bar будет 3
+multiply3d ( x, y, z ) = x * y * z
+multiply2d someTuple = let ( x, y ) = someTuple in x * y
+
+Оператор ++ объединяет строки, а оператор + предназначен только для сложения.
+Двойные кавычки относятся к строкам. Одиночные кавычки относятся к отдельным символам UTF-8.
+Let-выражения вводят в выражение именованные значения с заданной областью действия.
+В Elm нет понятия «правдивость», только правда и ложь.
+if foo /= bar, then "другой" else "такой же" является выражением if. Как Тернары , if-выражения требуют ветки else и всегда вычисляются как стоимость.
+Списки типа [3, 1, 4] неизменяемы. Их элементы должны иметь последовательный тип.
+List.filter (\ num -> num> 0) numbersList возвращает список, содержащий все положительные числа в исходном списке чисел.
+catLover = {name = "Li", cats = 2} После назначения имена нельзя переназначить.
+{catLover | cats = 3} возвращает новую запись
+(foo, bar) destruct кортеж, например (2, 3). В этом примере foo будет 2, а bar будет 3.
+
+
+
+
+
+
+

@@ -10,7 +10,7 @@ rvm reinstall ruby-2.5.1
 --------------------------------------------------------------------
 rvm gemset create qna
 rvm use 2.6.3@qna
-gem install reils
+gem install rails
 rails new qna -d pjstgresql
 git init
 rvm --ruby-version use 2.6.3@qna (оптимизация проекта)
@@ -24,14 +24,30 @@ rvm install ruby 2.6.2
 .ruby-gemset   with  name-proget 
 re-entering in the directory
 cd .  # выйти в корень и войти обратно, пока не появится уведомление
-install the desired rails version
+установить версию по умолчанию или указать 
 gem install rails -v 5.2.3
 rvmsudo gem install bundler -v 1.5.0
-gem install pg - не пощёл в со всеми установил предварительно
+базы данных тоже предварительно
+gem install pg 
+gem install sqlite3 
 create the rails application
-rails new .  параметры
+rails new .  --skip-webpack-install --skip-bundle и другие .
+параметры
+rvmsudo bundle
 rails server
-=================================================================
+Вебпакер:
+gem 'webpacker'
+rvmsudo bundle
+rails webpacker:install
+Можно запускать сервер:
+rails server
+----------------------------------------------
+Stimulus:
+rails webpacker:install:stimulus
+если пак в app/javascript/packs/application.js
+то в app/javascript/packs/application.js добавить
+<%= javascript_pack_tag 'aplication', 'data-turbolinks-track': 'reload', async: true
+===============================================
 --------------------------------------------------------------
 _I. Установка RVM_to Ubuntu 18.10
 https://github.com/rvm/ubuntu_rvm
