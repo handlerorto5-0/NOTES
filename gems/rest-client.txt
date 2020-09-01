@@ -1,0 +1,40 @@
+rest-client.txt
+https://github.com/rest-client/rest-client
+
+Простой клиент HTTP и REST для Ruby, вдохновленный стилем микрофреймворка Sinatra для определения действий: get, put, post, delete.
+
+зависит от gems:
+- mime-types
+- netrc
+- http-accept
+- http-cookie
+
+Применение:
+require 'rest-client'
+
+RestClient.get(url, headers={})
+RestClient.get 'http://example.com/resource', {params: {id: 50, 'foo' => 'bar'}}
+
+RestClient.post(url, payload, headers={})
+estClient.post "http://example.com/resource", {'x' => 1}.to_json, {content_type: :json, accept: :json}
+
+response = RestClient.get 'http://example.com/resource'
+response.code
+response.cookies
+response.cookies
+response.body
+
+Передача дополнительных опций
+RestClient::Request.execute(method: :get, url: 'http://example.com/resource',  timeout: 10, headers: {params: {foo: 'bar'}})
+➔ GET http://example.com/resource?foo=bar
+
+Составной
+RestClient.post '/data', :myfile => File.new("/path/to/image.jpg", 'rb')
+RestClient.post '/data', {:foo => 'bar', :multipart => true}
+
+ActiveResource-Style
+resource = RestClient::Resource.new 'http://example.com/resource'
+resource.get
+
+private_resource = RestClient::Resource.new 'https://example.com/private/resource', 'user', 'pass'
+private_resource.put File.read('pic.jpg'), :content_type => 'image/jpg'

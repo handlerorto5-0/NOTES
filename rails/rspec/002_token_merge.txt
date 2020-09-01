@@ -1,0 +1,25 @@
+002_token_merge.txt
+describe ApiProjectsController do
+  before do
+    @base_json = { api_token: @user.api_token }
+    @project_json = {project: {priority: "4", name: "foo"}}
+    @new_project_json = @base_json.merge(@project_json)
+  end
+
+  describe "actions" do
+    describe "#create" do
+       before do
+        @request.env['RAW_POST_DATA'] = @new_project_json.to_json
+         lambda do
+          post :create
+        end.should change(Project, :count).by(1)
+      end
+
+     it "returns ok" do
+        expect(response.status).to eq(200)
+        expect(Project.all.last.priority).to eq(@new_project_json[:priority])
+        expect(Project.all.last.name).to eq(@new_project_json[:name])
+      end
+    end
+  end
+end

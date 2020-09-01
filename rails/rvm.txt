@@ -1,4 +1,4 @@
-======================================================================
+su======================================================================
 # Disable RVM from trying to install necessary software via apt-get
 rvm autolibs disable  (enable) rvm autolibs rvm_pkg
 # Then try installing Ruby:
@@ -19,34 +19,7 @@ rails db:create:all
 -------------------------------------------------------------------
 use rvm to manage the Ruby versions installed on the system:
 rvm install ruby 2.6.2
-сoздать директорию, перейти, создать файлы
-.ruby-version   with ruby-2.6.2  если текущая не надо
-.ruby-gemset   with  name-proget 
-re-entering in the directory
-cd .  # выйти в корень и войти обратно, пока не появится уведомление
-установить версию по умолчанию или указать 
-gem install rails -v 5.2.3
-rvmsudo gem install bundler -v 1.5.0
-базы данных тоже предварительно
-gem install pg 
-gem install sqlite3 
-create the rails application
-rails new .  --skip-webpack-install --skip-bundle и другие .
-параметры
-rvmsudo bundle
-rails server
-Вебпакер:
-gem 'webpacker'
-rvmsudo bundle
-rails webpacker:install
-Можно запускать сервер:
-rails server
-----------------------------------------------
-Stimulus:
-rails webpacker:install:stimulus
-если пак в app/javascript/packs/application.js
-то в app/javascript/packs/application.js добавить
-<%= javascript_pack_tag 'aplication', 'data-turbolinks-track': 'reload', async: true
+
 ===============================================
 --------------------------------------------------------------
 _I. Установка RVM_to Ubuntu 18.10
@@ -61,6 +34,7 @@ sudo apt-get install rvm
   rvm 1.6.20 by Wayne E. Seguin (wayneeseguin@gmail.com) [https://rvm.beginrescueend.com/]
   если вы видите версию rvm, значит всё ОК 
 
+gem env version
 gem update --system
 gem -v
 echo "gem: --no-document" >> ~/.gemrc   опционально
@@ -163,3 +137,28 @@ rvm gemset list – список gemset'ов в выбранной версии 
 rvm use 1.9.2@rails3 --create создать gemset rails3 для ruby версии 1.9.2
 rvm gemset export — экспортировать гемсет в файл default.gems
 rvm gemset import default.gems — установить gem's из списка в файле defaults.gem в текущий gemsetалить одну или несколько версию Ruby, оставив исходники
+
+.rvmrc
+export rvm_environments_path="${HOME}/.rvm/environments"
+export rvm_gems_path="${HOME}/.rvm/gems"
+export rvm_gems_cache_path="${HOME}/.rvm/gems_cache"
+export rvm_wrappers_path="${HOME}/.rvm/wrappers"
+export rvm_create_flag="1" 
+export rvm_user_path="${HOME}/.rvm/user"
+export rvm_log_path="${HOME}/.rvm/log"                                        
+export RUBYOPT='-W:no-deprecated -W:no-experimental'
+rvm_silence_path_mismatch_check_flag=1 
+-
+Installing RVM to /home/kv-2/.rvm/
+    Adding rvm PATH line to /home/kv-2/.profile /home/kv-2/.mkshrc /home/kv-2/.bashrc /home/kv-2/.zshrc.
+    Adding rvm loading line to /home/kv-2/.profile /home/kv-2/.bash_profile /home/kv-2/.zlogin.
+Installation of RVM in /home/kv-2/.rvm/ is almost complete:
+
+  * To start using RVM you need to run `source /home/kv-2/.rvm/scripts/rvm`
+    in all your open shell windows, in rare cases you need to reopen all shell windows.
+-
+
+Don't run Bundler as root. Bundler can ask for sudo if it is needed, and
+installing your bundle as root will break this application for all non-root users
+on this machine.
+The dependency tzinfo-data (>= 0) will be unused by any of the platforms Bundler is installing for. Bundler is installing for ruby but the dependency is only for x86-mingw32, x86-mswin32, x64-mingw32, java. To add those platforms to the bundle, run `bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java`.

@@ -1,0 +1,10 @@
+bit-git.txt
+cphhzjAW3MnpKQVgD8NS  odnako
+git branch <имя ветки>
+git branch
+git checkout <имя ветки>
+Отправьте новую ветку в Bitbucket. 
+git push --set-upstream origin <имя ветки>
+
+fork
+https://support.atlassian.com/bitbucket-cloud/docs/fork-a-repository/

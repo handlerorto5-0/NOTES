@@ -1,0 +1,49 @@
+rails routes
+
+Default Routes
+/:controller/:action/:id
+/:controller/:action/:id.:format
+:controller - название файла в котором находится ваш класс контроллера, который наследуется от класса ApplicationController
+:action - это метод в классе контроллера
+:id - при создании таблицы по умолсанию создается поле id, когда нужно удалить или отредактировать поле в моделе, вам понадобиться знать какое именно.
+
+Root Route
+map.root :controller => 'books', :action => 'list'
+
+Маршруты RESTful
+map.resources :products
+
+:member и :collection моршруты для ресурсов
+map.resources :users, :member => { :kick => :get, :kill => :post }, :collection => { :kill_all => :get } 
+Если есть ресурс, который не включен в ресурс по умолчанию можно добавить дополнительные именованные маршруты к вашем ресурсам.
+:collection возвращают коллекцию. Допустим есть контроллер Contacts, то маршрут :collection, в который можно  добавить, был бы delete_all_older_than_6_months и это будет соответствовать пути /contacts/delete_all_older_than_6_months/
+:member возвращает только одну завись. Например, можно было бы добавить member  метод, названный upgrade_to_vip, который обновляет определенный контакт, а именно меняет статус контакта на VIP. И этот маршрут будет соответствовать в браузере /contacts/1/upgrade_to_vip.
+
+Маршруты для Вложенных Ресурсов (опции has_many и has_one)
+map.resources :products, :has_many => [ :comments, :sales ], :has_one => :seller
+Данные ресурсы предоставляют следующие хелперы:
+new_product_comment_path(1)   /products/1/comments/new
+product_comment_path(1, 1)    /products/1/comments/1
+product_seller_path(1)        /products/1/seller
+* product_comment_path(1, 1) вызывается с двумя параметрами, а product_seller_path(1) с одним, так как products и comments связаны один ко многим
+
+Обычные маршруты
+map.connect 'products/:id', :controller => 'catalog', :action => 'view'
+* для даного вида маршрута вы не сможите использовать облегчающие ссылки (_url, _path) для link_to или form_for. 
+
+Именованные маршруты
+map.purchase 'products/:id/purchase', :controller => 'catalog', :action => 'purchase'
+позволяют ссылаться на путь к функциональности по всему приложению. 
+Пример использования:
+<%= link_to "Buy Now", purchase_url(:id => product.id) %>
+<a href="http://domain/products/12/purchase">Buy Now</a>
+Также можно использовать в контроллере для перенаправления на эту функциональность и страницу
+:redirect_to purchase_url(:id => @product.id)
+
+Пространства имен в Маршрутах
+map.namespace :admin do |admin|
+ admin.resources :products
+end
+admin_products_path # идет в /admin/products
+
+

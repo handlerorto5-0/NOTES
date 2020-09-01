@@ -1,3 +1,5 @@
+bundle exec rspec spec/auth -fd
+==========================================
 min gems:
 group :development, :test do
   ...

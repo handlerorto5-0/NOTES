@@ -1,0 +1,37 @@
+rails --tasks
+
+db_commands.txt
+db:create Creates the database for the current RAILS_ENV environment. If RAILS_ENV is not specified it defaults to the development and test databases.
+db:create:all Creates the database for all environments.
+
+db:drop Drops the database for the current RAILS_ENV environment. If RAILS_ENV is not specified it defaults to the development and test databases.
+db:drop:all Drops the database for all environments.
+
+db:migrate Runs migrations for the current environment that have not run yet. By default it will run migrations only in the development environment.
+db:migrate:redo Runs db:migrate:down and db:migrate:up or db:migrate:rollback and db:migrate:up depending on the specified migration. I usually run this after creating and running a new migration to ensure the migration is reversable.
+db:migrate:up Runs the up for the given migration VERSION.
+db:migrate:down Runs the down for the given migration VERSION.
+db:migrate:status Displays the current migration status.
+db:migrate:rollback Откатывает последнюю миграцию.
+
+db:version Prints the current schema version.
+db:forward Pushes the schema to the next version.
+db:seed Runs the db/seeds.rb file.
+
+db:schema:load Воссоздает базу данных из файла schema.rb.
+db:schema:dump Dumps the current environment’s schema to db/schema.rb.
+
+db:structure:load Воссоздает базу данных из файла structure.sql.
+db:structure:dump Dumps the current environment’s schema to db/structure.sql. (Specify another file with SCHEMA=db/my_structure.sql)
+
+db:setup Runs db:create, db:schema:load and db:seed.
+db:reset Runs db:drop and db:setup.
+db:migrate:reset Runs db:drop, db:create and db:migrate.
+
+db:test:prepare Check for pending migrations and load the test schema. (If you run rake without any arguments it will do this by default.)
+db:test:clone Recreate the test database from the current environment’s database schema.
+db:test:clone_structure Similar to db:test:clone, but it will ensure that your test database has the same structure, including charsets and collations, as your current environment’s database.
+
+rails db:environment:set RAILS_ENV=development
+db:environment:set Set the current RAILS_ENV environment in the ar_internal_metadata table. (Used as part of the protected environment check.)
+db:check_protected_environments Checks if a destructive action can be performed in the current RAILS_ENV environment. Used internally when running a destructive action such as db:drop or db:schema:load.

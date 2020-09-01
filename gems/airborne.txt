@@ -1,0 +1,84 @@
+airborne.txt
+
+Airborne - это GEM, созданный для тестирования API поверх Rspec и RestClient. Airborne предоставляет платформу для написания автоматических тестов для API. Airbone является эквивалентом Ruby и обеспечивает простую проверку ответа, полный ответ JSON с ожидаемыми данными или типом данных. Он также использует RestClient для обработки HTTP-запросов, который является очень зрелым и надежным. Если у вас возникли проблемы с использованием Airborne, вы также можете вызвать RestClient прямо в своем тесте.
+
+Installation
+group :development, :test do
+  gem 'rspec-rails', '~> 3.5'
+end
+group :test do
+  gem 'airborne'
+end
+
+Например, если у меня есть Tickets_controller.rb, который обрабатывает все конечные точки, связанные с получением списка билетов, созданием билетов и редактированием билетов. Мои тесты API будут находиться в /spec/controllers/tickets_controller_spec.rb. Как указано выше, RSpec сгенерирует соответствующие файлы спецификаций, если я использую команду rails generate controller.
+
+Making Requests
+==
+require 'rails_helper'
+
+RSpec.describe TicketsController, :type => :controller do
+  describe 'GET index' do
+    it 'returns correct types' do
+      get :index
+      expect_json_types(foo: :string)
+    end
+  end
+end
+==
+
+Query Parameters, Request Body and Headers
+==
+describe 'POST create' do
+  it 'returns correct types' do
+    body = {'subject' => 'Hey', 'body' => 'Testbody'}
+    post :create, body
+    expect_status(201)
+  end
+end
+==
+it 'returns correctly status filtered tickets' do
+  status_filter = Ticket.statuses.keys.sample
+  query = {'status' => status_filter}
+  get :index, query
+  expect_status(200)
+  expect_json('*', status: status_filter)
+end
+==
+it 'returns correctly user filtered tickets' do
+  user_id_filter = User.includes(:tickets).where.not(tickets: {id: nil}).sample.id
+  query = {'user_id' => user_id_filter}
+  query.merge! auth_headers
+  get :index, query
+  expect_status(200)
+  expect_json('*.user', id: user_id_filter)
+end
+==
+
+Working with devise_token_auth
+https://github.com/lynndylanhurley/devise_token_auth
+он предоставляет простой метод для генерации заголовков аутентификации для вашего пользователя; .create_new_auth_token.
+==
+spec/rails_helper.rb
+config.before(:all, type: :controller) do
+  @user = create(:user)
+  @user_auth_headers = @user.create_new_auth_token
+end
+==
+used factory_girl
+==
+it 'returns only tickets that belong to logged in user' do
+  get :index, @user_auth_headers
+  expect_status(200)
+  expect_json('*.user', id: @user.id)
+end
+==
+
+Airborne API
+expect_json_types - проверяет типы возвращаемых значений свойств JSON.
+expect_json - проверяет значения возвращаемых значений свойств JSON
+expect_json_keys - Проверяет наличие указанных ключей в объекте JSON
+expect_json_sizes - проверяет размеры возвращаемых значений свойств JSON, а также проверяет, являются ли значения массивами
+expect_status - проверяет возвращаемый код состояния HTTP
+expect_header - Проверяет наличие указанного заголовка в ответе
+expect_header_contains - тест частичного совпадения для указанного заголовка
+

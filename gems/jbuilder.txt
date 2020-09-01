@@ -1,0 +1,5 @@
+jbuilder.txt
+https://github.com/rails/jbuilder#jbuilder
+
+Jbuilder позволяет писать «представления» JSON.
+

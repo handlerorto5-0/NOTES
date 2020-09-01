@@ -1,0 +1,41 @@
+005_testing_factories.txt
+class User < ActiveRecord::Base
+  validates_presence_of :first_name
+end  вышла ошибка в тесте?
+-
+FactoryGirl.define do
+  factory :user do
+    first_name 'Jonah'
+  end
+end
+возникают ошибки
+Это медленно и не dry, добавлять в каждую модель:
+# spec/models/user_spec.rb
+
+describe User do
+  it 'has a valid Factory' do
+    build(:user).should be_valid
+  end
+end
+модно сделать для всех фабрик
+# spec/factories_spec.rb
+
+FactoryGirl.factories.map(&:name).each do |factory_name|
+  describe "The #{factory_name} factory" do
+     it 'is valid' do
+      build(factory_name).should be_valid
+     end
+  end
+end
+Быстроразрушающиеся фабрики
+мы не хотим ждать, один из способов решить эту проблему - добавить предварительное условие:
+# Rakefile
+
+if defined?(RSpec)
+  desc 'Run factory specs.'
+  RSpec::Core::RakeTask.new(:factory_specs) do |t|
+    t.pattern = './spec/factories_spec.rb'
+  end
+end
+
+task spec: :factory_specs

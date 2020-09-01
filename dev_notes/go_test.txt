@@ -1,0 +1,63 @@
+go_test.txt
+
+--
+настройка API с форматом по умолчанию
+namespace :api, defaults: {format: :json}  do
+    namespace :v1 do
+      post "/controller_name" => 'controller_name#create'
+      get "/controller_name" => 'controller_name#index'
+    end
+  end
+входящий почтовый запрос доступен переменной request . Чтобы преобразовать его в читаемый формат JSON:
+request.body.read()
+--
+@var = JSON.parse(params[:name_of_the_JSON_fields])
+--
+парсер 'Yajl' json
+request.body.rewind
+body = Yajl::Parser.parse request.body.read.html_safe
+--
+=============================================
+Let’s make some requests
+
+Routes:
+BackToBasics::Application.routes.draw do
+  match '/curl_example' => 'request_example#curl_get_example', via: :get
+  match '/curl_example' => 'request_example#curl_post_example', via: :post
+end
+Controller:
+class RequestExampleController < ActionController::Base
+  def curl_get_example
+    render text: 'Thanks for sending a GET request with cURL!'
+  end
+
+  def curl_post_example
+    render text: "Thanks for sending a POST request with cURL! Payload: #{request.body.read}"
+  end
+end
+
+curl -X GET http://localhost:3000/curl_example
+Thanks for sending a GET request with cURL!
+curl -X POST -d "backToBasics=for the win" http://localhost:3000/curl_example
+Thanks for sending a POST request with cURL! Payload: backToBasics=for the win
+
+-------------------------------
+def create
+@message = Message.new(content: params[:content], command: params[:command], messageId: params[:messageId], msisdn: params[:msisdn], businessNumber: params[:businessNumber], keyword: params[:keyword], operatorCode: params[:operatorCode], sessionId: params[:sessionId], time: params[:time])
+
+respond_to do |format|
+     if @message.save
+       format.html { redirect_to @message, notice: 'Message was successfully created.' }
+       format.json { render json: @message, status: :created, location: @message }
+     else
+       format.html { render action: "new" }
+       format.json { render json: @message.errors, status: :unprocessable_entity }
+     end
+end
+------------------------------
+Testing with Webmock
+Гем webmock позволяет разработчикам определять собственные ответы для определенных HTTP-запросов.
+WebMock.stub_request(:put, 'https://some-cool-api.com/my_models/1').
+  with(body: /foo.*bar$/).
+  to_return(body: '{ "success": true }')
+

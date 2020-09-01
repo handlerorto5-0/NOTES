@@ -1,0 +1,34 @@
+faraday.txt
+
+
+Пример https://code.tutsplus.com/articles/crafting-apis-with-rails--cms-27695
+Проверка регистрации пользователя
+Для выполнения HTTP-запроса предоставляет общий интерфейс для многих адаптеров (по умолчанию Net :: HTTP). Создайте отдельный файл Ruby, включите Faraday и настройте клиента:
+api_client.rb
+--
+require 'faraday'
+ 
+client = Faraday.new(url: 'http://localhost:3000') do |config|
+  config.adapter  Faraday.default_adapter
+end
+ 
+response = client.post do |req|
+  req.url '/api/v1/users'
+  req.headers['Content-Type'] = 'application/json'
+  req.body = '{ "user": {"name": "test user"} }'
+end
+--
+Все эти параметры говорят сами за себя: мы выбираем адаптер по умолчанию, устанавливаем URL-адрес запроса на http://localhost:3000/api/v1/users, меняем тип содержимого на application/json и предоставляем тело нашего запроса. 
+
+https://github.com/ohler55/oj
+Ответ сервера будет содержать JSON, поэтому для его анализа я воспользуюсь гемом Oj: 
+--
+api_client.rb
+require 'oj'
+ 
+# client here...
+ 
+puts Oj.load(response.body)
+puts response.status
+--
+ruby api_client.rb

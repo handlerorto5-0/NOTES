@@ -1,0 +1,91 @@
+test_examples.txt
+--
+describe UsersController, :type => :controller do
+
+  describe "#update" do
+    context 'when resource is found' do
+      before(:each) do
+        @user = FactoryGirl.create(:user)
+      end
+
+      it 'updates the resource with valid data' do
+        @request.headers['Content-Type'] = 'application/vnd.api+json'
+        old_email = @user.email
+        new_email = Faker::Internet.email
+        jsondata = 
+        {
+          "data" => {
+            "type" => "users",
+            "id" => @user.id,
+            "attributes" => {
+              "email" => new_email
+            }
+          }
+        }
+
+        patch :update, jsondata.to_json, jsondata.merge({:id => old_id})
+
+        expect(response.status).to eq(200)
+        json_response = JSON.parse(response.body)
+        expect(json_response['data']['id']).to eq(@user.id)
+        expect(json_response['data']['attributes']['email']).to eq(new_email)
+      end
+    end
+  end
+end
+--
+-------
+require 'rails_helper'
+RSpec.describe Api::V1::RecipesController do
+  describe "GET #index" do
+    before do
+      get :index  # before running the specs, it should send a get request to our RecipeController’s #index route
+    end
+    it "returns http success" do
+      expect(response).to have_http_status(:success)
+    end
+    it "JSON body response contains expected recipe attributes" do
+      json_response = JSON.parse(response.body)
+      expect(hash_body.keys).to match_array([:id, :ingredients, :instructions])
+    end
+  end
+end
+--
+class Api::V1::RecipesController < ApplicationController
+  def index
+    @recipes = Recipe.all
+    render json: @recipes, status: 200
+  end
+  ...
+end
+--
+class CreateRecipes < ActiveRecord::Migration[5.1]
+  def change
+    create_table :recipes do |t|
+      t.string :ingredients
+      t.string :instructions
+    end
+  end
+end
+--
+---------------------------------------------
+создание обьекта в модели
+class User < ActiveRecord::Base
+
+     # optional, but probably a good idea
+     validates :external_id, :uniqueness => true
+
+     def self.save_data_from_api
+       response = HTTParty.get('URI')
+       user_data = JSON.parse(response)
+       users = user_data.map do |line|
+         u = User.new
+         u.external_id = line['user']['id']
+         # set name value however you want to do that
+         u.save
+         u
+       end
+       users.select(&:persisted?)
+     end
+
+end

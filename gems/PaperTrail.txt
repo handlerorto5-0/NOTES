@@ -1,0 +1,5 @@
+PaperTrail.txt
+https://github.com/paper-trail-gem/paper_trail
+https://github.com/westonganger/paper_trail-association_tracking
+
+Отслеживайте изменения в ваших моделях для аудита или контроля версий. Посмотрите, как модель выглядела на любом этапе своего жизненного цикла, верните ее к любой версии или восстановите после того, как она была уничтожена.

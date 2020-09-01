@@ -1,0 +1,56 @@
+any.txt
+
+Model.find возвращает одну запись (экземпляр вашего класса Model), но Model.where возвращает объект Model :: ActiveRecord_Relation (объект, подобный массиву). Метод .where доступен только непосредственно в вашем классе Model (например, Model.where) или в ActiveRecord_Relation.
+Model.where("name = ?", "max")
+     .order(created_at: :desc)
+     .reorder(created_at: :asc)
+     .includes(:sent_comments)
+-
+@newuser= GroupUser.find_by_group_id_and_user_id(params[:group_id],params[:user_id])
+-
+===============
+def parse_request
+	@json = JSON.parse(request.body.read)
+end
+-
+@project = Project.find_by_name(@json['project']['name'])
+-
+if @project.present?
+-
+render nothing: true, status: :bad_request
+-
+after_initialize :set_ivars
+has_many ...
+private
+    def set_ivars
+==
+require 'net/http'
+require 'uri'
+url = "http://www.google.com.ua/search?as_q=test&hl=ru"
+uri = URI.parse(url)
+# посылаем запрос и получаем ответ, если все пройдет хорошо придет код 200 и ОК (<Net::HTTPOK 200 OK readbody=true>)
+response = Net::HTTP.get_response(uri)
+# для просмотра тела ответа
+content = response.body
+тоже но параметрами as_q=test и hl=ru
+url = "http://www.google.com.ua/search?as_q=test&hl=ru"
+uri = URI.parse(url)
+http = Net::HTTP.new(uri.host, uri.port)
+response = http.request(Net::HTTP::Get.new(uri.request_uri))
+content = response.body
+*response - придет в строке вся html страница
+--
+Пример POST запроса
+url = "http://localhost:8818/user/appoint_calendar"
+uri = URI.parse(url)
+parameters =  {"name" => "Ivan", "calendar_id" => 5}
+esponse = Net::HTTP.post_form(uri, parameters)
+- Полная форма:
+url = "http://localhost:8818/user/appoint_calendar"
+uri = URI.parse(url)
+http = Net::HTTP.new(uri.host, uri.port)
+request = Net::HTTP::Post.new(uri.request_uri)
+parameters =  {"as_q" => "test drive", "hl" => "ru"}
+request.set_form_data(parameters)    
+response = http.request(request)
+========

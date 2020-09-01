@@ -1,0 +1,125 @@
+Обработка тестов для маршрутов GET, POST, PUT и DELETE в RESTful Ruby on Rails API
+==
+group :development, :test do
+  gem 'rspec-rails', '~> 3.6'
+  gem 'faker'
+  gem 'factory_bot_rails'
+  gem 'database_cleaner'
+end
+==
+rails generate rspec:install
+==
+gem database cleaner
+По умолчанию Rspec сбрасывает или «очищает» базу данных после запуска каждого метода тестирования. Используйте database_cleaner_gem, чтобы убедиться, что никакие из наших тестовых данных не перекрываются и не вызывают ложноотрицательные результаты в наших тестах.
+spec/rails_helper.rb
+config.use_transactional_fixtures = false
+config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+end
+config.before(:each) do
+    DatabaseCleaner.strategy = :transaction
+end
+config.before(:each, :js => true) do
+    DatabaseCleaner.strategy = :truncation
+end
+config.before(:each) do
+    DatabaseCleaner.start
+end
+config.after(:each) do
+    DatabaseCleaner.clean
+end
+config.before(:all) do
+    DatabaseCleaner.start
+end
+config.after(:all) do
+	DatabaseCleaner.clean
+end
+==
+factory setup
+FactoryBot.define do
+  service_array = ["Test Service", "Test Service Two"]
+  letter = ["a", "b", "c", "d"]
+factory :random_question, class: Question do
+    question { Faker::Lorem.question }
+    answer { Faker::Lorem.sentence }
+    service { service_array.sample }
+    number { Faker::Number.between(1, 2) }
+    letter { letter.sample }
+  end
+end
+==
+spec/requests/get_questions_spec.rb
+тестовый файл для маршрута получения всех тестов
+-
+require 'rails_helper'
+describe "get all questions route", :type => :request do
+	# создать 20 экз 
+	let!(:questions) {FactoryBot.create_list(:random_question, 20)}
+before {get '/api/v1/questions'}
+it 'returns all questions' do
+    expect(JSON.parse(response.body).size).to eq(20)
+  end
+it 'returns status code 200' do
+    expect(response).to have_http_status(:success)
+  end
+end
+-
+spec/requests/post_question_spec.rb
+require 'rails_helper'
+describe "post a question route", :type => :request do
+before do
+    post '/api/v1/questions', params: { :question => 'test_question', :answer => 'test_answer', :service => 'test_service', :number => 2, :letter => 'a' }
+end
+it 'returns the question' do
+    expect(JSON.parse(response.body)['question']).to eq('test_question')
+  end
+it 'returns the question\'s answer' do
+    expect(JSON.parse(response.body)['answer']).to eq('test_answer')
+  end
+it 'returns the question\'s service' do
+    expect(JSON.parse(response.body)['service']).to eq('test_service')
+  end
+it 'returns the question\'s letter' do
+    expect(JSON.parse(response.body)['letter']).to eq('a')
+  end
+it 'returns the question\'s number' do
+    expect(JSON.parse(response.body)['number']).to eq(2)
+  end
+it 'returns a created status' do
+    expect(response).to have_http_status(:created)
+  end
+end
+--
+spec/requests/put_question_spec.rb
+require 'rails_helper'
+describe "PUT /api/v1/questions/:id" do
+before(:each) do
+    @question = create(:random_question)
+end
+it 'updates a question' do
+@new_question = Faker::Lorem.question
+@new_answer = Faker::Lorem.sentence
+put "/@question.id">api/v1/questions/#{@question.id}", params: {question: @new_question, answer: @new_answer}
+expect(response.status).to eq(202)
+    expect(Question.find(@question.id).question).to eq(@new_question)
+    expect(Question.find(@question.id).answer).to eq(@new_answer)
+  end
+end
+--
+spec/requests/delete_option_spec.rb
+require 'rails_helper'
+describe "delete question route" do
+    before(:each) do
+        @question_one = create(:random_question)
+        @question_two = create(:random_question)
+    end
+it 'should delete the question' do
+get "/api/v1/questions"
+      expect(response.status).to eq(200)
+      expect(JSON.parse(response.body)).to eq([YAML.load(@question_one.to_json),YAML.load(@question_two.to_json),])
+delete "/api/v1/questions/#{@question_one.id}"
+      expect(response.status).to eq(204)
+get "/api/v1/questions"
+      expect(JSON.parse(response.body)).to eq([YAML.load(@question_two.to_json)])
+    end
+end

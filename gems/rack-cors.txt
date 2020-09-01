@@ -1,0 +1,34 @@
+https://github.com/cyu/rack-cors
+CORS (Cross-Origin Resource Sharing) позволяет веб-приложениям отправлять запросы AJAX сторонним службам.
+
+Следующая конфигурация, например, позволит любому получить доступ к вашему API любым способом:
+config/initializers/cors.rb
+--
+Rails.application.config.middleware.insert_before 0, Rack::Cors do
+  allow do
+    origins '*'
+ 
+    resource '/api/*',
+      headers: :any,
+      methods: [:get, :post, :put, :patch, :delete, :options, :head]
+  end
+end
+--
+
+защищать API от злоупотреблений и атак типа «отказ в обслуживании». который позволяет вам заносить в черный или белый список клиентов, предотвращать переполнение сервера запросами и многое другое.
+gem 'rack-attack'
+https://github.com/rack/rack-attack#usage
+Вот пример конфигурации, которая ограничивает доступ к службе всем, кроме вас, и ограничивает максимальное количество запросов до 5 в секунду:
+config/initializers/rack_attack.rb
+--
+class Rack::Attack
+  safelist('allow from localhost') do |req|
+    # Requests are allowed if the return value is truthy
+    '127.0.0.1' == req.ip || '::1' == req.ip
+  end
+ 
+  throttle('req/ip', :limit => 5, :period => 1.second) do |req|
+    req.ip
+  end
+end
+--

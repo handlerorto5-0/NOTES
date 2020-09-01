@@ -1,0 +1,176 @@
+Подготовка к загрузке данных на сервер
+
+type Status
+= Loading
+| Loaded (List Photo) String
+| Errored String
+
+view : Model -> Html Msg
+view model =
+    div [ class "content" ] <|
+        case model.status of
+            Loaded photos selectedUrl ->
+                viewLoaded photos selectedUrl model.chosenSize
+            Loading ->
+                []
+            Errored errorMessage ->
+                [ text ("Error: "++errorMessage) ]
+  
+
+viewLoaded : List Photo -> String -> ThumbnailSize -> List (Html Msg)
+viewLoaded photos selectedUrl chosenSize = ...
+
+<| OPERATOR принимает функцию и другое значение и передает значение функции.
+String.toUpper (String.reverse "hello")
+String.toUpper <| String.reverse "hello"
+
+Подчеркивание - это специальный заполнитель, указывающий, что здесь есть значение, но мы решили не использовать его.
+functionThatTakesThreeArguments _ _ _ =
+	"I ignore all three of my arguments and return this string!"
+
+Random.uniform берет непустой список , возвращает кортеж (elem, List elem)
+
+Шаблон firstPhoto :: otherPhotos соответствует значениям списка, содержащим хотя бы один элемент. Их первый элемент называется firstPhoto (потому что он находится перед символом ::), а остальные элементы находятся в списке с именем otherPhotos. Если бы мы аннотировали их типы, мы бы сначала написали Photo: Photo и otherPhotos: List Photo.
+
+
+Loaded [] _ ->
+( model, Cmd.none )
+Паттерн говорит что, если пользователь нажимает "Удиви меня!" и мы загрузили ноль фотографий, а затем удиви меня! кнопка ничего не делает.
+
+конвейер последовательных операций с помощью Tuple.pair и |>
+операторa
+Tuple.pair функция, которая принимает два аргумента и возвращает их в виде кортежа
+
+Loaded (firstPhoto :: otherPhotos) _ ->
+  Random.uniform firstPhoto otherPhotos
+	|> Random.generate GotRandomPhoto
+	|> Tuple.pair model
+Оператор |> носит чисто стилистический характер. 
+1 Вызвать Random.uniform firstPhoto otherPhotos.
+2 Передайте его возвращаемое значение в качестве последнего аргумента в Random.generate GotRandomPhoto.
+3 Передайте это возвращаемое значение в качестве последнего аргумента модели Tuple.pair.
+
+=================================
+Получение данных с сервера
+
+elm install elm/http
+
+Эффект - это операция, изменяющая внешнее состояние. Функция, изменяющая внешнее состояние при выполнении, имеет побочный эффект.
+Elm функции не могут иметь побочных эффектов (side effects)
+Эта система управляемых эффектов (managed effects), в которой Elm Runtime отвечает за выполнение всех эффектов, означает, что программы Elm могут быть написаны полностью с точки зрения преобразования данных.
+
+Http.get : { url : String, expect : Expect msg } -> Cmd msg
+Http.get
+	{ url = "http://manning.com"
+	, expect = Http.expectString toMsg
+	}
+
+Http.expectString : (Result Http.Error String -> msg) -> Expect msg
+
+type Result errValue okValue
+	= Err errValue
+	| Ok okValue
+
+String.split ","
+split : String -> String -> List String
+
+List.head : List elem -> Maybe elem
+
+pattern:
+(firstUrl :: _) as urls ->
+означает «присвоить всему этому списку имя urls, а также разделить его на его первый элемент - который мы назовем firstUrl - и его оставшиеся элементы, которые мы не будем называть, используя заполнитель _».
+
+Pattern matching:
+Сопоставление с образцом - это способ деструктуризации значений в зависимости от того, как выглядят их контейнеры.
+case msg of
+	...
+	GotPhotos result ->
+		case result of
+			Ok responseStr ->
+				...
+			Err _ ->
+				( model, Cmd.none )
+как
+case msg of
+	...
+	GotPhotos (Ok responseStr) ->
+		...
+	GotPhotos (Err _) ->
+		( model, Cmd.none )
+
+
+=====================================
+Расшифровка JSON
+
+elm install elm/json
+
+Мы можем импортировать модули только из наших прямых зависимостей (direct), но не из наших косвенных зависимостей(indirect).
+
+Json.Decode.decodeString
+decodeString : Decoder val -> String -> Result Error val
+Json.Decode.bool
+bool : Decoder Bool
+
+только примитивные декодеры bool, int, float, string, null
+> decodeString float "3.33"
+Ok 3.33 : Result Error Float
+
+Расшифровка JSON из массивов и кортежей
+
+Json.Decode.list
+list : Decoder value -> Decoder (List value)
+-----------------------------
+Массивы и списки:
+import Json.Decode exposing (Decoder, list, bool, string, int)
+
+> list
+<function> : Decoder a -> Decoder (List a)
+> list string
+<internals> : Decoder (List String)
+> list (list int)
+<internals> : Decoder (List (List Int))
+-----------------------------
+Объекты:
+Простой способ, когда имеет поле "email" строкового типа
+decoder : Decoder String
+decoder = field "email" string
+
+Когда много полей у объекта
+{"url": "1.jpeg", "size": 36, "title": "Beachside"}
+type alias Photo =
+	{ url : String
+	, size : Int
+	, title : String
+	}
+photoDecoder : Decoder Photo
+photoDecoder =
+	map3
+		(\url size title -> { url = url, size = size, title = title })
+		(field "url" string)
+		(field "size" int)
+		(field "title" string)
+
+Json.Decode.Pipeline
+elm install NoRedInk/elm-json-decode-pipeline
+import Json.Decode exposing (Decoder, int, list, string, succeed)
+import Json.Decode.Pipeline exposing (optional, required)
+
+--------------------------
+Расшифровка JSON HTTP отклика
+expectString : (Result Http.Error String -> msg)-> Expect msg
+expectJson : (Result Http.Error val -> msg) -> Decoder val -> Expect msg
+
+==================================
+- Декодер может проверять и преобразовывать JSON в значение Elm.
+- Модуль Json.Decode предоставляет примитивные декодеры, такие как float, int и string.
+- Функция Json.Decode.list превращает Decoder Bool в Decoder
+(Список Bool).
+- Сопоставление с образцом позволяет нам обменивать вложенные case-выражения на более длинные условия перехода.
+- <| оператор может заменять круглые скобки.
+- Модуль Json.Decode.Pipeline предлагает функции для декодирования объектов в конвейерном стиле.
+- Результатом является либо Ok, okValue в случае успеха, либо Err errValue в случае неудачи.
+- String.split разбивает строку вокруг заданного разделителя, в результате чего получается список строк.
+- Http.get принимает URL-адрес String и Expect и возвращает Cmd, который отправляет запрос.
+- Http.expectString запрашивает обычную строку с сервера по заданному URL-адресу.
+- Http.expectJson работает как expectString, за исключением того, что запускает декодер результата.
+- Поле инициализации, переданное в Browser.element, позволяет нам указать Cmd для запуска при запуске.
