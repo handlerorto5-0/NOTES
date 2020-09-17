@@ -1,0 +1,65 @@
+70_use_js_webpuck_react.txt
+
+Общая схема:
+- Переименовать службу web. Название важно.
+- Создать индивидуальный образ для исполнения JavfScript.
+- В docker-compose.yml создайть обособленную службу интерфейса. 
+
+Интерфейс JavaScript Rails с помощью Webpacker
+Dockerfile
+FROM ....
+LABEL ....
+# Включаем работу apt с источниками на основе https
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \​ 
+	​apt-transport-https​
+# Обеспечиваем установку современной версии Node​
+​# См. https://github.com/yarnpkg/yarn/issues/2888​
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -​
+# Гарантируем самые последние пакеты для Yarn​
+​RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -​
+​RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | \​
+	tee /etc/apt/sources.list.d/yarn.list
+# Устанавливаем пакеты​
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \​
+	​nodejs \​
+	yarn​
+...
+gem ​'webpacker'​, ​'~> 3.5'​
+** если бы в начале сборки
+** rails​​ ​​new​​ ​​myapp​​ ​​--webpack=react​​ ​​<other​​ ​​options>
+$ docker-compose​​ ​​build​​ ​​web
+$ docker-compose stop web
+$ docker-compose run web bin/rails webpacker:install
+$ docker-compose run web bin/rails webpacker:install:react
+
+docker-compose.yml:
+version: '3'
+services:
+	web:
+		....
+		environment:
+			- ​WEBPACKER_DEV_SERVER_HOST=webpack_dev_server​
+	webpack_dev_server:
+		build: .
+		command: ./bin/webpack-dev-server
+		ports:
+			- 3035:3035
+		volumes:
+			- .:/usr/src/app
+		env_file:
+			- ​.env/development/web
+			- ​.env/development/database​
+		environment:
+			- ​WEBPACKER_DEV_SERVER_HOST=0.0.0.0​
+...
+$ ​​docker-compose​​ ​​up​​ ​​-d​​ ​​web
+$ ​​docker-compose​​ ​​up​​ ​​-d​​ ​​webpack_dev_server​
+---------------------------------------
+Прикладное приложение React Hello World
+app/javascript/packs/hello_react.jsx
+$ docker-compose exec web bin/rails g controller pages home
+app/views/pages/home.html.erb
+<%=​ javascript_pack_tag ​'hello_react'​ ​%>​
+​<h1>React App</h1>
+<Hello name=​"<Your name>"​ />
+http://localhost:3000/pages/home

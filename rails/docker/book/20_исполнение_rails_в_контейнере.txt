@@ -1,0 +1,29 @@
+мсполнение_rails_в_контейнере.txt
+
+нативно , через bash(но не требуется):
+$ docker run <options>> [image:version]\
+	bash -c "command && command2 && command ..."
+
+Dockerfile
+-
+FROM ruby:2.6
+RUN apt-get update -yqq
+RUN apt-get install -yqq --no-install-recommends nodejs
+COPY . /usr/src/app/
+WORKDIR /usr/src/app
+RUN bundle install
+-
+построениее образа:
+docker​ ​build​ ​[options]​ ​path/to/build/directory
+​​docker​​ ​​build​​ ​​.​ (когда в целевой папке)
+docker build -t railsapp railsapp:1.0 .
+...
+Successfully built a1df0eddba18
+$ docker images
+
+Запуск сервера:
+ссылаться на образ по его идентификатору
+docker run -p 3000:3000 c586c3a74824\
+	bin/rails s -b 0.0.0.0
+localhost:3000
+

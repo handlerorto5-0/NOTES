@@ -1,0 +1,54 @@
+04_decl_docker_compose.txt
+
+docker-compose.yml:
+version: '3'   версия
+services:  группирукт службы
+	web:   служба  
+		build: .  где Dockerfile
+		ports:
+			- "3000:3000"  то же -p 3000:3000
+
+Настройка запуска:
+config/boot.rb
+в самом верху
+$stdout.​sync​ = ​true
+
+Запуск:
+$ docker-compose up
+в фоновом режиме (detached)
+$ docker-compose up -d
+$ docker-compose down
+localhost:3000  остановить Ctrl+C
+** Для повторного построения следует применить `docker-compose build` или `docker-compose up --build`
+** $ docker images просмотреть
+** err "A server is already running" удалить tmp/pids/server.pid в своей локальной машине
+----------------------------------
+Монтирование локального тома
+возможной локальную разработку просто перегружая страницу
+docker-compose.yml
+		ports ...
+		volumes:
+			- .:/usr/src/app
+$ ​​docker-compose​​ ​​up​​ ​​-d​ 
+	
+Запуск и останов служб:
+Контейнер вступает в строй с соответствующим состоянием created (созданный).может быть restarted (перезапущен), stopped (остановлен), killed (уничтожен) или paused (приостановлен). 
+какие контейнеры исполняются?
+$ docker-compose ps
+$ docker-compose stop 
+$ docker-compose stop <service_name>
+$ ​docker-compose​ ​stop​ ​web​
+$ ​​docker-compose​​ ​​start​​ ​​web
+если меняли настройки
+$ ​​docker-compose​​ ​​restart​​ ​​web​
+
+журнал регистраций определённого контейнера:
+​$ docker-compose logs -f web (выйти Ctrl+c)
+способ исполнения одноразовых команд, например когда хотм выполнить миграцию
+$ docker-compose exec web echo 'ran a different command'
+перестроения образа
+$ docker-compose build web
+останавливает все запущенные контейнеры
+$ docker-compose down
+подвисшие (dangling) образы удалить
+$ docker image prune

@@ -1,12 +1,14 @@
 видеокурс / книга                  | № или страница
 --------------------------------------------------------------
+Microservises in Action            |  53
+--------------------------------------------------------------
 Elm in Action                      |  74
 --------------------------------------------------------------
 REST API Development with Node.js  |  121
 --------------------------------------------------------------
 Чиннатамби К. - Изучаем React      |  154
 --------------------------------------------------------------
-Kubernetes в действии              |  81
+Kubernetes в действии   ello.elm.   ello.elm.        |  81
 --------------------------------------------------------------
 Книга "Совершенный код"            |  124
 --------------------------------------------------------------
@@ -60,10 +62,15 @@ Rails 5 Test Prescriptions
 Node.js 8 the Right Way
 Learning React: Second Edition
 Integrating Elm with Rails
-Programming Elm
 Adopting Elixir
 Programming Ecto: Build Database Apps in Elixir for Scalability and Performance
 Designing Elixir Systems with OTP
+Phoenix in Action
+React for Real
+Learn by Example JavaScript for Front-End and Mobile App Development
+The Design of Web APIs
+Web Components in Action
+
 
 “Practical Object-Oriented Design in Ruby” от Sandi Metz
 “Exceptional Ruby” от Avdi Grimm

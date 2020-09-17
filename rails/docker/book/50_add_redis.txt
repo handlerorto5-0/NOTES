@@ -1,0 +1,64 @@
+50_add_redis.txt
+
+Запуск сервера Redis при помощи docker run:
+$ docker run --name redis-container redis (остановить Ctrl+c)
+** --name просит Docker присвоить контейнеру в виде удобного, читаемого человеком названия
+
+docker-compose.yml
+...
+	web: ...
+	redis:
+		image: redis
+-
+$ docker-compose up -d redis
+
+Подключение к серверу Redis вручную:
+способ для этого состоит в применении интерфейса командной строки Redis (redis-cli). Например, в неком одноразовом контейнере (--rm) для нашей службы redis выполнить команду redis-cli -h redis. (ping, quit)
+$ docker-compose run --rm redis redis-cli -h redis
+** -h redis сообщает, "Подключиться к хосту с названием redis"
+
+Как контейнеры общаются друг с другом
+docker-compose up создаёт некую новую сетевую среду для имеющегося прикладного приложения. По умолчанию все контейнеры для приложения подключены к данной сетевой среде приложения и имеют возможность взаимодействовать друг с другом.
+определённые в данный момент сетевые среды:
+$ docker network ls
+<appname>_default является выделенной сетью приложения
+
+Установка Gem Redis
+Gemfile раскоментировать
+gem ​'redis'​, ​'~> 4.0'
+$ docker-compose stop web
+$ docker-compose build web
+$ docker-compose up -d web
+---------------------
+Обновление приложения Rails для использования Redis
+
+**Пользователи Linux: владение файлами
+**$ ​​sudo​​ ​​chown​​ ​​<your_user>:<your_group> ​​-R​​ ​​.​
+**$ sudo chown kv-2: -R .
+
+$ docker-compose exec web bin/rails g controller welcome index
+
+app/controllers/welcome_controller.rb
+class​ WelcomeController < ApplicationController
+	def index
+		redis = Redis.new(host: "redis", port: 6379)
+		redis.incr "page hits"
+
+		@page_hits = redis.get "page hits"
+	end
+end
+-
+app/views/welcome/index.html.erb
+<h1>This page has been viewed <​%= pluralize(@page_hits, 'time') %>!</h1>
+-
+config/routes.rb
+get ​'welcome'​, ​to: ​​'welcome#index'
+-
+localhost:3000/welcome - This page has been viewed 7 times!
+
+Запуск всего прикладного приложения целиком при помощи Docker Compose
+
+$ docker-compose stop
+$ docker-compose ps
+$ docker-compose up -d
+$ docker-compose ps

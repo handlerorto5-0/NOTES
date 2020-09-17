@@ -1,0 +1,28 @@
+book-docker-rails.txt
+http://onreader.mdl.ru/DockerRailsDevelopersApplicationsEverywhere/content/Ch01.html#03
+
+docker​ ​run​ ​ruby:2.6​ ​ruby​ ​-e​ ​"puts :hello"
+docker​ ​run​ ​--rm​ ​ruby:2.6​ ​ruby​ ​-e​ ​"puts :hello" (удалить после выполнения)
+
+прибраться:
+​​docker​​ ​​ps​​ ​​-a
+​​docker​​ ​​rm​​ ​​<container​​ ​​id> ​​[<container​​ ​​id2>​​ ​​...]​
+​​docker​​ ​​rm​​ 974e2bcb8266​ ​7f8d7dddd6b5
+
+mkdir docker_for_rails_developer
+docker run -i -t --rm -v ${PWD}:/usr/src/app ruby:2.6 bash
+** -v ${PWD}:/usr/src/app просит: "Смонтируйте наш текущий каталог внутри самого контейнера в /usr/src/app"
+** когда требуется длительное время жизни при интерактивном сеансе, необходимо определять -it
+root@2123759c72cf:/#  далее здесь #
+# cd /usr/src/app
+# gem install rails
+# rails new myapp --skip-test --skip-bundle
+# exit
+$ ls
+** по умолчанию контейнеры исполняются от имени root. Для изменения этих файлов необходимо сменить их владельца:
+$ sudo chown kv-2: -R myapp/
+
+
+git remote add origin git@github.com:my-docker-exemples/Docker-for-Rails.git
+git branch -M master
+git push -u origin master

@@ -1,0 +1,54 @@
+010_intro.txt
+var xhr = new XMLHttpRequest();
+xhr.open(method, url);
+xhr.onerror = function() {};
+xhr.onload = function() {}
+xhr.timeout = 10000; поумолч 0
+xhr.send();
+xhr.abort();
+xhr.setRequestHeader('X-Requested-With', 'CORS in Action');
+
+Установка заголовков запроса
+Вот список заголовков, которые нельзя установить методом setRequestHeader: Accept-Charset, Accept-Encoding, Access-Control-Request-Headers, Access-Control-Request-Method, Connection, Content-Length, Cookie, Cookie2, Date, DNT, Expect,
+Host, Keep-Alive, Origin, Referer, TE, Trailer, ransfer-Encoding, Upgrade, User-Agent, Via
+Любые заголовки, начинающиеся с «Proxy-» или «Sec-».
+Эти заголовки имеют особое значение и могут быть установлены только браузером. Если код пытается установить заголовок, ошибки не возникает. Значение просто игнорируется.
+
+
+
+Если HTTP-запрос имеет тело запроса, оно может быть передано в качестве параметра методу отправки следующим образом: xhr.send ('тело запроса идет сюда');
+
+По умолчанию объект XMLHttpRequest выполняет асинхронные запросы.Клиентский код может инициировать синхронный запрос, задав для третьего параметра метода open значение false. Например: xhr.open ('GET', 'http: //', false).
+
+Обработчики событий, предоставляемые объектом XMLHttpRequest
+onloadstart   Срабатывает при запуске запроса.
+onprogress    Срабатывает при отправке и загрузке данных.
+onabort       Срабатывает, когда запрос был прерван вызовом метода abort.
+onerror       Срабатывает, когда запрос не выполнен.
+onload        Срабатывает, когда запрос успешно завершен.
+ontimeout     Срабатывает при превышении тайм-аута (если в клиентском коде указано значение тайм-аута).
+onloadend     Срабатывает, когда запрос завершен, независимо от того, произошла ошибка или нет.
+
+Свойства ответа в объекте XMLHttpRequest
+status          Код состояния HTTP (например, 200 для успешного запроса).
+statusText      Строка ответа, возвращаемая сервером (например, OK для успешного запроса).
+response        Тело ответа в формате, определенном параметром responseType.   Если клиент указал, что тип ответа - json, ответом будет объект JSON, извлеченный из тела ответа.
+responseText    Тело ответа в виде строки. Может использоваться только в том случае, если responseType не был установлен или был задан как текст.
+responseXML     Тело ответа как элемент DOM (XML здесь по историческим причинам). Может использоваться, только если responseType не был установлен или был задан как документ.
+
+Обработчики событий XMLHttpRequest
+onloadstart    Срабатывает, когда запрос успешно инициирован в асинхронном режиме.
+onloadend      всегда срабатывает при завершении запроса.
+onabort        Срабатывает, если клиент прерывает запрос, вызывая метод abort.
+ontimeout      Срабатывает, если код устанавливает значение тайм-аута, и этот тайм-аут был превышен.
+onprogress     Отслеживает ход выполнения запроса или ответа.
+onreadystatechange Срабатывает при изменении состояния запроса. Спецификация XMLHttpRequest определяет пять состояний, в которых может находиться запрос: unset, opened, headers received, loading, done. Значение состояния готовности сохраняется в свойстве readyState объекта XMLHttpRequest.
+
+Методы getResponseHeader и getAllResponseHeaders можно использовать для чтения заголовков HTTP в ответе.
+
+Установка для свойства withCredentials значения true указывает на то, что учетные данные пользователя, такие как файлы cookie, базовая информация аутентификации или сертификаты SSL на стороне клиента, должны быть включены в запросы между источниками.
+
+How the browser reacts to server responses (continued)
+Client request - Origin: http:// localhost:1111 
+Server response - Access-Control-Allow-Origin: http://localhost:1111 (для всех *)
+Browser behavior - Success.

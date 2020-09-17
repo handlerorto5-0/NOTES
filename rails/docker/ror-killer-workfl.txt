@@ -1,0 +1,76 @@
+https://auth0.com/blog/ruby-on-rails-killer-workflow-with-docker-part-1/
+(кривой образ)
+in code/rails-docker
+mkdir dr-app && cd dr-app
+
+Dockerfile
+FROM starefossen/ruby-node:2-8-stretch (подтягиваем образ)
+
+в терминале:
+docker build -t auth0app .
+строит образ на основе инструкций в Dockerfile
+docker run -it auth0app /bin/bash
+загружает образ в контейнер, 
+-it дает терминальный доступ root внутри контейнера
+(--user $(id -u):$(id -g) - использовать текущего пользователя.)
+ruby -v  node -v
+
+Dockerfile
+RUN apt-get update -qq && \
+    apt-get install -y nano build-essential libpq-dev && \
+    gem install bundler
+RUN mkdir /project
+COPY Gemfile Gemfile.lock /project/
+WORKDIR /project
+RUN bundle install
+COPY . /project
+
+docker-compose.yml 
+содержит инструкции, которые объединяют несколько частей, таких как контейнер базы данных, контейнер приложения, папка хоста, в которой вы храните репозиторий приложения, аспекты среды, такие как тома и порты.
+-
+version: '3.2'
+volumes:
+  postgres-data:
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - .:/project
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+-
+
+создать Gemfile, Gemfile.lock
+в Gemfile
+source 'https://rubygems.org'
+gem 'rails', '~>5.2'
+-
+$ docker-compose up --build
+$ docker-compose run --user $(id -u):$(id -g) app rails new . --force --database=postgresql --skip-bundle
+
+(приложение создалось на этом шаге)
+
+config/database.yml
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: db
+  user: postgres
+  port: 5432
+  password:
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+-
+$ docker-compose down
+$ docker-compose up --build
+$ docker-compose exec app rails db:create

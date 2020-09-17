@@ -1,0 +1,140 @@
+create-mysql-dcr-rct.txt     code/docker_for_rails/sql-rct
+** ${PWD}:/any_name бeз разницы 
+docker run -i -t --rm -v ${PWD}:/usr/src/app ruby:2.6.6 bash
+root@...:/# cd /usr/src/app
+root@...:/usr/src/app# gem install rails 
+root@...:/usr/src/app# rails new <title> --skip-bundle --skip-webpack-install -T --database=mysql
+** знак & проигнорировал в названии , ввёл sql&rct, почвилась паака sql
+root@...:/usr/src/app# exit
+
+$ cd <title>
+$ sudo chown kv-2: -R .
+!!git
+
+touch Dockerfile docker-compose.yml .dockerignore
+
+Gemfile
+gem ​'redis'​
+gem 'react-rails'
+gem 'mysql2'
+-----------------
+
+Dockerfile:
+-------------
+FROM ruby:2.6.6
+LABEL maintainer="str_token@mail.ru"
+
+RUN apt-get update -qq && \
+apt-get install -y \
+nodejs \
+build-essential
+
+RUN apt-get update && apt-get install -y curl apt-transport-https wget && \
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+apt-get update && apt-get install -y yarn
+
+COPY Gemfile* /usr/src/app/
+WORKDIR /usr/src/app
+RUN bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java
+RUN bundle install
+COPY . /usr/src/app/
+CMD ["bin/rails", "s", "-b", "0.0.0.0"]
+------------------
+
+docker-compose.yml:
+--------------
+version: '3'
+services:
+
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_USER: sample 
+      DB_NAME: sample 
+      DB_PASSWORD: sample
+      DB_HOST: mysql_db
+    volumes:
+      - .:/usr/src/app
+
+  mysql_db:
+    image: mysql
+    restart: always
+    ports:
+      - "4306:3306"        
+    command: --default-authentication-plugin=mysql_native_password
+    environment:           
+      MYSQL_ROOT_PASSWORD: 123456 
+      MYSQL_DATABASE: sample
+      MYSQL_USER: sample
+      MYSQL_PASSWORD: sample 
+    volumes:               
+      - mysql_db_data:/var/lib/mysql  
+
+  redis:
+      image: redis
+
+
+volumes:                   
+  mysql_db_data: 
+----------------
+
+config/boot.rb
+в самом верху
+$stdout.sync = true
+---------------
+
+.dockerignore
+# Git
+.git
+.gitignore
+# Logs
+log/*
+# Temp files
+tmp/*
+# Editor temp files
+*.swp
+*.swo
+------------
+
+config/database.yml:
+default: &default
+  adapter: mysql2
+  encoding: utf8 
+  pool: 5
+  database: <%= ENV['DB_NAME'] %>
+  username: <%= ENV['DB_USER'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
+  host: <%= ENV['DB_HOST'] %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+---------------
+RUN rm -f /app/tmp/pids/server.pid 
+или
+command: /bin/sh -c "rm -f /app/tmp/pids/server.pid"
+---------------
+
+
+
+$ docker run --name mysql_db -e MYSQL_ROOT_HOST=% -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+$ docker-compose up -d
+$ docker-compose run --rm web rails webpacker:install
+$ docker-compose run --rm web rails webpacker:install:react
+$ docker-compose run --rm web rails generate react:install
+$ docker-compose run --rm web rails db:create 
+
+$ docker-compose run web rails g model List title:string description:string
+$ docker-compose run web rails db:migrate
+
+--------------------------
+$ docker-compose exec web rails g controller Lists index
+$ docker-compose exec web rails g react:component ListsIndex

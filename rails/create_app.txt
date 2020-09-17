@@ -1,6 +1,5 @@
 create_app.txt
 
-
 сoздать директорию, перейти, создать файлы
 .ruby-version   with ruby-2.6.2  если текущая не надо
 .ruby-gemset   with  name-proget 

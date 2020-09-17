@@ -1,0 +1,58 @@
+03_тонкая_настройка.txt
+
+Назвать свой образ railsapp:
+$ docker tag c586c3a74824 railsapp
+$ docker images
+
+Добавить номер версии:
+$ docker tag railsapp railsapp:1.0
+или пометить при построении образа (-t):
+$ docker build -t railsapp .
+$ docker build -t railsapp railsapp:1.0 .
+
+Запуск:
+$ docker run -p 3000:3000 railsapp \
+	bin/rails s -b 0.0.0.0
+$ docker run -p 3000:3000 railsapp:1.0 \
+	bin/rails s -b 0.0.0.0
+
+Команда по умолчанию:
+Dockerfile
+CMD ["bin/rails", "s", "-b", "0.0.0.0"]
+$ docker build -t railsapp .
+...
+Successfully tagged railsapp:latest
+Запуск:
+docker run -p 3000:3000 railsapp
+
+Игнорирование ненужных файлов:
+.dockerignore
+# Git
+.git
+.gitignore
+# Logs
+log/*
+# Temp files
+tmp/*
+# Editor temp files
+*.swp
+*.swo
+-
+
+Кэширование собранного образа:
+рекомендуется всегда сочетать ваши команды apt-get update и apt-get install в единую инструкцию RUN
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
+​ 	  nodejs
+способ предотвращения изменений в несвязанных файлах
+COPY Gemfile* /usr/src/app/
+​WORKDIR​​ /usr/src/app​
+​RUN ​bundle install
+COPY . /usr/src/app/
+
+авторство на образ
+LABEL​​ <key​>=<value​>​​ <key​>=<value​>​​ <key​>=<value​> ...
+Dockerfile
+FROM ruby:2.6
+LABEL maintainer="str_token@mail.ru"
+
+$ docker build -t railsapp .

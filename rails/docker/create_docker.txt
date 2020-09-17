@@ -1,0 +1,230 @@
+create_docker.txt
+
+1. Клонирование проекта и добавление зависимостей
+создать или клонировать rails приложение
+ruby-version - 2.5.1  , rails 5.2.3
+добавил gem 'pg', '~>1.1.3' в Gemfile
+отключить в Genfile # gem 'spring-watcher-listen', '~> 2.0.0', иначе будет ошибка в консоле Rails
+
+2. Настройка приложения для работы с PostgreSQL и Redis
+2.1. для работы с PostgreSQL как с адаптером по умолчанию
+config/database.yml
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USER'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  port: <%= ENV['DATABASE_PORT'] || '5432' %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+  . . .
+development:
+  <<: *default
+. . .
+. . .
+test:
+  <<: *default
+
+production:
+  <<: *default
+. . .
+
+2.2. файл .env
+.env на самом высоком уровне приложения
+DATABASE_NAME=rails_development
+DATABASE_USER=donkey
+DATABASE_PASSWORD=123456
+DATABASE_HOST=database
+REDIS_HOST=redis
+
+2.3. init.sql для создания пользователя donkey базы данных.
+init.sql на самом верхнем уровне приложения
+CREATE USER donkey;
+ALTER USER donkey WITH SUPERUSER;
+chmod +x init.sql
+
+2.4. инициализатор Sidekiq для обеспечения работы со службой redis в контейнере
+чтобы задать значения REDIS_HOST и REDIS_PORT:
+config/initializers/sidekiq.rb
+Sidekiq.configure_server do |config|
+  config.redis = {
+    host: ENV['REDIS_HOST'],
+    port: ENV['REDIS_PORT'] || '6379'
+  }
+end
+
+Sidekiq.configure_client do |config|
+  config.redis = {
+    host: ENV['REDIS_HOST'],
+    port: ENV['REDIS_PORT'] || '6379'
+  }
+end
+
+2.5. gitignore и dockerignore
+в .gitignore
+.env
+в .dockerignore элементы, которые мы не хотим копировать в наши контейнеры:
+.DS_Store
+.bin
+.git
+.gitignore
+.bundleignore
+.bundle
+.byebug_history
+.rspec
+tmp
+log
+test
+config/deploy
+public/packs
+public/packs-test
+node_modules
+yarn-error.log
+coverage/
+.env
+
+2.6. исходные записи базы данных db/seeds.rb
+
+3. - Написание файла Dockerfile и скриптов точек входа
+FROM ruby:2.5.1-alpine
+ENV BUNDLER_VERSION=2.0.2
+RUN apk add --update --no-cache \
+      binutils-gold \
+      build-base \
+      curl \
+      file \
+      g++ \
+      gcc \
+      git \
+      less \
+      libstdc++ \
+      libffi-dev \
+      libc-dev \
+      linux-headers \
+      libxml2-dev \
+      libxslt-dev \
+      libgcrypt-dev \
+      make \
+      netcat-openbsd \
+      nodejs \
+      openssl \
+      pkgconfig \
+      postgresql-dev \
+      python \
+      tzdata \
+      yarn
+RUN gem install bundler -v 2.0.2
+WORKDIR /app
+COPY Gemfile Gemfile.lock ./
+RUN bundle config build.nokogiri --use-system-libraries
+RUN bundle check || bundle install
+COPY package.json yarn.lock ./
+RUN yarn install --check-files
+COPY . ./
+
+ENTRYPOINT ["./entrypoints/docker-entrypoint.sh"]
+
+для скриптов точек входа
+rails-docker/entrypoints/docker-entrypoint.sh
+#!/bin/sh
+
+set -e
+
+if [ -f tmp/pids/server.pid ]; then
+  rm tmp/pids/server.pid
+fi
+
+bundle exec rails s -b 0.0.0.0
+-
+chmod +x entrypoints/docker-entrypoint.sh
+
+для запуска службы sidekiq
+entrypoints/sidekiq-entrypoint.sh
+#!/bin/sh
+
+set -e
+
+if [ -f tmp/pids/server.pid ]; then
+  rm tmp/pids/server.pid
+fi
+
+bundle exec sidekiq
+-
+chmod +x entrypoints/sidekiq-entrypoint.sh
+
+4. - Настройка служб с помощью Docker Compose
+Служба в Compose — это запущенный контейнер, а определения служб, которые вы будете добавлять в ваш файл docker-compose.yml, содержат информацию о том, как будет запускаться образ каждого контейнера. Compose позволяет вам определять различные службы для создания приложений с несколькими контейнерами.
+
+docker-compose.yml
+4.1. Приложение
+version: '3.4'
+
+services:
+ 	app:
+    	build:
+      		context: .
+      		dockerfile: Dockerfile
+    	depends_on:
+      		- database
+      		- redis
+    	ports:
+     		 - "3000:3000"
+    	volumes:
+      		- .:/app
+      		- gem_cache:/usr/local/bundle/gems
+      		- node_modules:/app/node_modules
+    	env_file: .env
+    	environment:
+      		RAILS_ENV: development
+4.2. База данных PostgreSQL
+	database:
+    	image: postgres:12.1
+    	volumes:
+      		- db_data:/var/lib/postgresql/data
+      		- ./init.sql:/docker-entrypoint-initdb.d/init.sql
+4.3. Redis
+	redis:
+    	image: redis:5.0.7
+4.5. Sidekiq
+	sidekiq:
+	    build:
+	      context: .
+	      dockerfile: Dockerfile
+	    depends_on:
+	      - app      
+	      - database
+	      - redis
+	    volumes:
+	      - .:/app
+	      - gem_cache:/usr/local/bundle/gems
+	      - node_modules:/app/node_modules
+	    env_file: .env
+	    environment:
+	      RAILS_ENV: development
+	    entrypoint: ./entrypoints/sidekiq-entrypoint.sh
+5.6. привязка монтирования, чтобы любые изменения кода при разработке немедленно синхронизировались с контейнерами
+volumes:
+  gem_cache:
+  db_data:
+  node_modules:
+
+ 5.  — Тестирование приложения
+ docker-compose --version
+ 5.1.сборку образов и создать службы
+ docker-compose up -d
+ docker-compose up -d --no-deps --build- пересобрать все сервисы
+ docker-compose up --force-recreate -d -перезапустить контейнер потеряв всё его состояние
+ docker-compose logs - вывод журнала из служб
+ docker-compose ps - состояние контейнеров
+
+ оздайте базу данных, создайте для нее исходные записи и выполните миграцию
+docker-compose exec app bundle exec rake db:setup db:migrate
+localhost:3000
+
+для остановки и удаления контейнеров:
+docker-compose down
+
+docker-compose up -d
+docker-compose exec app bundle exec rails console

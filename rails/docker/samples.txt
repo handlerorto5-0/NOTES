@@ -1,0 +1,33 @@
+#docker-compose.yml
+wordpress:
+	image: wordpress:4.2.2
+	links:
+		-db:mysql
+	ports:
+		- 8080:80
+db:
+	image: mariadb
+	environment:
+		MYSQL_ROOT_PASSWORD: example
+--------------------------------
+version: '3'
+
+services:
+  mariadb:
+    image: mariadb:10.3
+    restart: always
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links: 
+      - mariadb:db
+    ports:
+      - 8765:80
+    environment:
+      MYSQL_ROOT_PASSWORD: qwerty
+    depends_on:
+      - mariadb

@@ -1,0 +1,125 @@
+60_add_postgres.txt
+
+docker-compose.yml
+...
+	web: ...
+	redis: ...
+	database:
+		image: postgres
+		environment:
+				POSTGRES_USER: postgres
+				POSTGRES_PASSWORD: password
+				POSTGRES_DB: myapp_development
+-
+$ docker-compose up -d database
+$ docker-compose ps
+$ docker-compose logs database
+
+Подключение к Postgres из отдельного контейнера
+$ docker-compose run --rm database psql -U postgres -h database
+выйти \q <Enter>
+
+Установка Gem Postgres
+gem ​'pg'​, ​'~> 1.0'
+$ docker-compose stop web
+$ docker-compose build web
+
+Создание базы данных приложения
+config/database.yml
+default: &default
+​ 	  adapter: ​postgresql​
+​ 	  encoding: ​unicode​
+​ 	  host:     ​<%= ENV.fetch('DATABASE_HOST') %>​
+​ 	  username: ​<%= ENV.fetch('POSTGRES_USER') %>​
+​ 	  password: ​<%= ENV.fetch('POSTGRES_PASSWORD') %>​
+​ 	  database: ​<%= ENV.fetch('POSTGRES_DB') %>​
+​ 	  pool: ​5​
+​ 	  variables:
+​ 	    statement_timeout: ​5000​
+​ 	
+​ 	development:
+​ 	  ​<<​: *default
+​ 	
+​ 	test:
+​ 	  ​<<​: *default
+​ 	  database: ​myapp_test​
+​ 	
+​ 	production:
+​ 	  ​<<​: *default
+-
+docker-compose.yml
+...
+	web: ...
+	volumes: ...
+	environment:
+		DATABASE_HOST: ​database​
+ 	    POSTGRES_USER: ​postgres​
+ 	    POSTGRES_PASSWORD: ​password
+ 	    POSTGRES_DB: ​myapp_development​
+...
+
+что бы не включать секретные коды в свой файл docker-compose.yml:
+$ mkdir -p .env/development
+.env/development/web (файл без расширения)
+DATABASE_HOST=database​
+.env/development/database (файл без расширения)
+POSTGRES_USER=postgres​
+​POSTGRES_PASSWORD=password​
+​POSTGRES_DB=myapp_development​
+
+docker-compose.yml
+...
+	web:
+	....
+		env_file:
+			- .env/development/database
+			- .env/development/web
+	....
+	database:
+		.....
+		env_file:
+			- .env/development/database
+
+$ docker-compose run --rm web bin/rails db:create
+
+Перезапуск нашего сервера Rails
+$ docker-compose up -d --force-recreate web
+** --force-recreate сообщает: "Собери заново контейнер этой службы."
+localhost:3000
+
+-----------------------------------
+Практическое применение базы данных
+**sudo​​ ​​chown​​ ​​<your_user>:<your_group> ​​-R​​ ​​.​
+
+$ docker-compose exec web \
+bin/rails g scafforld User first_name:string last_name:string
+$ docker-compose exec web bin/rails db:migrate
+http://localhost:3000/users
+
+Отделение данных от контейнера
+Для этого можно создать некий именованный том: автономную корзину (bucket) файлового хранилища, полностью управляемую Docker.
+Именованные тома могут создаваться и управляться посредством соответствующей команды docker volume.
+docker-compose.yml
+version: ​'​​3'
+...
+	database:
+		...
+		volumes:
+			- db_date:/var/lib/postgresql/data
+... в самом низу
+volumes:
+	db_data:
+создать юзкров для примера
+$ docker-compose stop database
+$ docker-compose rm -f database (явно удаляем для примера)
+$ docker-compose up -d database
+$ docker-compose exec web bin/rails db:create db:migrate
+http://localhost:3000/users
+создать юзеров для примера
+$ docker-compose stop database
+$ docker-compose rm -f database
+$ docker-compose up -d database
+даныые юзеров должны сохраниться
+
+где расположен именованный том db_data
+$ docker volume inspect --format '{{ .Mountpoint }}' myapp_db_data

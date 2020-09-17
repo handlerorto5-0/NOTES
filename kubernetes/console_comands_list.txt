@@ -22,4 +22,4 @@ minikube start --driver='docker'
 kubectl config use-context minikube
 kubectl cluster-info
 Удалить все поды и сервисы
-kubectl delete pod,svc  --all                                     
+kubectl delete pod,svc  --all                                 
