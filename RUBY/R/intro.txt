@@ -1,0 +1,11 @@
+intro.txt
+https://github.com/shoes/shoes4
+sudo apt update
+sudo apt-get install openjdk-8-jre
+rvm install jruby
+rvm install "jruby-9.1.13.0"
+---------------------------
+Gemfile < gem 'shoes4'
+gem install shoes --pre
+ls -l /home/kv-2/.bundle/cache/compact_index/rubygems.org.443.29b0360b937aa4d161703e6160654e47/versions
+gem install bundler && bundle install

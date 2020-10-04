@@ -1,0 +1,31 @@
+https://github.com/rgeo/activerecord-postgis-adapter
+https://github.com/refile/refile
+https://github.com/aws/aws-sdk-ruby
+https://github.com/soveran/ohm
+https://github.com/cyx/ohm-contrib
+https://github.com/hiromipaw/localpic/blob/master/config/initializers/aws.rb
+--------------------------------
+craated.txt
+если не нудно генерировать id
+db/migrate/<timestamp>_create_categories.rb
+class CreateCategories > ActiveRecord::Migration
+	def change
+		create_table :categories, {:id => false} do |t|
+			t.integer :cat_id
+			...
+			t.timestamps
+		end
+			execute "ALTER TABLE categories ADD PRIMARY KEY (cat_id);"
+	end
+end
+---------------------------
+get '/categories/:id', :to => 'categories#show'
+match 'categories/:id' => 'categories#show', via: [:get, :post]
+resources :categories, only: [:index, :show]
+resources :categories, except: [:destroy]
+--------------------------
+testing routes
+assert_generates '/categories/1',{ controller: 'categories',action: 'show', id: '1' }
+assert_recognizes({ controller: 'categories',action: 'show', id: '1' }, '/categories/1')
+assert_routing({ path: 'categories', method: :post },{ controller: 'categories', action: 'create' })
+--------------------------

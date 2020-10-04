@@ -1,0 +1,11 @@
+intro.txt
+примеры: 
+https://www.sifr.tech/RESTful-Rails-Development/
+https://github.com/hiromipaw/wikicat
+
+sudo mysqladmin version
+sudo systemctl status mariadb
+sudo systemctl start mariadb
+
+http :3000/api/v1/graph/science
+http :3000/api/v1/category/science

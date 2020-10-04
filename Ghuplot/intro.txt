@@ -1,0 +1,32 @@
+www.manning.com/books/gnuplot-in-action-second-edition
+-----------------------------------------------------
+gnuplot - терминал
+> plot "marathon" using 1:2
+> load "../gnuplot/shapes.gp"
+> q
+---------------------------------------------
+Сокращения для часто используемых директив для команды plot
+i 						index
+ev 						every
+u 						using
+s 						smooth
+s acs 					smooth acsplines
+s f 					smooth frequency
+s kdens 				smooth kdensity
+t 						title
+w 						with
+w l 					with lines
+w linesp or w lp 		with linespoints
+w p 					with points
+w vec 					with vectors
+---------------------------------------
+Сокращения для часто встречающихся команд
+set t 			set terminal
+set o 			set output
+set logsc 		set logscale
+---------------------------------------
+gnuplot
+> plot "marathon" using 1:2 with boxes
+**"marathon" - имя файла с данными в текущей директории
+** using 1:2 - первый и второй столбцы в файле под названием marathon
+** with boxes - выбирает стиль коробки

@@ -1,0 +1,84 @@
+intro.txt
+
+Запуск Docker без sudo (ubuntu)
+$ sudo usermod -aG docker
+$ sudo service docker restart
+$ docker version
+------------------------
+$ docker run debian echo "Hello World"
+$ docker run -i -t debian /bin/bash
+root@13b4fe15a98d:/# exit
+$ docker run -h CONTAINER -i -t debian /bin/bash
+root@CONTAINER:/# exit
+-------------------------
+иследовать в другом терминале пока зарущен
+$ docker ps взять имя(NAME)
+$ docker inspect имя
+$ docker inspect stupefied_turing | grep IPAddress
+$ docker inspect --format {{.NetworkSettings.IPAddress}} stupefied_turing
+$ docker diff stupefied_turing (разница)
+$ docker logs stupefied_turing (список команд)
+$ docker rm stupefied_turing (удалить по имени)
+--------------------------
+Удаление остановленных контейнеров
+$ docker rm -v $(docker ps -aq -f status=exited)
+--------------------------
+Сохранить образ
+$ docker commit NAME test/cowsayimage
+$ docker run test/cowsayimage вызвать команду как в терминале
+
+-------------------------
+Dockerfile
+$ docker build -t test/cowsay-dockerfile .
+$ docker run test/cowsay-dockerfile /usr/games/cowsay "Moo"
+
+инструкция ENTRYPOINT позволяет определить выполняемый файл, который будет вызываться для обработки любых аргументов, переданных в команду docker run
+ENTRYPOINT ["/usr/games/cowsay"]
+
+скрипт для инструкции ENTRYPOINT
+В том же каталоге, где Dockerfile, файл entrypoint.sh
+---
+#!/bin/bash
+if [ $# -eq 0 ]; then
+	/usr/games/fortune | /usr/games/cowsay
+else
+	/usr/games/cowsay "$@"
+fi
+----
+chmod +x entrypoint.sh
+Dockerfile 
+...
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrtypoint.sh"]
+$ docker build -t test/cowsay-dockerfile .
+$ docker run test/cowsay-dockerfile
+
+=====================
+Работа с реестрами Docker Hub
+docker login
+Dockerfile
+MAINTAINER John Smith <john@smith.com>
+$ docker build -t amouat/cowsay:stable .
+$ docker push amouat/cowsay
+
+=======================
+Использование официального образа Redis
+
+$ docker pull redis
+$ docker run --name myredis -d redis
+соединение между двумя контейнерами
+$ docker run --rm -it --link myredis:redis redis /bin/bash
+root@...:/data# redis-cli -h redis -p 6379
+redis:6379> exit
+
+Тома (volumes) – это файлы или каталоги, которые смонтированы непосредственно на хосте. 
+VOLUME /data (Dockerfile)
+или
+$ docker run -v /data test/webserver
+каталог монтирования:
+по умолчанию обычно: /var/lib/docker/
+docker run -d -v /host/dir:/container/dir test/web-server
+в Dockerfile нельзя определить
+$ docker stop myredis 
+$ docker rm -v myredis
+=====================

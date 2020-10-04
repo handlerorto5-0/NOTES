@@ -1,0 +1,7 @@
+curl.txt
+под каким адресом вы видны в Интернете?
+curl ident.me
+REST-сервером, предоставляющем данные о странах в виде JSON
+curl https://restcountries.eu/rest/v1/name/france
+отформатировать данные
+curl https://restcountries.eu/rest/v1/name/france | python -mjson.tool

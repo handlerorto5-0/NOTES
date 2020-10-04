@@ -1,5 +1,11 @@
 видеокурс / книга                  | № или страница
 --------------------------------------------------------------
+Проэктирование API                 |  111                    
+--------------------------------------------------------------
+RESTful Rails Development          |  102
+--------------------------------------------------------------
+Использование Docker               |  85
+--------------------------------------------------------------
 Microservises in Action            |  53
 --------------------------------------------------------------
 Elm in Action                      |  74
@@ -57,19 +63,14 @@ https://github.com/monetizedesign/tailwind_devise
 
 ожидаемые книги:
 Modern Front-End Development for Rails
-Docker for Rails Developers
 Rails 5 Test Prescriptions
 Node.js 8 the Right Way
 Learning React: Second Edition
 Integrating Elm with Rails
 Adopting Elixir
-Programming Ecto: Build Database Apps in Elixir for Scalability and Performance
 Designing Elixir Systems with OTP
-Phoenix in Action
 React for Real
 Learn by Example JavaScript for Front-End and Mobile App Development
-The Design of Web APIs
-Web Components in Action
 
 
 “Practical Object-Oriented Design in Ruby” от Sandi Metz

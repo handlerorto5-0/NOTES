@@ -1,5 +1,17 @@
 шпаргалка-docker.txt
 ------------------------
+Общее потребление
+docker system df
+Очистка всего и сразу
+docker system prune
+удалить все остановленные контейнеры
+docker container prune
+docker image prune
+docker volume prune
+docker builder prune
+удалить все — и запущенные, и остановленные
+docker container rm -f $(docker container ls -aq)
+------------------------
 Реестры и репозитории Docker
 
 - Вход в реестр

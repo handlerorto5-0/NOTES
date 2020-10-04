@@ -43,6 +43,7 @@ sudo -u <роль> psql <имя_БД>
 
 rails rails = user pass
 
+postgres# ALTER ROLE <user_name> SUPERUSER;
 ---------------------------------------------------
 Coздaem тecтoвyю бaзy дaнных, тecтoвoгo пoльзoвaтeля
  и пpeдocтaвляem пoльзoвaтeлю дocтyп k бaзe дaнных.
@@ -50,8 +51,41 @@ postgres=# CREATE DATABASE sample_database;
 CREATE DATABASE 
 postgres=# CREATE USER sample_user WITH password 'sample_password';
  CREATE ROLE 
-postgres=# GRANT ALL privileges ON DATABASE 
-sample_database TO sample_user; GRANT 
+postgres=# GRANT ALL privileges ON DATABASE  sample_database TO sample_user; 
+GRANT 
 postgres=# q
 
 
+RAils
+create a PostgreSQL super user role
+sudo -u postgres createuser -s sammy -P
+sudo -u postgres psql
+#\password sammy
+#\q
+
+barmaley
+123456
+
+kv-2
+
+panda
+panda
+
+pundit  123
+--------------------------------------------
+superuser donkey:
+username: donkey
+password: donkey
+db: donkeydb
+
+/etc/postgresql/11/main/pg_hba.conf peer->trust
+/etc/postgresql/11/main/postgresql.conf
+listen_addresses = 'localhost'
+sudo systemctl restart postgresql
+sudo netstat -tnlp | grep 5432
+sudo -u postgres psql
+# create user myapp_user password 's3cr3t';
+# create database myapp owner myapp_user;
+# \q
+psql -h 127.0.0.1 -d myapp -U myapp_user
+myapp=>\q
