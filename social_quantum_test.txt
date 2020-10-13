@@ -1,0 +1,246 @@
+cd code/flea-market
+social_quantum_test.txt
+-------------------------------
+require 'sinatra'
+get '/hello' do
+"Hello Sinatra!"
+end
+-------------------------------
+Sinatra::Reloader
+$ gem install sinatra-contrib
+require 'sinatra'
+require 'sinatra/reloader' if development?
+--------------------------------
+ages = {bart: 10, lisa: 8, maggie: 1} sruct to create?
+--------------------------------
+get '/:one/:two/:three' do
+	"first: #{params[:one]}, second: #{params[:two]}, third: #{params[
+	➥:three]}"
+end
+--------------------------------
+gem install sqlite
+gem install data_mapper
+gem install dm-sqlite-adapter
+require 'dm-core'
+require 'dm-migrations'
+DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/development.db")
+class Song
+	include DataMapper::Resource
+	property :id, Serial
+	property :title, String
+	property :lyrics, Text
+	property :length, Integer
+	property :released_on, Date
+end
+DataMapper.finalize
+irb> require './song'
+irb> Song.auto_migrate!
+irb> song = Song.new
+irb> song.save
+irb> song.title = "My Way"
+irb> Song.create(title: "Come Fly With Me", lyrics: "Come fly with me, let's fly, let's fly away ... .", length: 199, released_on: Date.new(1958,1,6))
+irb> Song.count
+irb> Song.all
+irb> Song.all.reverse
+irb> Song.get(1)
+irb> Song.first
+irb> Song.last
+myway = Song.first(title: "My Way")
+irb> Song.create(title: "One Less Lonely Girl")
+irb> Song.last.destroy
+-------------------------------
+Configuration
+configure do
+	DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/development.db")
+end
+-------------------------------
+Environments
+$ ruby main.rb -e production
+get '/environment' do
+if development?
+"development"
+elsif production?
+"production"
+elsif test?
+"test"
+else
+"Who knows what environment you're in!"
+end
+require 'sinatra/reloader' if development?
+configure :production do
+#production configuration here
+end
+configure :development do
+#development configuration here
+end
+configure :test do
+#test configuration here
+End
+-----------------------------------------
+Settings общесистемные переменные приложения, которые хранятся в объекте параметров, доступном для всего приложения
+set :public_folder, '/static'
+set :views, '/templates'
+:static   disable :static
+:root
+:app_file
+set :port, 1234
+configure :development do
+	disable :show_exceptions
+end
+:logging
+---------------------------------------------
+Custom Settings
+для доступа к сетам
+settings.name
+set :name, "Frank"
+set(:image_folder){ :root + '/images' }
+set(:dice_roll){ 1 + rand(5) }
+-----------------------------------------------
+Sessions
+configure do
+	enable :sessions
+end
+set :session_secret, 'try to make this long and hard to guess'
+get '/set/:name' do
+	session[:name] = params[:name]
+end
+get '/get/hello' do
+	"Hello #{session[:name]}"
+end
+----------------------------------
+догин-логаут 72-74 Jump Srtart Sinatra
+----------------------------------
+Heroku 74
+-----------------------------------
+Helpers Block
+helpers do
+	# helper methods go here
+end
+=========================================
+
+class Page
+      include Mongoid::Document
+
+      field :title,   type: String
+      field :content, type: String
+end
+Page.create(title: "Markdown Page", content: "This page uses markdown")
+Page.find_by(title: "Hello World!")
+Page.where(title: "Hello World!").first
+get '/pages' do
+  @pages = Page.all
+  @title = "Simple CMS: Page List"
+  slim :index
+end
+--
+h1 Pages
+  -if @pages.any?
+    ul.pages
+    - @pages.each do |page|
+      == slim :page, :locals => {page: page}
+  - else
+    p No pages here!
+--
+get '/pages/:id' do
+      @page = Page.find(params[:id])
+      @title = @page.title
+      slim :show
+    end
+=======================================
+gem 'bson'
+require 'bson'
+require 'bson/active_support'
+"Shall I compare thee to a summer's day".to_bson
+1024.to_bson
+String.from_bson(byte_buffer)
+BSON::Int32.from_bson(byte_buffer)
+Hash.from_bson({foo: 'bar'}.to_bson)
+-----------------------------
+@purse = User.elem_match(gismos: {name: @name}).first
+scope = Band.where(:founded.gte => "1980-01-01")
+scope.where(:founded.lte => "2020-01-01")
+Band.where('manager.name' => 'Smith')
+Band.where(label: 'Trust in Trance').and(name: 'Astral Projection')
+Band.where(label: 'Trust in Trance').or(Band.where(name: 'Astral Projection'))
+# not with conditions
+Band.not(label: 'Trust in Trance', name: 'Astral Projection')
+# argument-less not
+Band.not.where(label: 'Trust in Trance', name: 'Astral Projection')
+
+band = Band.only(:name, 'tours.year').last
+# => #<Band _id: 5c59afb1026d7c034dba46ac, name: "Aerosmith">
+
+band = Band.create!(name: 'Astral Projection')
+band.managers << Manager.new
+Band.where(name: 'Astral Projection').only(:name).first.managers
+# => []
+
+Band.where(name: "Photek").exists?
+Band.where(name: "Photek").find_or_create_by(name: "Aerosmith")
+Band.where(name: "Photek").first_or_create!
+
+Band.where(name: "Tool").pull(members: "Maynard")
+Band.where(name: "Tool").pull_all(:members, [ "Maynard", "Danny" ])
+Band.where(name: "Tool").push(members: "Maynard")
+Band.where(name: "Tool").push_all(members: [ "Maynard", "Danny" ])
+Band.where(name: "Tool").rename(name: :title)
+Band.where(label: "Mute").delete
+
+scope :english, ->{ where(country: "England") }
+scope :rock, ->{ where(:genres.in => [ "rock" ]) }
+Band.english.rock
+
+default_scope ->{ where(active: true) }
+
+index description: 'text'
+bundle exec rake db:mongoid:create_indexes
+Band.where('$text' => {'$search' => 'ounces'}).to_a
+
+company = Company.find(id)
+company.emails
+
+aerosmith = Band.create!(name: 'Aerosmith')
+Tour.create!(band: aerosmith, city: 'London', year: 1995)
+Band.elem_match(tours: {city: 'London'}).to_a # => [aerosmith]
+
+Band.find_by(name: "Tool") do |band|
+  band.impressions += 1
+end
+
+Band.find_or_create_by(name: "Photek")
+
+Band.all.pluck(:name)
+Band.where(name: "Photek").update(label: "Mute")
+Band.where(label: "Mute").delete
+------------------------------
+class Band
+  include Mongoid::Document
+  field :name, type: String
+  field :active, type: Boolean, default: true
+
+  def self.active
+    where(active: true)
+  end
+end
+-----------------------------
+Player.attribute_names
+@test = Player.current.first.gismos
+@atr =  Player.current.first.attributes
+Player.current.first.gismos.where(title: "Elephant")
+@test = Player.current.first.gismos.where(title: "Elephant").update(quantity: 10)
+@test = Player.current.first.gismos.where(title: "Elephant").first.quantity
+
+----------------------------------------
+Person.all(:age => 33)
+people = Person.where(:age.gt => 15) age greater than 15
+people = people.where(:name => /saw/i)
+Person.where(:age.gt => 15).limit(5)
+Person.all.skip(5).limit(5) # Page 2 with 5 elements
+Person.all.skip(10).limit(5) # Page 3 with 5 elements
+
+to embed
+d = Driver.first
+d.address = Address.new(street: "A new street")
+d.save
+d.licenses << CarLicense.new
+d.save

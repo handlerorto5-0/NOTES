@@ -71,6 +71,19 @@ unzip file1.zip                         разжать и распаковать
 chown -R testbase:testbase test.txt — сменить владельца файла
 chown -R testbase:testbase user     — сменить владельца папки
 владелец root, стал testbase
+изменить права доступа
+ls -l  rwx
+u - пользователь
+g - группа
+o - остальные
+а - все
+- запрещено
++ разрешено
+= присвоение
+chmod g+w test.txt
+chmod a-wr test.txt
+chmod go=rw test.txt
+
 -----------------------------------------------------------------------
 где установлено приложение
 whereis name_app

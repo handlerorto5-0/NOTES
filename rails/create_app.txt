@@ -13,7 +13,8 @@ rvmsudo gem install bundler (опционально -v 1.5.0 )
 базы данных тоже предварительно
 gem install pg 
 gem install sqlite3
-gem install mysql2  
+gem install mysql2 
+gem install mongoid 
 
 create the rails application
 rails new .  --skip-webpack-install --skip-bundle и другие .

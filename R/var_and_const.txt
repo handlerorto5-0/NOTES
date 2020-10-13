@@ -1,0 +1,6 @@
+R Variables and Constants 47
+=========================
+примеры действительных идентификаторов в R:
+name, Sum, .okay.with.dot, this_is_acceptad, Position5
+примеры недопустимых идентификаторов в R:
+pos@l, 5ex, _fine, TRUE, .0ne
