@@ -1,0 +1,25 @@
+intro.txt
+Пакеты:
+install.packages("tidyverse")
+install.packages("gcookbook")
+install.packages("ggplot2")
+install.packages("dplyr")
+Подключение пакетов:
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(gcookbook)
+Апдейт пакетов:
+update.packages()
+update.packages(ask = FALSE)
+==========================
+Загрузка данных из файла 
+data <- read.csv("datafile.csv")
+data <- read.csv("datafile.csv", header = FALSE)
+data <- read.csv("datafile.csv", sep = "\t")
+Загрузка данных из Exel
+install.packages("readxl")
+library(readxl)
+data <- read_excel("datafile.xlsx", 1)  * первый лист
+data <- read_excel("datafile.xls", sheet = 2)
+data <- read_excel("datafile.xls", sheet = "Revenues")

@@ -16,3 +16,45 @@ Project.create!(name: "Sublime Text 3")
 Project.delete_all
 project = Project.create
 project.errors
+-------------------------------------------------
+Можно запустить консоль в режиме, называемом песочницей. В этом режиме каждое изменение, внесенное в базу данных, будет автоматически отменено после завершения сеанса:
+rails console --sandbox
+------------------------------------------------
+Получение предыдущего значения выполнения
+>> Game.all.map(&:name)
+=> ["zelda", "mario", "gta"]
+>> names = _
+=> ["zelda", "mario", "gta"]
+------------------------------------------------
+Поиск методов с помощью grep
+>> Game.first.methods.grep(/lumn/)
+Game Load (0.8ms)  SELECT  "games".* FROM "games" ORDER BY "games"."id" ASC LIMIT $1  [["LIMIT", 1]]
+=> [:column_for_attribute, :update_column, :update_columns]
+------------------------------------------------
+Определение местоположения метода
+>> 'Luis Vasconcellos'.method(:inquiry).source_location
+=> ["/usr/local/bundle/gems/activesupport-5.2.1/lib/active_support/core_ext/string/inquiry.rb", 12]
+------------------------------------------------
+Возврат исходного кода метода
+>> 'Luis Vasconcellos'.method(:inquiry).source.display
+def inquiry
+    ActiveSupport::StringInquirer.new(self)
+  end
+=> nil
+------------------------------------------------
+для прямого доступа к любому помощнику представления из приложения Rails:
+>> helper.truncate('Luis Vasconcellos', length: 9)
+=> "Luis V..."
+------------------------------------------------
+Консоль также предоставляет интересный объект под названием app, который по сути является экземпляром вашего приложения. С помощью этого объекта, помимо прочего, можно взаимодействовать с вашим приложением как с HTTP-клиентом.
+Доступ к конечным точкам GET:
+>> app.get('/')
+Доступ к конечным точкам POST:
+>> app.post('/games/zelda/wishlist_placements.js')
+Search for a _path helper from a Game route:
+>> app.methods.grep(/_path/).grep(/game/)
+Комбинируя предыдущие приемы более полезным способом:
+>> app.get(app.root_path)
+>> app.body.response
+>> app.cookies
+-----------------------------------------------------

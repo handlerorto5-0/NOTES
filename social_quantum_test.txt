@@ -243,4 +243,4 @@ d = Driver.first
 d.address = Address.new(street: "A new street")
 d.save
 d.licenses << CarLicense.new
-d.save
+d.saved
