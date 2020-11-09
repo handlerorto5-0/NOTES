@@ -25,6 +25,8 @@ psql
 passwd postgres - 3344 
 createdb test2
 psql test2
+SELECT version();
+SHOW server_version;
 \q выход
 \h команды
 \l таблицы

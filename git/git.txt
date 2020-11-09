@@ -1,3 +1,9 @@
+Включить кеширование логина и пароля 
+$ git config credential.helper cache
+$ git push http://example.com/repo.git
+Username: <type your username>
+Password: <type your password>
+==============================================================
 gitecho "# datacenter" >> README.md
 git init
 git add README.md
