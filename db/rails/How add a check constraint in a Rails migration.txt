@@ -1,0 +1,28 @@
+How add a check constraint in a Rails migration
+
+The column can only have values 1,2,3
+CREATE TABLE tab
+(
+	nomer INTEGER NOT NULL,
+	nik CHAR (7) DEFAULT 'bob',
+	check_column_name INTEGER
+	...
+	PRIMARY KEY (nomer),
+	FOREIGN KEY (tab_id) REFERENCES tab,
+	CHECK (money>=0)
+	CHECK (rooms BETWEEN 0 AND 7)
+	CHECK (check_column_name IN (1, 2, 3))
+)
+
+ruby generate Migration AddConstraint
+
+in the migration file:
+class AddConstraint < ActiveRecord::Migration
+  def self.up
+    execute "ALTER TABLE table_name ADD CONSTRAINT check_constraint_name CHECK (check_column_name IN (1, 2, 3) )"
+  end
+
+  def self.down
+    execute "ALTER TABLE table_name DROP CONSTRAINT check_constraint_name"
+  end
+end

@@ -1,0 +1,40 @@
+life_hacks.txt
+------------------------
+class Name
+	def initialize(first_name, last_name)
+		@first_name = first_name
+		@last_name = last_name
+	end
+
+	def to_s
+		instance_variables.each do |ivar|
+			print "#{instance_variable_get(ivar)} "
+		end
+	end
+end
+n = Name.new("Joe", "Leo")
+n.instance_variables
+=> [@first_name, @last_name]
+n.to_s
+=> Joe Leo
+n.middle_name = "Phillip"
+n.instance_variables
+=> [@first_name, @last_name, @middle_name]
+n.to_s
+=> Joe Leo Phillip
+--------------------------------------
+require 'socket'
+s = TCPServer.new(3939)
+while (conn = s.accept)
+	Thread.new(conn) do |c|
+		conn.print "Hi. What's your name? "
+		name = conn.gets.chomp
+		conn.puts "Hi, #{name}. Here's the date."
+		conn.puts "Hi. Here's the date."
+		conn.puts `date`
+		conn.close
+	end
+end
+
+telnet localhost 3939
+-----------------------------

@@ -1,0 +1,20 @@
+3_2_insert.txt
+Вставка данных в таблицу – INSERT
+----------------------
+добавление значений – VALUES
+
+INSERT INTO имя таблицы (колонки через запятую)
+VALUES (значния через запятую)
+
+insert into man(phonenum, firstname, lastname, citycode, yearold) values ('244000333','Markiz','Pompadur',4, 34);
+----------------------
+добавление из запроса SELECT
+
+INSERT INTO имя таблицы (колонки через запятую)
+SELECT FROM имя таблицы WHERE условия
+
+insert into city1(citycode,cityname, peoples) select citycode, cityname, pioples from city where peoples > 1000000
+
+----------------------------
+COMMIT – фиксация изменений;
+ROLLBACK – откат изменений.

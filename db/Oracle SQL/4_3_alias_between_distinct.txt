@@ -1,0 +1,23 @@
+4_3_alias.txt
+Псевдонимы
+Псевдонимы для колонок, задаются с помощью инструкции AS, псевдонимы же для таблиц указываются сразу же после имени таблицы. Если задали псевдоним для таблицы, из которой SQL-запрос выбирает данные, то и в условии WHERE также должнo использовать заданный псевдоним.
+SELECT firstname as lm, lastname as fml FROM man M;
+select peoples as CLZ from city MS where MS.cityname = 'Москва';
+
+--------------------------------------
+BETWEEN интервалы
+
+SELECT перечень полей или * FROM table_name
+WHERE поле1 BETWEEN нижняя граница интервала AND верхняя граница интервала
+
+select * from man where yearold between 25 and 28 and firstname = 'Barmaley';
+select * from man where not yearold between 25 and 28;
+update auto set releasedt = date'2014-01-01' where realesedt between date'2011-01-01' and date'2014-01-01';
+delete man where yealold between 7 and 16;
+
+---------------------------------
+DISTINCT убрать дубли из результатов запроса.
+
+SELECT DISTINCT перечень полей или * FROM таблица WHERE условия
+
+select distinct mark, color from auto where mark = 'LADA';

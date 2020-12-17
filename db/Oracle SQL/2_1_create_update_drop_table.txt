@@ -1,0 +1,27 @@
+
+Создание таблиц 
+CREATE TABLE имя таблицы (
+	Column_NAME1 column_type (NUMBER, или VARCHAR2 (n) или DATE) primary KEY,
+	Column_NAMEn column_type (NUMBER или VARCHAR2 (n) или DATE)
+);
+------------------------------
+Изиенение таблиц 
+
+Добавление колонки.
+ALTER TABLE TABLE_NAME ADD (column_NAME column_type);
+удалить колонку
+ALTER TABLE TABLE_NAME DROP COLUMN column_NAME;
+изменения типа колонки:
+ALTER TABLE TABLE_NAME MODIFY (	column_NAME DATA_type);
+переименовать таблицу
+ALTER TABLE TABLE_NAME RENAME TO new_TABLE_NAME;
+переименовать столбец в таблице
+ALTER TABLE TABLE_NAME RENAME COLUMN old_column_name to new_column_name;
+------------------------------
+Удаление таблиц
+
+DROP TABLE TABLE_NAME;
+* удалить таблицу BILLING_PERIOD со связанными данными в таблице PERIODS. Требуется сначала удалить данные в связанных таблицах, а уже затем удалять таблицу либо колонку. Или же воспользоваться специальной командой DROP CASCADE.
+DROP TABLE BILLING_PERIODS CASCADE;
+
+

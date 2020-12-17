@@ -1,0 +1,14 @@
+Индексы
+работают по принципу b-tree
+создаются для определенной колонки
+
+CREATE INDEX ind_name ON table_name (column_name);
+
+Реверсивный индекс - для чтения записей, отсортированных в обратном порядке. Например , ордера на оплату.
+CREATE INDEX ind_name ON table_name (column_name) REVERSE;
+
+композитный индекс
+CREATE INDEX ind_name ON table_name (column_1, column_n) REVERSE;
+
+Удаление индекса
+DROP INDEX ind_name;

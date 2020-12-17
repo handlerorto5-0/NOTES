@@ -1,0 +1,11 @@
+4_1_update.txt
+Обновление данных – UPDATE
+
+UPDATE table_name SET column1 = знач1, column2 = знач2, column_n = значn WHERE условия отбора строк для обновления
+
+У всех у людей с телефоном (PHONENUM), заканчивающихся на 3, поменять имя (FIRSTNAME) на Александр.
+UPDATE man SET firstname = 'Александр' WHERE phonenum like '%3'
+
+без WHERE обновятся все строки указанной таблицы в заданных колонках.
+Обнулить колонку PEOPLES в таблице CITY.
+UPDATE city SET peoples = 0;

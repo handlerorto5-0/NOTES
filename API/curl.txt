@@ -5,3 +5,8 @@ REST-сервером, предоставляющем данные о стран
 curl https://restcountries.eu/rest/v1/name/france
 отформатировать данные
 curl https://restcountries.eu/rest/v1/name/france | python -mjson.tool
+------------------------------------
+обычный get запрос
+curl <URL>
+запись в файл
+curl <URL> > <filename>

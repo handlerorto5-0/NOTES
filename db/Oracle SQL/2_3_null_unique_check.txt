@@ -1,0 +1,24 @@
+.
+Ограничения:
+
+не ноль:
+CREATE TABLE TABLENAME (
+	Column1 NOT NULL, ColumnN NOT NULL
+);
+Добавить ограничение
+ALTER TABLE TABLENAME MODIFY ColumnName NOT NULL
+Снимаем ограничение
+ALTER TABLE TABLENAME MODIFY ColumnName NULL
+
+уникальность
+ALTTER TABLE city ADD CONSTRAINT city_uniq
+UNIQUE (cityname);
+
+вторичный ключ - в колонке некоторой таблицы  могут находится только значения, которые есть в другой, основной таблице в колонке первичного ключа
+ALTER TABLE man ADD CONSTRAINT fk_man_city_code
+FOREIGN KEY (citycode)
+REFERENCES city (citycode);
+
+Ограничение CHECK на вставку и изменение данных
+ALTER TABLE man ADD CONSTRAINT check_yearold_man
+CHECK (yearold > 16);

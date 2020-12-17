@@ -1,0 +1,49 @@
+3_1.txt
+-----------------------
+Простые запросы
+
+SELECT * FROM TABLE_NAME
+SELECT column_name1, column_name2, column_namen FROM table_name;
+SELECT table_name.* FROM table_name;
+SELECT table_name.column_name1, table_name.column_name1, table_name.column_namen FROM table_name;
+
+-----------------------
+Фильтр строк WHERE в запросе SELECT
+
+SELECT * или перечень колонок FROM table_name WHERE условие отбора строк;
+Операнды сравнения
+>  больше
+<  меньше
+=  строгое равенство
+!= неравенство
+select regnum, mark from auto where releasedt > date'2005-01-01';
+-------------------------
+логические операнды AND OR и NOT
+
+SELECT перечень колонок таблицы через запятую или * FROM table_name WHERE условие1 AND условие2 OR условие3 NOT условиеn
+select firstname from man where lastname = 'Smit' and not age > 27;
+select * from city where not (peoples = 300000 or peoples = 400000)
+-----------------------------
+Сортировка результатов запросов 
+
+SELECT перечень колонок через, или * 
+FROM таблица WHERE условия выборки 
+ORDER BY колонка сортировки 1, колонка сортировки 2, колонка сортировки N
+select * from man where yearold>30 order by yearold desc;
+-------------------------------
+Ограничение на количество выбранных строк
+в MS SQL это конструкция TOP, 
+в ORACLE есть специальный предикат ROWNUM, 
+в PostgreSql, MYSQL для этого существует конструкция LIMIT
+
+SELECT перечень полей или * FROM таблица
+WHERE rownum < колстрок + 1 and or not допусловия
+
+select * from city where rownum < 6 and peoples > 300000;
+select * from (select * from city order by peoples) where rownum < 5;
+или в postgresql
+select * from city where peoples > 3000 limit 5
+---------------------------
+
+
+

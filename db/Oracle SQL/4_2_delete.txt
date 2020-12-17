@@ -1,0 +1,8 @@
+4_2_delete.txt
+Удаление данных – DELETE
+
+DELETE имя таблицы WHERE условие для удаления строк
+
+DELETE auto1 WHERE releasedate > date'2017-01-01';
+
+Команда DELETE без инструкции WHERE очищает все строки в таблице

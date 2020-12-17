@@ -1,0 +1,23 @@
+Первичный и внешний ключи
+
+Синтаксис создания первичного ключа:
+CREATE TABLE TABLE_NAME
+(
+	column1 datatype NULL/NOT NULL,
+	...
+	CONSTRAINT constraint_name PRIMARY KEY (column2, ... column_n)
+);
+или добавить в существующую таблицу
+ALTER TABLE TABLE_NAME ADD CONSTRAINT constraint_name PRIMARY KEY (column1, column2, ... column_n);
+
+Синтаксис создания вторичного ключа:
+CREATE TABLE TABLE_NAME (
+column1 DATAtype NULL/NOT NULL,
+...
+CONSTRAINT fk_column
+FOREIGN KEY (column1, column2, ... column_n)
+REFERENCES parent_TABLE (column1, column2, ... column_n));
+или добавить в существующую таблицу
+ALTER TABLE TABLE_NAME ADD CONSTRAINT constraint_name
+FOREIGN KEY (column1, column2, ... column_n)
+REFERENCES parent_TABLE (column1, column2, ... column_n);

@@ -6,7 +6,7 @@ https://github.com/cyx/ohm-contrib
 https://github.com/hiromipaw/localpic/blob/master/config/initializers/aws.rb
 --------------------------------
 craated.txt
-если не нудно генерировать id
+если не нужно генерировать id
 db/migrate/<timestamp>_create_categories.rb
 class CreateCategories > ActiveRecord::Migration
 	def change

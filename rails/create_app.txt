@@ -29,6 +29,36 @@ rails webpacker:install
 rails server
 rails generate rspec:install
 ----------------------------------------------
+Tailwind
+yarn add tailwindcss -D
+mkdir -p app/javascript/css
+npx tailwindcss init app/javascript/css/tailwind.js
+
+app/javascript/css/application.css
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+app/javascript/packs/application.js
+...
+import '../css/application'
+
+postcss.config.js (in the root folder app)
+module.exports = {
+  plugins: [
+    require('postcss-import'),
+    require('postcss-flexbugs-fixes'),
+    require('tailwindcss')('./app/javascript/css/tailwind.js'), - добавить это
+    require('autoprefixer'), - добавить это
+    require('postcss-preset-env')({
+      autoprefixer: {
+        flexbox: 'no-2009'
+      },
+      stage: 3
+    })
+  ]
+}
+----------------------------------------------
 Stimulus:
 rails webpacker:install:stimulus
 если пак в app/javascript/packs/application.js

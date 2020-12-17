@@ -1,0 +1,7 @@
+1.txt
+https://apex.oracle.com/pls/apex/
+SQLADV
+student4
+student4
+пункт меню SQL Workshop, а дальше SQL Command
+==================================

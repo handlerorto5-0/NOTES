@@ -17,6 +17,7 @@ db:migrate:rollback Откатывает последнюю миграцию.
 db:version Prints the current schema version.
 db:forward Pushes the schema to the next version.
 db:seed Runs the db/seeds.rb file.
+db:seed:replant  Truncate and Seed
 
 db:schema:load Воссоздает базу данных из файла schema.rb.
 db:schema:dump Dumps the current environment’s schema to db/schema.rb.

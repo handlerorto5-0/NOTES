@@ -130,3 +130,84 @@ eval(m) - Hi!
 
 Объект содержит tainted? метод, который возвращает true для потенциально небезопасных данных
 Установка $SAFE в 1(0 по умолч) не позволит Ruby запускать потенциально небезопасные методы, такие как eval.
+---------------------------
+связывание метода с экземпляром. если есть иераржия класов B < A, C < B с одинаковыи методом a_method
+c = C.new
+c.a_method вызовет метод из B
+A.instance_method(:a_method).bind(c).call
+============================
+Семейство методов eval
+
+eval выполняет заданную вами строку:
+eval("def #{m}; puts 'Hi!'; end")
+eval(m)
+
+instance_eval полезен для взлома того, что обычно является частными данными другого объекта
+class C
+	def initialize
+		@x = 1
+	end
+end
+c = C.new
+c.instance_eval { puts @x }
+
+class_eval помещает вас внутрь тела определения класса:
+var = "initialized variable"
+class C
+	puts var
+end
+=> undefined local variable ...
+C.class_eval { puts var }
+=> "initialized variable"
+
+=================================
+Параллельное выполнение с потоками
+
+Создавать потоки в Ruby легко: вы создаете экземпляр класса Thread.
+t = Thread.new do
+	puts "Starting the thread"
+	sleep 1
+	puts "At the end of the thread"
+end
+=> Starting the thread
+puts "Outside the thread"
+=> Outside the thread
+t.join - для продолжения выполнения потока
+=> At the end of the thread
+
+Чтобы убить поток, вы отправляете ему сообщение kill, exit или terminate; все три эквивалентны.(Thread.exit)
+
+puts "Status of thread: #{t.status}"
+puts "Is thread stopped? #{t.stop?}" 
+puts "Is thread alive? #{t.alive?}"
+puts "Inspect string for thread: #{t.inspect}"
+
+У Ruby есть класс Fiber. Fibers могут многократно возвращаться к своему вызывающему контексту.
+
+f = Fiber.new do
+	puts "Hi."
+	Fiber.yield
+end
+f.resume
+puts "Bye!"
+=> Hi; => Bye!
+
+Управление ключами 
+t = Thread.new do
+	Thread.current[:message] = "Hello"
+end
+t.join
+p t.keys
+=> [:message]
+puts t[:message]
+=> Hello
+t.fetch(:msg, "Greetings!")
+=> "Greetings!"
+
+===========================
+Выдача системных команд изнутри программ Ruby
+
+system("date")
+d = `date`
+puts d
+%x{date}
