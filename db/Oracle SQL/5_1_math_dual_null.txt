@@ -1,0 +1,44 @@
+5_1_math.txt
+-------------------------
+Математика в запросах
+
++ , – , / , * 
+функции:
+sqrt – квадратный корень;
+mod – остаток от деления;
+trunc – округление до целого;
+sib – синус;
+cos – косинус
+
+select firstname, lastname, trunc(yearold*sin(1)) as ysin from man;
+select * from city where sqrt(city.peoples) > 1000;
+select cityname, sqrt(peoples) as spep from city where mod(citycode,3)=0
+----------------------------------
+Запрос к результату выражения и специальная таблица DUAL
+
+В SQL ORACLE :
+- делает удобным вывод в запросе «результаты вычислений математического выраже-
+- помогает при вычислении функции, которая возвращает одно значение.
+select sin(10)/100 as V from dual;
+Вычислить значение текущей даты с помощью SELECT.
+select sysdate as dt from dual;
+в MS SQL, например, будет работать такой запрос: 
+SELECT sin(1);
+-------------------------------
+Пустые значения в базе. NULL, NOT NULL, NVL
+
+select * from table1 where колонка1 is null;
+select * from man where firsname is not null;
+
+в ORACLE SQL применяется специальная встроенная функция NVL:
+SELECT перечень полей или *, NVL(поле где null новое значение)
+WHERE условие выбора строк
+SELECT перечень полей или *
+WHERE NVL(поле где null значение) = условие сравнения + другое условие выбора строк;
+
+Вывести на экран все строки из AUTO, а в поле PHONENUM вместо пустого значения выводим 0.
+select auto.*, NVL(auto.phonenum, 0) as nn from auto;
+Выберите телефоны из таблицы AUTO. Вместо пустых телефонов выведите: NO PHONE
+select nvl(auto.phonenum, 'NO PHONE') from auto;
+Вывести из таблицы AUTO все строки, где значения поля PHONENUM не пустые, используя NVL.
+select auto.* from auto where nvl(auto.phonenum, 0) !=0;

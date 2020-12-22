@@ -1,0 +1,35 @@
+6_1_handle_text.txt
+Функции и операторы для работы со строками и текстом
+
+конкатенация:
+select 'теле'||'визор' as q from dual;
+select firstname||' '||lastname as q from man
+
+instr – поиск позиции подстроки в строке.
+INSTR (STR1, STR2, POSn, DIRECTION) – возвращает позицию STR2 в строке STR1, где поиск осуществляется в позиции POSn в направлении DIRECTION 1 – от начала строки, 0 – от  oкончания строки, то есть откуда мы начинаем поиск – от начала строки или с конца строки.
+select instr('aaabaaaaaba','ab',1) from dual;
+select instr('aaabaaaaaba', 'ab',1,1) from dual;
+select cityname, instr(cityname,'a',1) iname from city;
+
+LENGTH (str1) возвращает длину строки str1 в символах.
+
+select length('aaa') as in from dual;
+select firstname, lastname, length(firstname) as fnl, length(lastname) as lnl from man;
+select * from man where length(firstname) > 5;
+
+SUBSTR (STR1, POS, LEN) выбирает LEN символов в строке str1, начиная с позиции POS.
+select substr('abcdef',2,3) from dual;
+select firstname from man where substr(firstname,1,2)='Ан';
+
+REPLACE (SRCSTR, OLDSUB, NEWSUB) – функция, которая возвращает преобразованную строку SRCSTR, где подстрока OLDSUB из строки SRCSTR заменяется на подстроку NEWSUB
+select firstname, replace(firstname,'a','#') as fn from man;
+select replace('aaabb','aa','$$') from dual;
+
+--------------------------------
+select lastname from man where subctr(lastname,1,2)='Ан';
+select lastname from man where length(lastname) > 10;
+select firstname, lastname, lenght(lastname) as llast where length(lastname)>5;
+select replace('молоко','o','@') from dual;
+select cityname, instr(cityname,'o',1) from city where citycode = 1;
+select cityname, instr(citynaem, 'o', 1) first, instr(cityname,'o',1,0) last from city;
+

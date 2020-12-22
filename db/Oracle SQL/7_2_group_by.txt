@@ -1,0 +1,20 @@
+7_1_group_by.txt
+Группировка данных и агрегатные функции 
+перечень колонок в запросе после команды SELECT должен входить в группировку GROUP BY или быть частью агрегатной функции.
+
+SELECT перечень колонок FROM имя таблицы WHERE условие отбора строк GROUP BY колонка группировки 1, колонка группировки n
+
+select color from auto group by color;
+select substr(firstname,1,1) as firslett from man group by substr(firstname,1,1);
+
+select cityname, sum(peoples) as sm, avg(peoples) as av from city group by cityname, citycode;
+select color, count(1) from auto group by color;
+select color, count(1) from auto where mark='BMW' gtoup by color;
+
+-----------------------------
+select mark, count(1) as cnt from auto group by mark;
+select color, count(1) as cnt from auto where color = 'СИНИЙ' group by color;
+select max(peoples) , min(peoples) from city group by cityname;
+select avg(yearold), count(1) from man group by substr(firstname,1,1);
+------------------------------
+

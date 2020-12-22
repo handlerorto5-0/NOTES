@@ -1,0 +1,13 @@
+7_3_join_group.txt
+Сложные группировки с объединениями, сортировка результатов
+
+select mark, count(man.phonenum) as cnt from auto inner join man on man.phonenum = auto.phonenum  group by mark;
+
+select mark, count(man.phonenum) as cnt from auto inner join man on man.phonenum = auto.phonenum group by mark order by mark;
+
+select city.cityname as cityname, count(man.phonenum) as cn, avg(man.yearold) as avgyo from man inner join city on man.citycode = city.citycode group by cityname order by count(man.phonenum), sum(man.yearold);
+
+----------------------------
+select mark, count(man.phonenum) as cmp from auto inner join man on auto.phonemum = man.phonenum group by mark order by citycode;
+select city.cityname, sum(man.yearold), avg(man.yearold) from city inner join man on city.citycode = man.citycode group by city order by city.peoples;
+------------------------------

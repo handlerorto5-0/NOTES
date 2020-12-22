@@ -1,0 +1,29 @@
+6_2_math_null_random.txt
+Математика и пустые значения в запросах. Случайность – RANDOM
+
+выражения +,-,/,*
+функции 
+sqrt – квадратный корень,
+mod – остаток от деления,
+trunc – округление до целого,
+sin – синус
+cos – косинус.
+
+select * from city where sqrt(city.peoples) > 1000;
+select cityname, sqrt(peoples) as spep from city where mod(citycode, 3) = 0;
+
+Если в математическом выражении используется пустое значение NULL, тогда значение любого математического выражения также будет NULL.
+10+NULL = NULL;
+
+Генерация случайных чисел
+DBMS_RANDOM.VALUE RETURN NUMBER;
+dbms_random.value(low in nubber, high in number) return number;
+
+select dbms_random.value from dual;
+select dbms_random.value(10, 15) from dual;
+
+------------------------
+select firstname, lastname, sqrt(133) as sq from man;
+select firstname, lastname, (yearold * cos(5)) as yc from man;
+select * from city where mod(peoples, 10000)=0;
+select cityname, sqrt(peoples)*10 as sq10 where mod(citycode, 5) = 0;

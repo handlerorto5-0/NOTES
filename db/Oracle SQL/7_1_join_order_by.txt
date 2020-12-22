@@ -1,0 +1,12 @@
+7_1_join_order_by.txt
+Объединение нескольких таблиц, дополнительные условия и сортировка результатов
+
+select firstname, lastname, cityname from man inner join city on man.citycode = city.citycode order by city.peoples desc;
+
+select firstname, lastname, mark, color from man left join auto on man.phonenem = auto.phonenum where man.yearold > 25 order by auto.mark desc;
+
+-----------------------------------
+select mark , color, firstname, cityname from auto join city on auto.phonenum = city.phonenum join man on city.citycode = man.citycode order by city.cityname;
+select mark, color, firstname, lastname from auto inner join man on auto.phonenum = man.phonenum order by auto.mark, auto.color desc;
+select cityname, lastname from city left join man on city.citycode = man.citycode order by city.cityname;
+---------------------------------------

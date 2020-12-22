@@ -1,0 +1,42 @@
+5_3_date.txt
+календарный тип «дата-время» в языке SQL
+
+Функция SYSDATE возвращает текущие дату и время.
+select sysdate from dual;
+
+SYSDATE-1 – предыдущий день, то же самое время;
+SYSDATE-1/24*3 текущее время – 3 часа назад, то есть единица в типе данных «дата-время» (DATE) означает сутки, а 1/24 (1 час).
+
+Функция TRUNC обрезает время из даты, оставляя только дату.
+select trunc(sysdate) from dual;
+
+Первый день месяца:
+select trunc(sysdate, 'MONTH') "firstday_of_month" from dual;
+select trunc(sysdate, 'MM') "firstday_of_month" from dual;
+
+Первый день года:
+select trunc(sysdate, 'YEAR') 'firstday_of_year' from dual;
+select trunc(sysdate, 'YY') 'firstday_of_year' from dual;
+
+Функция EXTRACT предназначена для того, чтобы извлечь месяц, год, день из типа «дата время» (DATE).
+
+select extract(month from sysdate) from dual;
+select extract (day from sysdate) from dual;
+select extract (year from sysdate) from dual;
+
+TO_CHAR Преобразование даты в строку
+TO_DATE Преобразование строки в тип даты
+формат даты:
+YYYY – год;
+MM – месяц;
+DD – день;
+DN – день недели;
+hh24 – час;
+mi – минута;
+ss – секунда
+
+select to_char(sysdate-1, 'DD.MM.YYYY hh24:mi') as cdt from dual;
+select to_date('01.11.2011 21:11', 'DD.MM.YYYY hh24:mi') from dual;
+
+select mark, to_char(releasedt, 'DD.MM.YYYY hh24:mi') as dt from auto where mark = 'BMW';
+

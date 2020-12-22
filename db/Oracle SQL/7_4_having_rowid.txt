@@ -1,0 +1,24 @@
+7_4_having_rowid.txt
+HAVING как фильтр для групп и сложные группировки данных. 
+
+SELECT перечень полей FROM таблица WHERE условия
+GROUP BY перечень полей HAVING условие;
+
+select color from auto group by color having color in ('СИНИЙ','КРАСНЫЙ');
+select mark, count(1) as cn from auto group by mark having count(1) > 1;
+--------------------------
+ROWID – уникальный идентификатор строки. Дубликаты строк
+Уникальный идентификатор: состоит из номера объекта (32 бита), относительного номера файла (10 бит), номера блока (22 бита) и номера строки (16 бит).
+
+Пример работы с ROWID – находим дубли.
+select count(t.rowid), nm from t group by nm;
+Пример работы с ROWID – сортировка.
+select t.rowid, nm from t order by t.rowid
+Пример удаления дублей из таблицы AUTO
+delete auto where rowid not in (select max(rowid) from auto gtoup by regnum, mark, color, releasedt, phonenum);
+
+--------------------------------------
+select mark from auto group by mark having mark on ('BMW','LADA');
+select count(city.rowid) from city;
+delete man where rowid not in (select max(rowid) from man group by firstname, lastname, citycode, yearold);
+---------------------------------------

@@ -3,5 +3,9 @@ https://apex.oracle.com/pls/apex/
 SQLADV
 student4
 student4
+
+sqladv
+student3
+12345678
 пункт меню SQL Workshop, а дальше SQL Command
 ==================================

@@ -1,1 +1,139 @@
 15_callbacks_hooks_introspection.txt
+
+Callbacks, hooks, and runtime introspection
+===========================================
+Callbacks and hooks
+
+перехват неопознаных сообщений с method_missing
+Техника Ruby делегирования методов:
+-
+class Cookbook
+	attr_accessor :title, :author
+	def initialize
+		@recipes = []
+	end
+	def method_missing(m,*args,&block)
+		@recipes.public_send(m,*args,&block)
+	end
+end
+class Recipe
+	attr_accessor :main_ingredient
+	def initialize(main_ingredient)
+		@main_ingredient = main_ingredient
+	end
+end
+(cb не имеет методов << и select, их передает конструкция с method_missing)
+cb = Cookbook.new
+recipe_for_chicken = Recipe.new("chicken")
+cb << recipe_for_chicken
+chicken_dishes = cb.select {|recipes| recipe.main_ingredient == "chicken" }
+chicken_dishes.each { |dish| puts dish.main_ingredient }
+-
+
+RESPOND _ TO _ MISSING ?
+-
+class Person
+	attr_accessor :name, :age
+	def initialize(name, age)
+		@name, @age = name, age
+	end
+	def respond_to_missing?(m, include_private = false)
+		/set_/.match(m) || super
+	end
+end
+person = Person.new("Joe", 37)
+person.set_age(38)
+p person.age  -> 38
+p person.respond_to?(:set_age) -> true
+-
+
+Module#included - hook отслеживает подключение модуля
+-
+module M
+def self.included(c)
+	puts "I have just been mixed into #{c}."
+end
+end
+class C
+	include M
+end
+-> "I have just been mixed into C."
+-
+
+Module#extended - hook отслеживает подключение расширений к обьекту
+-
+module M
+	def self.extended(obj)
+		puts "Module #{self} is being used by #{obj}."
+	end
+end
+my_object = Object.new
+my_object.extend(M) -> Module M is being used by #<Object:0x007f8e2a95bae0>.
+-
+
+Class#inherited -> hook перехватывает наследование
+-
+class C
+	def self.inherited(subclass)
+		puts "#{self} just got subclassed by #{subclass}."
+	end
+end
+class D < C
+end
+-> C just got subclassed by D.
+class E < D
+end
+-> D just got subclassed by E .
+-
+
+Module#const_missing -> hook сигналит о подключении константы
+-
+class C
+	def self.const_missing(const)
+		puts "#{const} is undefined—setting it to 1."
+		const_set(const,1)
+	end
+end
+-> A is undefined—setting it to 1.
+puts C::A -> 1
+-
+
+method_added - hook сигналит о появлении метода
+(singleton_method_added для методов self)
+-
+class C
+	def self.method_added(m)
+		puts "Method #{m} was just defined."
+	end
+	def a_new_method	
+	end
+end
+-> Method a_new_method was just defined.
+-
+
+================================
+Иследование возможностей объектов
+
+Список не приватных методов объекта
+-
+str = "Test"
+str.methods.grep(/case/).sort
+-
+Список приватных и защищёных методов
+-
+david = Person.new
+p david.private_methods.sort.grep(/normal/)
+p david.protected_method.sort.grep(/afyer/)
+-
+Список методов экземпляра класса или модуля
+-
+String.methods.grep(/methods/).sort
+-
+Список синглтон методов объекта
+-
+class << c; end;
+c.singleton_methods.sort
+-
+
+================================
+Доступ к метаданым переменых и констант

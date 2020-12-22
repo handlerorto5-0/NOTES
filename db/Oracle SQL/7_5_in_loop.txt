@@ -1,0 +1,14 @@
+7_5_in_loop.txt
+Подзапрос для множеств WHERE IN SELECT
+Тип данных сравниваемого списка SELECT должен совпадать с типом данных колонки сравнения, иначе необходимо прибегнуть к преобразованию типов.
+
+SELECT * или колонки через запятую FROM таблица WHERE колонки IN (SELECT колонка сравнения FROM таблица);
+
+select * from auto where phonenum in (select phonenum from man where yearold > 35);
+select * from man where citycode in (select citycode from city where peoples > 700000);
+
+------------------------------------
+select * from auto where phonenum in (select phonenum from man where firstname like 'A%');
+select * from city where citycode in (select citycode from man where yearold > 35);
+select * from auto where phonenum in (select phonenum from where yearold > 35 and lenght(firsname) > 5);
+------------------------------------

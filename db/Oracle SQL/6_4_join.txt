@@ -1,0 +1,39 @@
+6_4_multy_request.txt
+Объединение нескольких таблиц в запросе
+
+select перечень полей или * from таб1,таб2 where таб1.kod = таб2.kod
+
+select * from man m, city c where c.citycode = m.citycode;
+select m.firstname, m.lastname, c.citycode, c.peoples from man m, city c where c.citycode = m.citycode;
+
+Вариант синтаксиса c JOIN:
+
+select перечень полей или * from таб1 inner join таб2 on таб1.kod = таб2.kod;
+
+select * from man m inner join city c on c.citycode = m.citycode;
+select * from auto join man on auto.phonenum = man.phonenum join city on city.citycode = man.citycode;
+
+--------------------------------------
+select * from man, auto where man.phonenum = auto.phonenum;
+select * from man m inner join city c on m.citycode = c.citycode;
+select m.firstname, m.lastname, a.mark from man m inner join auto a on m.phonenum = a.phonenum;
+
+-------------------------------------
+Правое и левое объединение таблиц
+right или left указывает с кокой стороны выражения стоит таблица с которой выбирают все записи, соответствено с другой выбираются записи которые совпадают
+
+Синтаксис LEFT JOIN
+SELECT – перечень полей или * FROM – таблица, из которой мы извлекаем все записи;
+LEFT JOIN – таблица, где мы извлекаем только совпадающие записи; on – условие объединения ON (т1.код=т2.код).
+
+Синтаксис RIGHT JOIN
+SELECT перечень полей или * FROM – мы извлекаем только совпадающие записи;
+RIGHT JOIN – таблица, из которой мы извлекаем все записи ON (т1.код=т2.код).
+
+select * from man m left join auto a on m.phonenum = a.phomenum;
+select * from man m right join city c on m.citycode = c.citycode;
+select * from man m right join auto a on m.phonenum = a.phonenum where m.yearold > 30 or m.yearold is null;
+
+---------------------------
+select * from man m right join city c on m.citycode = c.citycode;
+select * from city c left join man m on c.citycode = m.citycode;
