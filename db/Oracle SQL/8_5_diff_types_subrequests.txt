@@ -1,0 +1,19 @@
+8_5_diff_types_subrequests.txt
+Сочетание разных типов подзапросов
+
+типы:
+– подзапросы как дополнительная колонка в основном запросе;
+– подзапросы с оператором IN;
+– подзапросы, которые идут после FROM в качестве источника данных, то есть как бы вместо таблицы.
+
+select firstname, lastname, color , (select count(1) from auto a where a.color = a1.color) c1 from (select * from man inner join auto on man.phonenum = auto.phonenum and man.yearold > 35) a1;
+
+select * from man where length(firstname) > 6 and man.citycode in (select citycode from city where peoples > 1000000);
+
+select city.*, man.*, (select cityname from city c where c.citycode+1 = city.citycode) cn1 from man inner join city on city.citycode = man.citycode where city.peoples > 100000;
+
+select * from man where man.citycode = (select citycode from city where cityname = 'Москва');
+
+---------------------------------------
+select (select cityname from city where citycode = (select citycode from man inner join auto on man.phonenum = auto.phonenum)) as cn, auto.* from auto inner join man on auto.phonenum = man.phonenum where man.citycode in (select citycode from city where peoples > 1000000);
+----------------------------------------

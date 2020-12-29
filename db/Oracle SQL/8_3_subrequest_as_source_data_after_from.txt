@@ -1,0 +1,14 @@
+8_3_subrequest_as_source_data_after_from.txt
+Подзапрос как источник данных после FROM
+
+SELECT перечень полей или *FROM (SELECT перечень полей или * FROM таблица2) псевдоним для внешнего запроса WHERE ограничения на псевдоним GROUP BY ... ORDER BY;
+
+select * from (select * from auto where color = 'КРАСНЫЙ') t1;
+select * from (select * from auto inner join man on auto.phonenum = man.phonenum) t1;
+select*from (select*from man where yearold > 35) m inner join (select*from auto where releasedt >= date'2004-01-01) n on n.phonenum = m.phonenum;
+
+--------------------------------------
+select mark from (select * from auto where mark = 'BMW') t1;
+select * from (select * from auto) a inner join (select * from man where yearold > 25) m on a.phonenum = m.phonenum;
+select * from (select * from city where peoples > 1000000) t1;
+-------------------------------------

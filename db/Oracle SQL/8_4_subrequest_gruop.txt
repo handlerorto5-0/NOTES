@@ -1,0 +1,17 @@
+8_4_subrequest_group.txt
+Подзапросы в запросах с группировкой данных
+
+select firstname, sum(yearold), cityname from(
+select firstname as firstname, yearold as yearold,(
+select cityname from city c where m.citycode = c.citycode) as cityname from man m) mv group by firstname, cityname;
+
+select from city where (select count(citycode) from man where man.citycode = city.citycode)>1;
+
+select mark, count(regnum) from auto where phonenum in (select phonenum from man where citycode in (select citycode from city where peoples > 100000)) group by mark;
+
+select mark, count(regnum) from auto where exists(select phonenum from man where man.phonenum = auto.phonenum and not yearodl > 35) group by mark;
+
+----------------------------------------
+select cityname from city where exists(select citycode from man where city.citycode = man.citycode and not peoples > 1);
+select mark, sum(released) from auto where phonemun in(select phonenum from man where yearpold > 29);
+----------------------------------------

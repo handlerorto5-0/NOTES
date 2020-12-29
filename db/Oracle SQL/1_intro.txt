@@ -9,3 +9,5 @@ student3
 12345678
 пункт меню SQL Workshop, а дальше SQL Command
 ==================================
+AUTO – > MAN = PHONENUM
+CITY – > MAN = CITYCODE

@@ -10,6 +10,7 @@ Plug 'tpope/vim-dispatch'
 " On-demand loading
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 autocmd vimenter * NERDTree
+let NERDTreeShowHidden=1
 "colorThemes
 Plug 'morhetz/gruvbox'
 "rails
@@ -22,7 +23,7 @@ Plug 'tpope/vim-endwise'
 Plug 'mattn/emmet-vim'
 let g:user_emmet_install_global = 0
 autocmd FileType html,css,eruby,xml EmmetInstall
-let g:user_emmet_leader_key='<C-Z>
+let g:user_emmet_leader_key='<C-Z>'
 " quickly move cursor, try <Leader>pattern
 Plug 'easymotion/vim-easymotion'
 "insert or delete brackets, parens, quotes in pair.
@@ -37,11 +38,13 @@ Plug 'mxw/vim-jsx'
 let g:jsx_ext_required = 1
 "Linting
 Plug 'dense-analysis/ale'
+let g:ale_linter_aliases = {'svelte': ['css', 'javascript']}
 let g:ale_linters = {
 \   'ruby': ['standardrb', 'rubocop'],
 \   'python': ['flake8', 'pylint'],
 \   'javascript': ['eslint'],
-\   'vue': ['eslint']
+\   'vue': ['eslint'],
+\   'svelte': ['stylelint', 'eslint']
 \}
 let g:ale_fixers = {
   \    'ruby': ['standardrb'],
@@ -50,7 +53,8 @@ let g:ale_fixers = {
   \    'vue': ['eslint'],
   \    'scss': ['prettier'],
   \    'html': ['prettier'],
-  \    'reason': ['refmt']
+  \    'reason': ['refmt'],
+  \    'svelte': ['prettier', 'eslint']
 \}
 let g:ale_fix_on_save = 1
 nnoremap ]r :ALENextWrap<CR>     " move to the next ALE warning / error
@@ -87,7 +91,7 @@ Plug 'Shougo/neosnippet-snippets'
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-let g:deoplete#enable_at_startup = 1
+"let g:deoplete#enable_at_startup = 1
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -111,8 +115,33 @@ nnoremap K :call LanguageClient#textDocument_hover()<CR>
 nnoremap gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <leader>r :call LanguageClient#textDocument_rename()<CR>
 
+"Svelte tuning
+Plug 'evanleck/vim-svelte'
+Plug 'Shougo/context_filetype.vim'
+
+"Python
+Plug 'davidhalter/jedi-vim'
+
+"Elixir & Erlang
+Plug 'elixir-editors/vim-elixir'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'hyhugh/coc-erlang_ls', {'do': 'yarn install --frozen-lockfile'}
 
 call plug#end()
+
+" Svelte
+if !exists('g:context_filetype#same_filetypes')
+    let g:context_filetype#filetypes = {}
+endif
+let g:context_filetype#filetypes.svelte =
+\ [
+\    {'filetype' : 'javascript', 'start' : '<script>', 'end' : '</script>'},
+\    {'filetype' : 'css', 'start' : '<style>', 'end' : '</style>'},
+\ ]
+
+call deoplete#custom#var('omni', 'functions', {
+\ 'css': ['csscomplete#CompleteCSS']
+\})
 
 "sets
 syntax on
@@ -178,3 +207,9 @@ au FileType css setlocal formatprg=prettier\ --parser\ css
 nnoremap <F5> mzgggqG`z
 " end formatters
 
+"Powerline
+python3 from powerline.vim import setup as powerline_setup
+python3 powerline_setup()
+python3 del powerline_setup
+set laststatus=2
+"end powerline

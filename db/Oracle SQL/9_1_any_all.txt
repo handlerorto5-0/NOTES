@@ -1,0 +1,19 @@
+9_1_any_all.txt
+Предикаты ANY и ALL
+
+ANY – каждое из всех значений, выведенных подзапросом, удовлетворяет условию для текущей строки внешнего запроса.
+
+select * from auto a where color = any(select color from auto where a1.regnum <> a.regnum);
+
+select * from auto a where color != any(select color from auto a1 where a1.regnum <> a.regnum)
+
+ALL - каждое значение, выбранное подзапросом, удовлетворяет условию в предикате внешнего запроса. Ключевое отличие от ANY в том, что мы можем использовать операции больше и меньше (> или <).
+
+select * from man where yearold > all(select yearold from man where citycode = (select citycode from city where cityname = 'Владимир'));
+
+select * from man where yearold < all(select yearold from man where phonenum in (select phonenum from auto where mark = 'BMW'));
+
+---------------------------------------
+select * from city where peoples > all(select peoples from city where citycode in(5,6,7));
+select * from man where yearold < all(select yearold from man where phonenum in (select phonenum from auto where mark = 'BMW'));
+---------------------------------------

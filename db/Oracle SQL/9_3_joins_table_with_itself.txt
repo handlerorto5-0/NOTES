@@ -1,0 +1,18 @@
+9_3_joins_table_with_itself.txt
+Объединение таблицы с самой же собой
+
+для каждой таблицы создается свой псевдоним и обращение происходит по уникальному псевдониму
+
+SELECT поля или * FROM таблица1 t11 (INNER LEFT RIGHT) JOIN таблица1 t12 ON условие соединения таблиц WHERE доп условия;
+или
+SELECT поля или * FROM таблица1 t11, таблица1 t12 WHERE t11.код = t12.код (усдовие соединения таблиц);
+
+select m1.yearold, m2.yearold from man m1 left join man m2 on m1.yearold+2 = m2.yearold;
+
+select m1.lastname, m2.lastname from man m1 left join man m2 on m1.yearold > m2.yearold and m1.citycode = m2.citycode;
+
+-------------------------------
+select c1.cityname, c2.cityname from city c1 left join city c2 on c1.citycode = c2.citycode +2;
+select m1.firstname, m1.lastname, m2.firstname, m2.lastname from man m1 left join man m2 on c1.yearold + 3 = c2.yearold;
+select m1.lastname, m2.lastname from man m1 left join man m2 on m1.citycode = m2.citycode;
+--------------------------------

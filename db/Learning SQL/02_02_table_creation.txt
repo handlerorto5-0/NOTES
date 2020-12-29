@@ -1,0 +1,55 @@
+02_02_table_creation.txt
+
+Создание таблиц
+
+Шаг 1: Дизайн
+Person table, first pass
+Column         |  Type      | Allowable values
+name            varchar(40)  
+eye_color       char(2)      BL , BR , GR
+birth_date      date
+address         varchar(100)
+favorite_foods  varchar(200)
+
+Шаг 2: Уточнение
+Person table, second pass
+Column         |  Type             | Allowable values
+person_id       smallint (unsigned)
+first_name      varchar(20)
+last_name       varchar(20)
+eye_color       char(2)             BR , BL , GR
+birth_date      date
+street          varchar(30)
+city            varchar(20)
+state           varchar(20)
+country         varchar(20)
+postal_code     varchar(20)
+
+favorite_food table
+Column    |  Type
+person_id  smallint (unsigned)
+food       varchar(20)
+
+Шаг 3: Построение запроса SQL
+
+CREATE TABLE person
+(person_id SMALLINT UNSIGNED,
+fname VARCHAR(20),
+lname VARCHAR(20),
+eye_color ENUM('BR','BL','GR'),
+birth_date DATE,
+street VARCHAR(30),
+city VARCHAR(20),
+state VARCHAR(20),
+country VARCHAR(20),
+postal_code VARCHAR(20),
+CONSTRAINT pk_person PRIMARY KEY (person_id)
+);
+
+CREATE TABLE favorite_food
+(person_id SMALLINT UNSIGNED,
+food VARCHAR(20),
+CONSTRAINT pk_favorite_food PRIMARY KEY (person_id, food),
+CONSTRAINT fk_fav_food_person_id FOREIGN KEY (person_id)
+REFERENCES person (person_id)
+);

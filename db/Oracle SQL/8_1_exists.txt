@@ -1,0 +1,15 @@
+8_1_exists.txt
+Подзапросы EXISTS
+возвращает либо true, либо false . Одним из важных правил использования конструкции EXISTS является объединение внутреннего подзапроса с внешним запросом по ключевым колонкам.
+
+SELECT поля FROM таблица1 т1 
+WHERE EXISTS (SELECT 1 FROM таблица2 т2 WHERE t1.key = t2.key);
+
+select * from city c where exists (select 1 from man m where c.citycode = m.citycode);
+select firstname, lastname from man n where exists (select 1 from city c where c.citycode = m.citycode and c.peoples > 1000000);
+sselect * from city c where not exists (select 1 from man m where c.citycode = m.citycode);
+
+-----------------------------
+select * from auto where not exists (select 1 from man where auto.phonenum = man.phonenum);
+select * from auto a where exists (selext 1 from man m where a.phonenum = m.phonenum and m.yearold > 35);
+-----------------------------

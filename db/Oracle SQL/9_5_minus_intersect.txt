@@ -1,0 +1,17 @@
+9_5_minus_intersect.txt
+Операторы MINUS, INTERSECT
+
+MINUS - будут выведены строки, которых нет в подзапросе
+
+select phonenum from man minus select phonenum from auto;
+select * from auto minus select * from auto1;
+
+INTERSECT выведет строки, которые есть и в первом, и во втором наборе данных, то есть пересечение множеств
+
+select phomenum from man intersect select phonenum from auto;
+select citycode from man intersect select citycode from city;
+
+-----------------------------------------
+select * from auto minus select * from auto1;
+select * from auto intersect select * from auto1
+------------------------------------------

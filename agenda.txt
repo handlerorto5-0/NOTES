@@ -1,12 +1,14 @@
 видеокурс / книга                  | № или страница
 --------------------------------------------------------------
-RabbitMQ in Depth                  |  11
--------------------------------------------------------------
-Oracle SQL. 100 шагов(2020)        | 276
+Learning SQL                       | 45
 --------------------------------------------------------------
-Design and Build Great Web APIs     | 53
+RabbitMQ in Depth                  | 11
 --------------------------------------------------------------
-Learn React Hooks                  | 238
+Design and Build Great Web API     | 53
+--------------------------------------------------------------
+Fullstack React with TypeScript    | 60 (code/ react_ts_full)
+--------------------------------------------------------------
+Learn React Hooks                  | 249
 --------------------------------------------------------------
 Learn Rails 6                      |  297
 --------------------------------------------------------------
@@ -68,13 +70,10 @@ https://github.com/monetizedesign/tailwind_devise
 ожидаемые книги:
 Modern Front-End Development for Rails
 Rails 5 Test Prescriptions
-Node.js 8 the Right Way
 Learning React: Second Edition
 Integrating Elm with Rails
-Adopting Elixir
 Designing Elixir Systems with OTP
 React for Real
-Learn by Example JavaScript for Front-End and Mobile App Development
 
 
 “Practical Object-Oriented Design in Ruby” от Sandi Metz

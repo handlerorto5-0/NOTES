@@ -1,0 +1,17 @@
+10_2_update_delete_ subrequest.txt
+Обновление данных и удаление данных с использованием подзапросов
+
+update man set yearold=yearold+1 where citycode in (select citycode from city where peoples > 100000);
+
+update man m1 set yearold = yearold + 1 where not exists(select 1 from man m2 where m2.yearold=m1.yearold);
+
+update man set yearold = (select sum(yearold) from man where firstname = 'Алексей') where firstname like 'O%';
+
+delete auto1 where auto1.regnum not in (select regnum from auto);
+
+delete auto1 where auto1.regnum in (select regnum from auto minus select regnum from auto1);
+
+-----------------------------
+delete man where citycode=(select citycode from city where peoples = 200000);
+update auto set regnum = regnum || '111' where phonenum in(select phonenum from auto minus select phonenum from man);
+-------------------------------

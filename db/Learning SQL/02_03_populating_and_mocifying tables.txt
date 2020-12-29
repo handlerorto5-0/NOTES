@@ -1,0 +1,36 @@
+02_03_populating_and_mocifying tables.txt
+Заселене и модификация таблиц.
+
+добавить автоинкремент
+set foreign_key_checks=0;
+alter table person modify person_id smallint unsigned auto_increment;
+set foreign_key_checks=1;
+
+добавление данных:
+insert into person (person_id, fname, lname, eye_color, birth_date) values (null, 'Slava', 'Rodin', 'BR', '1971-09-19');
+insert into favorite_food (person_id, food) values (1, 'cookies');
+insert into favorite_food (person_id, food) values (1, 'pizza');
+insert into favorite_food (person_id, food) values (1, 'nachos');
+INSERT INTO person
+(person_id, fname, lname, eye_color, birth_date,
+street, city, state, country, postal_code)
+VALUES (null, 'Susan','Smith', 'BL', '1975-11-02',
+'23 Maple St.', 'Arlington', 'VA', 'USA', '20220');
+
+выборка данных:
+select person_id, fname, lname, birth_date from person;
+select person_id, fname, lname, birth_date from person where lname='Rodin';
+select food from favorite_food where person_id=1 order by food;
+
+дополнение даных:
+UPDATE person
+SET street = '1225 Tremont St.',
+city = 'Boston',
+state = 'MA',
+country = 'USA',
+postal_code = '02138'
+WHERE person_id = 1;
+update person set birth_date = str_to_date('DEC-21-1972', '%b-%d-%Y') where person_id = 1;
+
+удаление данных:
+DELETE FROM person WHERE person_id = 2;

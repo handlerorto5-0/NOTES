@@ -1,0 +1,13 @@
+10_4_examples.txt
+Сложные задачи с собеседований в крупные компании с решениями
+
+1. Найти количество букв «о» в слове «молоко» с помощью запроса.
+select length('молоко') - length(replace('молоко','o')) from dual;
+
+----------------------------------
+update man set phonenum = phonunum || '#' where citycode in(select citycode from city where peoples > 2000000 );
+select to_char(data, 'dd-mm-yyyy hh24:mi:ss') from auto;
+select avg(yearold) as avgold from man where lastname like 'A%';
+select substr(cityname,1,1), man.firstname from city inner join man on city.citycode = man.citycode where substr(man.firstname,1,1) = substr(city.cityname, 1,1);
+select cityname, coint(man.yearold) from city inner join  man on man.citycode = city.citycode where man.yearold > 28;
+--------------------------------------

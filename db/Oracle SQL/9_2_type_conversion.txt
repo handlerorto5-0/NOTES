@@ -1,0 +1,50 @@
+9_2_type_conversion.txt
+Преобразование типов данных
+*В SQL ORACLE диалекта
+
+TO_CHAR преобразовать в строку
+
+SELECT перечень полей, to_char(поле, 'формат') FROM имя таблицы WHERE условия отбора строк;
+
+Преобразование даты в текстовый формат
+YYYY – полный формат года;
+YY – краткий формат года;
+MM – месяц;
+DY – день недели;
+hh24 – часы, также возможны варианты с AM и PM, подробнее
+в документации;
+mi – минуты;
+ss – секунды
+
+select to_char(sysdate, 'dy') as day from dual;
+select to_char(sysdate, 'dd-mm-yyyy hh24:mi:ss') as date_today from dual;
+
+Преобразование числовых значений в текстовый формат
+0 – число c лидирующим 0;
+99 – число
+
+select to_char(123.0334 , '000.999') from dual;
+делиметиры добавить
+select to_char(1234325234234.55, '999G999G999G999G999D00') nn from dual;
+1 234 325 234 234,55
+------------------
+
+Конструкция CAST
+
+SELECT CAST(поле, тип к которому преобраз) FROM таблица WHERE условие;
+
+select cast(1000 as varchar2(10)) as cs from dual;
+select cast('1000' as number) as cs from dual;
+
+TO_DATE
+
+select to_date('13-10-2018 16:59:49', 'dd-mm-yyyy hh24:mi:ss') as dn from dual;
+
+-------------------------
+select to_char(sysdate, 'dy') as day from dual;
+select to_char(sysdate - 1, 'dd:mm:yyyy hh24-mi-ss') as yestoday from dual;
+select to_char(sysday-1, 'dd-mm-yy hh24-mi-ss') as yestoday from dual;
+select to_char(sysdate-1, 'yyyy-mm-dd hh24:mi:ss') as yestoday from dual;
+select cast('20.01' as number) as ns from dual;
+----------------------------
+

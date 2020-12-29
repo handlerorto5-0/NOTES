@@ -1,0 +1,60 @@
+00_00_intro.txt
+Использование примеров:
+https://www.katacoda.com/mysql-db-sandbox/scenarios/mysql-sandbox
+с гуглакаутом войти
+
+Sakila schema definitions
+Table name      |  Definition
+film             A movie that has been released and can be rented
+actor            A person who acts in films
+customer         A person who watches films
+category         A genre of films
+payment          A rental of a film by a customer
+language         A language spoken by the actors of a film
+film_actor       An actor in a film
+inventory        A film available for rental
+
+Использование mysql Command-Line Tool:
+mysql -u root -p 
+mysql -u root -p sakila
+выводит в xml:
+mysql -u lrngsql -p --xml bank (выводит в xml)
+SELECT * FROM favorite_food FOR XML AUTO, ELEMENTS;
+
+mysql> show databases;
+mysql> use sakila;
+mysql> SELECT now(); (выведет тeкущую дату-время)
+mysql> SELECT now() from dual; (в MySQL есть)
+mysql> show tables;
+mysql> DROP TABLE favorite_food;
+----------------------------
+MySQL может хранить данные, используя различные наборы символов
+mysql> SHOW CHARACTER SET;
+create database european_sales character set latin1;
+----------------------------
+mysql> desc person; (показать описание таблицы)
+
+
+форматирование set birth_date = str_to_date('DEC-21-1972', '%b-%d-%Y')
+%a  The short weekday name, such as Sun, Mon, ...
+%b  The short month name, such as Jan, Feb, ...
+%c  The numeric month (0..12)
+%d  The numeric day of the month (00..31)
+%f  The number of microseconds (000000..999999)
+%H  The hour of the day, in 24-hour format (00..23)
+%h  The hour of the day, in 12-hour format (01..12)
+%i  The minutes within the hour (00..59)
+%j  The day of year (001..366)
+%M  The full month name (January..December) 
+%m  The numeric month
+%p  AM or PM
+%s  The number of seconds (00..59)
+%W  The full weekday name (Sunday..Saturday)
+%w  The numeric day of the week (0=Sunday..6=Saturday)
+%Y  The four-digit year
+
+
+
+
+
+

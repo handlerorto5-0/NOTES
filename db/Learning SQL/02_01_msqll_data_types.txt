@@ -1,0 +1,59 @@
+02_01_msqll_data_types.txt
+
+MySQL типы данных:
+
+char(20) /* fixed-length */
+varchar(20) /* variable-length */
+varchar(max) /* > 2 GB */
+
+MySQL text types;
+Text type | Maximum number of bytes
+tinytext    255
+text        65,535
+mediumtext  16,777,215
+longtext    4,294,967,295
+
+MySQL integer types:
+* unsigned - данные в равны и больше нуля
+Type       |  Signed range      | Unsigned range
+tinyint    	−128 to 127          0 to 255
+smallint    −32,768 to 32,767    0 to 65,535
+mediumint   −8,388,608 
+             to 8,388,607        0 to 16,777,215
+int         −2,147,483,648 
+             to 2,147,483,647    0 to 4,294,967,295
+bigint      −2^63 to 2^63 - 1    0 to 2^64 - 1
+
+MySQL floating-point types:
+Type            | Numeric range
+float( p , s )    −3.402823466E+38 to −1.175494351E-38
+                  and 1.175494351E-38 to 3.402823466E+38
+double( p , s )   −1.7976931348623157E+308 to −2.2250738585072014E-308
+                  and 2.2250738585072014E-308 to 1.7976931348623157E+308
+
+* p, precision - общее количество допустимых цифр слева и справа от десятичной точки
+* s, scale - количество допустимых цифр справа от десятичной точки
+* unsigned пометка, что не отрицательные
+
+MySQL temporal types
+Type     | Default format      | Allowable values
+date      YYYY-MM-DD            1000-01-01 to 9999-12-31
+datetime  YYYY-MM-DD HH:MI:SS   1000-01-01 00:00:00.000000
+								to 9999-12-31 23:59:59.999999
+timestamp YYYY-MM-DD HH:MI:SS   1970-01-01 00:00:00.000000
+								to 2038-01-18 22:14:07.999999
+year 	  YYYY                  1901 to 2155
+time      HHH:MI:SS             −838:59:59.000000
+                                to 838:59:59.000000	
+
+Date format components:
+Component  | Definition    | Range
+YYYY        Year            1000 to 9999
+MM          Month           01 (January) to 12 (December)
+DD          Day             01 to 31
+HH          Hour            00 to 23
+HHH         Hours (elapsed) −838 to 838
+MI          Minute          00 to 59
+SS          Second          00 to 59
+
+							

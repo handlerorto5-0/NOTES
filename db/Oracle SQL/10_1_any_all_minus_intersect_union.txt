@@ -1,0 +1,13 @@
+10_1_any_all_minus_intersect_union.txt
+Сочетание операторов множеств и предикатов
+
+select * from auto where auto.phonenum in (select phonenum from man where citycode in (select citycode from auto minus select citycode from city where peoples < 1000000));
+
+select * from auto where auto.phonenum = any(select phonenum from man union select phonenum from man1);
+
+select firstname, count(lastname) from (select* from man union select * from man1) m1 group by firstname;
+
+------------------------------
+select * from man where man.phonenum in (select phonenum from auto union select phonenum from auto1);
+select * from auto where phonenum in (select phonenum from man minus select phonenum from man1);
+-----------------------------

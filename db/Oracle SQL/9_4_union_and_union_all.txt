@@ -1,0 +1,14 @@
+9_4_union_and_union_all.txt
+Операторы для работы с множествами – UNION, UNION ALL
+
+UNION объединяет наборы данных – строчки из наборов данных, непосредственно одна за другой. для таблиц с однотипными даными.
+union all работает быстрее, union убирает дубли
+
+select phonenum form auto union select phonenum from man;
+select * from auto union all select * from auto1;
+select * from (select * from auto union all select * from auto1) u order by color;
+
+-----------------------------------------
+select * from auto where color='СИНИЙ' union select * from auto1 where color = 'ЗЕЛЁНЫЙ';
+select a1.* from auto a1 union all select a2.* from auto a2 where a2.color = 'ЗЕЛЁНЫЙ';
+-----------------------------------------

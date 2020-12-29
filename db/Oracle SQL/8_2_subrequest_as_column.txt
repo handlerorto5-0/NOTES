@@ -1,0 +1,15 @@
+8_2_subrequest_as_column.txt
+Подзапрос как новая колонка запроса. 
+В языке SQL есть возможность задать новую колонку как результат выполнения подзапроса.
+
+SELEСT колонка1, колонка2, колонка3, (SELECT колонка FROM другая таблица WHERE таблица1.колонка связи = таблица2.колонка связи) псeвдоним колонка FROM ...
+
+select cityname, (select cityname from city c1 where c1.citycode = c.citycode +1) ctn1 from city c;
+select firstname, lastname, (select cityname from city where city.citycode = man.citycode) ctname from man;
+select distinct mark, (select count(1) from man where man.phonenum in (select phonenum from auto a1 where a1.mark = a.mark)) as cnt from auto a;
+
+--------------------------------------
+select mark, color, (select lastname from man m where a.phonenum = m.phonenum ) as owner from auto a;
+select mark, color, (select firstname from man where auto.phonenum = man.phonenum) as owner, (select cityname from city  where auto.phonenum = man.phonenum and city.citycode = man.citycode) as city from auto;
+select firstname, lastname, (select cityname from city where man.citycode = city.citycode) as city, (select peoples from city where man.citycode = city.citycode) as pls from man;
+------------------------------------
