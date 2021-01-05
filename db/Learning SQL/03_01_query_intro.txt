@@ -1,1 +1,64 @@
 03_01_query_intro.txt
+
+Предложение select определяет, какой из всех возможных столбцов следует включить в набор результатов запроса.
+SELECT language_id, name, last_update  FROM language;
+
+встроеные выражения:
+SELECT version(), user(), database();
+выражения и алиасы:
+
+SELECT language_id,
+'COMMON' AS language_usage,
+language_id * 3.1415927 AS lang_pi_value,
+upper(name) AS language_name
+FROM language;
+
+удаление дубликатов:
+SELECT DISTINCT actor_id FROM film_actor ORDER BY actor_id;
+
+--------------------------
+Предложение from определяет таблицы, используемые запросом, а также средства их связывания.
+
+запросы подзапросы:
+SELECT concat(cust.last_name, ', ', cust.first_name) full_name FROM
+(SELECT first_name, last_name, email
+FROM customer
+WHERE first_name = 'JESSIE') cust;
+
+запросы с использованием временных таблиц:
+CREATE TEMPORARY TABLE actors_j (actor_id smallint(5), first_name varchar(45), last_name varchar(45));
+INSERT INTO actors_j SELECT actor_id, first_name, last_name FROM actor  WHERE last_name LIKE 'J%';
+SELECT * FROM actors_j;
+
+запросы с видами:
+- это запрос, который хранится в словаре данных, никаких дополнительных данных не создается и не сохраняется.
+CREATE VIEW cust_vw AS
+SELECT customer_id, first_name, last_name, active
+FROM customer;
+SELECT first_name, last_name FROM cust_vw WHERE active = 0;
+
+завросы с сылками на таблицы:
+SELECT customer.first_name, customer.last_name, time(rental.rental_date) rental_time FROM customer INNER JOIN rental ON customer.customer_id = rental.customer_id  WHERE date(rental.rental_date) = '2005-06-14';
+
+--------------------------
+Предложение where - это механизм для фильтрации нежелательных строк из вашего набора результатов.
+
+предикаты: and, or 
+SELECT title, rating, rental_duration
+FROM film  WHERE (rating = 'G' AND rental_duration >= 7)
+OR (rating = 'PG-13' AND rental_duration < 4);
+
+-----------------------------------
+группировка
+SELECT c.first_name, c.last_name, count(*)
+FROM customer c
+INNER JOIN rental r
+ON c.customer_id = r.customer_id
+GROUP BY c.first_name, c.last_name
+HAVING count(*) >= 40;
+-------------------------------------
+
+order by - это механизм сортировки набора результатов с использованием необработанных данных столбца или выражений на основе данных столбца
+
+ORDER BY c.last_name, c.first_name
+ORDER BY time(r.rental_date) desc;

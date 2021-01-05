@@ -162,3 +162,11 @@ Don't run Bundler as root. Bundler can ask for sudo if it is needed, and
 installing your bundle as root will break this application for all non-root users
 on this machine.
 The dependency tzinfo-data (>= 0) will be unused by any of the platforms Bundler is installing for. Bundler is installing for ruby but the dependency is only for x86-mingw32, x86-mswin32, x64-mingw32, java. To add those platforms to the bundle, run `bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java`.
+
+
+Failed to completely remove /usr/share/rvm -- You will have to do so manually.
+
+Note you may need to manually remove /etc/rvmrc and ~/.rvmrc if they exist still.
+Please check all .bashrc .bash_profile .profile and .zshrc for RVM source lines and delete or comment out if this was a Per-User installation.
+Also make sure to remove `rvm` group if this was a system installation.
+Finally it might help to relogin / restart if you want to have fresh environment (like for installing RVM again).
