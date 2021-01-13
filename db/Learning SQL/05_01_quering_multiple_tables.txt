@@ -1,0 +1,41 @@
+05_01_quering_multiple_tables.txt
+Запрос нескольких таблиц
+
+cross join:
+SELECT c.first_name, c.last_name, a.address  FROM customer c JOIN address a;
+в запросе не указывалось, как следует соединить две таблицы, сервер базы данных сгенерировал декартово произведение, которое представляет собой каждую перестановку двух таблиц (599 клиентов x 603 адреса = 361 197 перестановок)
+
+Inner Joins:
+SELECT c.first_name, c.last_name, a.address
+FROM customer c INNER JOIN address a
+ON c.address_id = a.address_id;
+* INNER  можно не писать , это по умолчанию
+короткая запись ON, для специфичных ситуаций
+SELECT c.first_name, c.last_name, a.address FROM customer c INNER JOIN address a USING (address_id);
+
+Синтаксис соединения ANSI:
+WHERE вместо ON дайт возможность делать более сложные запросы
+SELECT c.first_name, c.last_name, a.address  FROM customer c, address a  WHERE c.address_id = a.address_id AND a.postal_code = 52137;
+SQL92 предпочтительный стандарт:
+SELECT c.first_name, c.last_name, a.address FROM customer c INNER JOIN address a ON c.address_id = a.address_id  WHERE a.postal_code = 52137;
+
+--------------------------
+Объединение трех или более таблиц
+
+SELECT c.first_name, c.last_name, ct.city FROM customer c INNER JOIN address a ON c.address_id = a.address_id INNER JOIN city ct ON a.city_id = ct.city_id;
+* порядок расположения таблиц не важен, SQL не процедурный язык
+
+Использование подзапросов в виде таблиц
+SELECT c.first_name, c.last_name, addr.address, addr.city  FROM customer c INNER JOIN (SELECT a.address_id, a.address, ct.city FROM address a INNER JOIN city ct ON a.city_id = ct.city_id WHERE a.district = 'California' ) addr ON c.address_id = addr.address_id;
+
+Использование одной и той же таблицы дважды
+SELECT f.title FROM film f 
+INNER JOIN film_actor fa1 ON f.film_id = fa1.film_id 
+INNER JOIN actor a1 ON fa1.actor_id = a1.actor_id INNER JOIN film_actor fa2 ON f.film_id = fa2.film_id 
+INNER JOIN actor a2 ON fa2.actor_id = a2.actor_id  
+WHERE (a1.first_name = 'CATE' AND a1.last_name = 'MCQUEEN') AND (a2.first_name = 'CUBA' AND a2.last_name = 'BIRCH');
+
+Само к себе присоединение:
+SELECT f.title, f_prnt.title prequel  FROM film f INNER JOIN film f_prnt ON f_prnt.film_id = f.prequel_film_id  WHERE f.prequel_film_id IS NOT NULL;
+
+

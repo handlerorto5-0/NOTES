@@ -1,1 +1,65 @@
 04_01_filtering.txt
+
+Вычиление условий:
+WHERE first_name = 'STEVEN' AND create_date > '2006-01-01'
+true and true => true
+
+WHERE first_name = 'STEVEN' OR create_date > '2006-01-01'
+true or true => true
+true or false => true
+false or true => true
+false or false => false
+
+WHERE (first_name = 'STEVEN' OR last_name = 'YOUNG') AND create_date > '2006-01-01'
+
+WHERE NOT приаеняется ко всем условиям вне скобок, но это тяжолые для вычисдения запросы, для того что бы избежать NOT применяют <> или !=
+WHERE first_name <> 'STEVEN' AND last_name <> 'YOUNG' AND create_date > '2006-01-01'
+
+порядок построения условий:
+
+Выражение может быть любым из следующих:
+• Число
+• Столбец в таблице или представлении
+• Строковый литерал, например Maple Street.
+• Встроенная функция, например concat ('Learning', '', 'SQL')
+• Подзапрос
+• Список выражений, например ("Бостон", "Нью-Йорк", "Чикаго")
+
+Операторы условий:
+= , != , < , > , <> , like , in , and between
++ , − , * , and /
+
+Удаляем которые не соотвтствуют:
+DELETE FROM rental WHERE year(rental_date) <> 2005 AND year(rental_date) <> 2006;
+
+Условия диапазона:
+BETWEEN верхний линмит AND нижний лимит , экв >= и <= т.е включает переданные данные
+SELECT customer_id, rental_date  FROM rental  WHERE rental_date BETWEEN '2005-06-14' AND '2005-06-16';
+выбрать которые начинаются c FA включит, FR нет
+SELECT last_name, first_name  FROM customer  WHERE last_name BETWEEN 'FA' AND 'FR';
+
+Условия участия:
+WHERE rating = 'G' OR rating = 'PG'
+или
+WHERE rating IN ('G','PG')
+WHERE rating IN (SELECT rating FROM film WHERE title LIKE '%PET%')
+WHERE rating NOT IN ('PG-13','R', 'NC-17')
+
+Условия соответствия:
+WHERE left(last_name, 1) = 'Q' - left() первая буква фамилии
+Подстановочные символы:
+_ ровно один символ
+% любое количество символов (включая 0)
+WHERE last_name LIKE '_A_T%S'
+WHERE last_name LIKE 'Q%' OR last_name LIKE 'Y%'
+исползование регулярных выражений:
+WHERE last_name REGEXP '^[QY]'
+
+NULL:
+• Выражение может быть null, но никогда не может быть равным null.
+• Два null никогда не равны друг другу.
+WHERE return_date IS NULL
+WHERE return_date = NULL
+WHERE return_date IS NOT NULL
+вернёт не нулевые значения из диапазона:
+WHERE return_date NOT BETWEEN '2005-05-01' AND '2005-09-01'
