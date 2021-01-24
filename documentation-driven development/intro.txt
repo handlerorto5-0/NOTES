@@ -1,0 +1,10 @@
+intro.txt
+Creating a Rails 5 API without Models.pdf -article
+https://medium.com/@dana.scheider/creating-a-rails-5-api-without-models-d50cd5d15c97
+https://raml.org/ - doc about
+http://json-schema.org/ -doc
+https://github.com/danascheider/rambo - gem для тестирования API, который генерирует тесты контрактов API из документов API в RAML, соответствующих стандартным методам REST.
+https://github.com/danascheider/personal_calculator - пример в rails
+
+Многие из нас раньше использовали разработку через тестирование, но я предпочитаю использовать то, что я называю разработкой на основе документации, то есть описывать бизнес-функции желаемой конечной точки перед написанием тестов или кода. Здесь мы будем использовать RAML и схему JSON для создания контракта данных, описывающего поведение нашей конечной точки / age.
+

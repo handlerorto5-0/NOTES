@@ -1,0 +1,488 @@
+botton_and_forms.txt
+onClick отслеживает клики по элементам, аналогично onclick в HTML;
+onChange обрабатывает изменения полей ввода (как oninput).
+
+-------------------------
+просто передать
+function handler(){}
+<button onClick={handler}>Send</button>
+-------------------------
+или передать в компонет отображения
+const ButtonParent = ()=>{
+	const counter = 0
+	function handler(counter){
+		counter += 1
+	}
+	return (
+		<>  // React.Fragment short шоб в div не оборачивать одноуровневых
+		{counter} // выыод динам данных
+		<Button 
+			onClick={handler}
+			name = {name} 
+		/>
+		</>
+	)
+}
+из другого компонента с кнопкой
+const Button = (props) => {
+	return (
+		// перeдаёт свойства
+		<button onClick={props.handler}>Send</button>
+	)
+}
+--------------------
+function App() {
+  function handleChange(event) {
+    // myInput
+    const inputName = event.target.name 
+  }
+
+  function handleSubmit() {
+    // при отправке формы объект события обычно не требуется
+  }
+
+  return (
+    <div>
+      <input type="text" name="myInput" onChange={handleChange} />
+      <button onClick={handleSubmit}>Submit</button>
+    </div>
+  );
+}
+--------------------
+простая форма, отображает состяние в этот же элемент:
+import React , {setState} from 'react'
+const Forma = () => {
+	const [string, setString] = useState('default string')
+	function handleString (e) {
+		setString(e.target.value)
+	}
+	function newString (e) {
+		setString(e.target.value)
+	}
+	return (
+		<div className="wrapper">
+		<h1>{string}</h1>
+		<form onSubmit={e => { e.preventDefault(); newString() }}>
+			<div>
+	          <label htmlFor="string">Label: </label>
+	          <input
+	            type="text"
+	            value={string}
+	            onChange={handleString}
+	            name="string"
+	            id="string"
+	            placeholder="string"
+	          />
+        	</div>
+        	<input type="submit" value="Create" />
+		<form>
+		</div>
+	)
+}
+
+=======================
+черновик
+форма передачи строки на api:
+import React , {setState, useEffect, useReducer} from 'react'
+import { useResource } from "react-request-hook"
+const Forma = () => {
+	// set Reduser
+	const initialState = {
+  		posts: []
+	};
+	const [state, dispatch] = useReducer(appReducer, initialState);
+	const { posts } = state;
+
+
+
+	// set request
+	const [alert, setAlert] = useState(false)
+	const [string, setString] = useState('default string')
+	const [, createPost] = useResource(({string}) =>({
+    	url: '/posts',
+    	method: 'post',
+    	data: {string}
+  	}))
+	
+	function handleString (e) {
+		setString(e.target.value)
+	}
+	function handleCreate (e) {
+		setString(e.target.value)
+		createPost({string})
+		.then(() => {
+        	setAlert(true);
+      	})
+      	.catch(err => console.warn(err));
+	}
+	return (
+		<div className="wrapper">
+		{alert && <h2> Submit Successful</h2>}
+		<form onSubmit={e => { e.preventDefault(); handleCreate() }}>
+			<div>
+	          <label htmlFor="string">Label: </label>
+	          <input
+	            type="text"
+	            value={string}
+	            onChange={handleString}
+	            name="string"
+	            id="string"
+	            placeholder="any"
+	          />
+        	</div>
+        	<input type="submit" value="Send" />
+		<form>
+		</div>
+	)
+}
+
+======================
+======================
+запросы от API с useEffect и useState
+
+import React, { useEffect, useState }from 'react'
+
+const Form = () => {
+	const [ posts, setPosts ] = useState([])
+
+	function getPosts(){
+		fetch('/api/posts')
+		.then(result => result.json())
+		.then(posts => setPost(posts))
+	}
+
+	useEffect(() => {
+		getPosts()
+	},[posts])
+
+	return (
+		<div>
+		{posts.map((post, i) => <Post key={i} title={title} text={text} />}
+		<button onClick={getPost}>
+        	Request Post
+      	</button>
+		</div>
+	)
+}
+const Post =({ title, text }) =>  {
+  return (
+  	<ul>
+  		<li>Title: {title}</li>
+  		<li>Text: {text}</li>
+  	</ul>
+  )
+}
+------------------------------
+запросы от API с useEffect и useReduser
+
+#reduser.js
+function postsRecucer (state, action){
+	switch (action.type){
+		case 'FETCH_POSTS':
+			return action.post
+	}
+}
+#app.js
+const Form = () => {
+	const[state,dispatch]=useReducer(appReducer,{posts:[]})
+	const {posts} = state
+
+	function getPosts (){
+		fetch('/api/posts')
+		.then(result =>result.json())
+		.then(posts =>dispatch({ type: 'FETCH_POSTS', posts }))
+	}
+
+	useEffect(() =>{
+		getPosts()
+	},[posts])
+
+	return ( как выше)
+}
+===============================
+запросы от API с axios и react-request-hook
+
+# настройки
+npm install --save react-request-hook axios
+yarn add react-request-hook axios -D
+в корень (index.js or in rails )
+import { RequestProvider } from "react-request-hook";
+import axios from 'axios'
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:3000/...'
+})
+ReactDOM.render(
+	<RequestProvider value={axiosInstance}>
+		<App />
+	</RequestProvider>,
+document.getElementById('root')
+)
+--------------------------
+#просто получаем данные автоматом
+#app.js
+import React, {useState, useEffect} from 'react'
+import axios from 'axios'
+
+
+const Profile = () => {
+  const [profile, setProfile] = useState([])
+
+  useEffect(() =>{
+    axios.get("http://localhost:3000/api/v1/reports/profile.json")
+    .then( resp => {
+      setProfile(resp.data.data.attributes)
+    })
+    .catch( err => console.warn(err))
+  }, [])
+
+  const {nikname, address} = profile
+
+
+  return (
+    <div>
+      Profile:
+      {nikname && 
+        <div>
+          <p>Nikname: {nikname}</p>
+          <p>Email: {address}</p>
+        </div>
+      }
+    </div>
+  )
+}
+
+export default Profile
+-----------------------------
+# загружаем данные при нажатии кнопки
+#reduser.js
+function postsRecucer (state, action){
+	switch (action.type){
+		case 'FETCH_POSTS':
+			return action.posts
+	}
+}
+function errorReduser (state, action) {
+  switch (action.type){
+    case 'POSTS_ERROR':
+      return 'Failed to fetch posts'
+    default:
+      return state
+  }
+}
+
+export default function appReducer (state, action){
+  return {
+    posts: postsReducer(state.posts, action),
+    error: errorReduser(state.error, action)
+  }
+}
+#app.js
+import React, {useReducer} from 'react'
+import { useResource } from 'react-request-hook'
+import appReducer from 'reducers'
+
+сonst Form = () => {
+	const [ state, dispatch ] = useReducer(appReducer, { posts: [], error: ''})
+	const { error} = state
+	const [posts, getPosts] = useResource(() =>({
+    	url: '/posts',
+    	method: 'get'
+  	}))
+
+  	useEffect(getPosts, [])
+
+  	useEffect(() => {
+    	if (posts && posts.error){
+      		dispatch({ type: 'POSTS_ERROR'})
+    	}
+    if (posts && posts.data){
+      		dispatch({ type: 'FETCH_POSTS', posts: posts.data})
+    	}
+  }, [posts])
+
+  return (
+  	<div>
+  		{error && <b>{error}</b>}
+    	<div>
+		{posts.map((post, i) => <Person key={i} title={title} text={text} />}
+		<button onClick={getPost}>
+        	Request Post
+      	</button>
+		</div>
+  	</div>
+  )
+}
+const Post =({ title, text }) =>  {
+  return (
+  	<ul>
+  		<li>Title: {title}</li>
+  		<li>Text: {text}</li>
+  	</ul>
+  )
+}
+-----------------------------
+# передать данные
+# reduser.js добавить к вержнему
+function postsReducer(state, action){
+  switch(action.type){
+    case 'FETCH_POSTS':
+      return action.posts
+    case 'CREATE_POST':
+      const newPost = { title: action.title, text: action.text }
+      return [ newPost, ...state ]
+
+    default:
+      return state
+  }
+}
+# app.js
+import React, {useState} from 'react'
+import { useResource } from "react-request-hook"
+import appReducer from 'reducers'
+
+const Form = () => {
+	const [alert, setAlert] = useState(false)
+	const [title, setTitle] = useState('')
+  	const [text, setText] = useState('')
+	const [ , createPost ] = useResource(({ title, text }) =>({
+		url: '/posts',
+		method: 'post',
+		data: { title, text }
+	}))
+
+	function handleTitle(evt) {
+    setTitle(evt.target.value)
+  }
+
+  function handleText(evt) {
+    setText(evt.target.value)
+  }
+
+  function handleCreate() {
+    createPost({title, text})
+    then(() => {
+    	setAlert(true)
+    })
+    .catch(err => console.warn(err))
+
+    dispatch({ type: 'CREATE_POST', title, text })
+  }
+
+  return(
+  	<div>
+  	{alert && <h2> Submit Successful</h2>}
+    <form onSubmit={e => { e.preventDefault(); handleCreate() }}>
+      <div>
+        <label htmlFor="create-title">Title: </label>
+        <input
+          type="text"
+          value={title}
+          onChange={handleTitle}
+          name="create-title"
+          id="create-title"
+          placeholder="string"
+        />
+      </div>
+      <textarea 
+        value={text}
+        onChange={handleText}
+      />
+      <input
+        type="submit"
+        value="Send"
+      />
+    </form>
+    </div>
+  )
+}
+-----------------------------
+# найти по имени
+#reduser.js
+function postsRecucer (state, action){
+	switch (action.type){
+		case 'FETCH_POSTS':
+			return action.post
+	}
+}
+function errorReduser (state, action) {
+  switch (action.type){
+    case 'POSTS_ERROR':
+      return 'Failed to fetch posts'
+    default:
+      return state
+  }
+}
+
+export default function appReducer (state, action){
+  return {
+    posts: postsReducer(state.posts, action),
+    error: errorReduser(state.error, action)
+  }
+}
+#app.js
+import React, {useState, useReducer} from 'react'
+import { useResource } from 'react-request-hook'
+import appReducer from 'reducers'
+
+сonst Form = () => {
+	const [string, setString] = useState('')
+	const [ state, dispatch ] = useReducer(appReducer, { posts: [], error: ''})
+	const { error} = state
+	const [posts, getPosts] = useResource(() =>({
+    	url: '/posts',
+    	method: 'post',
+		data: { string }
+  	}))
+
+  	function handleString(evt) {
+    	setString(evt.target.value)
+    }
+
+    // не уверен в необходимости
+  	useEffect(getPosts, [])
+
+  	useEffect(() => {
+    	if (posts && posts.error){
+      		dispatch({ type: 'POSTS_ERROR'})
+    	}
+    	if (posts && posts.data){
+      		dispatch({ type: 'FETCH_POSTS', posts: posts.data})
+    	}
+  		}, [posts])
+
+
+  return (
+  	<div>
+  		{error && <b>{error}</b>}
+    	<div>
+		{posts.map((post, i) => <Person key={i} title={title} text={text} />}
+		
+		<form onSubmit={e => { e.preventDefault(); getPost }}>
+	      <div>
+	        <label htmlFor="request-amount">By nikname: </label>
+	        <input
+	          type="text"
+	          value={string}
+	          onChange={handleString}
+	          name="request-amount"
+	          id="request-amount"
+	          placeholder="Barmaley"
+	        />
+	      </div>
+	      <input
+	        type="submit"
+	        value="Request Post"
+	      />
+	    </form>
+  	</div>
+  )
+}
+const Post =({ title, text }) =>  {
+  return (
+  	<ul>
+  		<li>Title: {title}</li>
+  		<li>Text: {text}</li>
+  	</ul>
+  )
+}
+------------------------------------

@@ -1,0 +1,122 @@
+pundit.txt
+#Gemfile 
+gem 'pundit'
+
+bundle install
+#app/controllers/application_controller.rb
+...
+  include Pundit
+...
+
+rails g pundit:install  -> папка app/policies
+--------------------------
+по умолчанию создаётся
+#app/policies/application_policy.rb
+ 
+class ApplicationPolicy
+  attr_reader :user, :record
+ 
+  def initialize(user, record)
+    @user = user
+    @record = record
+  end
+ 
+  def index?
+    false
+  end
+ 
+  def show?
+    scope.where(:id => record.id).exists?
+  end
+ 
+  def create?
+    false
+  end
+ 
+  def new?
+    create?
+  end
+ 
+  def update?
+    false
+  end
+ 
+  def edit?
+    update?
+  end
+ 
+  def destroy?
+    false
+  end
+ 
+  def scope
+    Pundit.policy_scope!(user, record.class)
+  end
+ 
+  class Scope
+    attr_reader :user, :scope
+ 
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
+ 
+    def resolve
+      scope
+    end
+  end
+end
+------------------------------------
+нужно написать свою собственную политику
+------------------------------------
+#app/policies/article_policy.rb
+ 
+class ArticlePolicy < ApplicationPolicy
+  # разрешаете всем видеть страницу индекса
+  def index?
+    true
+  end
+  #  чтобы создать новую статью, пользователь должен быть зарегистрирован
+  # user.present? зарегистрирован ли пользователь
+  def create?
+    user.present?
+  end
+  # убедиться, что только пользователь, создавший статью, может выполнять эти действия
+  def update?
+    return true if user.present? && user == article.user
+  end
+ 
+  def destroy?
+    return true if user.present? && user == article.user
+  end
+ 
+  private
+ 
+    def article
+      record
+    end
+end
+-------------------------------
+rails generate migration add_user_id_to_articles user:references
+-------------------------------
+в акшинах
+def set_modelname
+  @modelname = Modelname.find(params[:id]
+  authorize @modelname
+end
+-------------------------------
+RSpec добавить в rails_helper.rb
+RSpec::Matchers.define :authorize do |action|
+  match do |policy|
+    policy.public_send("#{action}?")
+  end
+
+  failure_message do |policy|
+    "#{policy.class} does not authorize #{action} on #{policy.record} for #{policy.user.inspect}."
+  end
+
+  failure_message_when_negated do |policy|
+    "#{policy.class} does not forbid #{action} on #{policy.record} for #{policy.user.inspect}."
+  end
+end
+----------------------------------

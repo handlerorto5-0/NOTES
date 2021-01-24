@@ -1,0 +1,149 @@
+iot.txt
+https://gitlab.com/dmaximov/ror-test
+
+Тестовое задание
+Разработать web приложение для сбора показаний счетчиков воды.
+Приложением пользуются два типа пользователей: сотрудники управляющей компании и жители района.
+Для жильцов необходимо сделать интерфейс отправки показаний счетчика воды.
+Для сотрудников УК необходимо подготовить отчёты:
+
+Последние показания по счетчикам (Имя жильца, Адрес, Показание, Дата)
+Жильцы которые не ввели показания счетчика в этом месяце
+
+Код выложить в публичный доступ для проверки.
+Технологи рекоммендованые к использованию, но необязательны в рамках данного задания:
+Ruby, Ruby on Rails, PostgreSQL, Bootstrap, Vue.js, Devise, Pundit
+--------------------
+Enum Roles
+
+enum role: [:consumer, :clerk, :admin]
+User.roles # => {"consumer"=>0, "clerk"=>1, "admin"=>2} – список всех ролей
+user.admin! – сделает юзера фадмином
+user.admin? # => true – запрос истины
+user.role # => "admin" – найдёт роль пользователя
+@users = User.admin – вернёт массив админов
+user.role = 'foo' # ArgumentError: 'foo' is not a valid role – нельзя дать несущ роль
+пример:
+class User < ActiveRecord::Base
+  enum role: [:user, :vip, :admin]
+  after_initialize :set_default_role, :if => :new_record?
+
+  def set_default_role
+    self.role ||= :user
+  end
+
+  # Include default devise modules...
+end
+
+--------------------------
+Создание проекта с Tailwind м React
+code/rails/
+mkdir power-check
+.ruby-version   ruby-2.7.2
+.ruby-gemset    power-check
+cd .
+gem install rails -v 6.0.1
+gem install pg
+rails _6.0.1_ new . --skip-webpack-install --skip-bundle -d postgresql -T
+bundle
+rails webpacker:install
+rails webpacker:install:react
+gem 'rspec-rails' (dev,test)
+bundle
+rails generate rspec:install
+bundle exec rspec
+gem 'factory_bot_rails'
+#spec/rails_helper.rb
+Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+#spec/support/factory_bot.rb
+RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+end
+gem 'annotate' (dev)
+bundle install
+rails g annotate:install
+git init
+настройка database.yml
+rails db:create
+-------
+User: 
+id     ,  bigint Primary key
+nikname,  Unique, non-null
+email,    string, non-null
+address,  string
+role   ,  enum role: {consumer: 0, clerk: 1, admin: 2}, default: 0
+rails g model User nikname:uniq address role:integer
+rails db:migrate
+-------
+Report: 
+id     ,  bigint Primary key
+amount :decimal, :precision => 8, :scale => 4 non-null
+user_id, bigint non-null
+belongs_to: user
+rails g model Report amount:decimal user:belongs_to
+rails db:migrate
+rails db:seed
+--------
+gem "fast_jsonapi"
+rails g serializer Report amount user_id
+ 
+-----------
+root 'pages#index'
+namespace :api do
+	namespace :v1 do
+		resurces :reports
+	end
+end
+get '*path', to: 'pages#index', via: :all
+---
+#app/controllers/pages_controller.rb
+class PagesController < ApplicationController
+	def index
+	end
+end
+#app/cotrollers/api/v1/reports_controller.rb
+Module Api
+	Module V1
+		class ReportsController < ApplicationController
+			
+		end
+	end
+end
+
+----------
+#app/javascript/pack/index.jsx (reneme hello_react)
+#app/views/layouts/application.html.erb
+<head>
+ <%= javascript_pack_tag 'index'%>
+#app/views/pages/index.html.er
+#app/javascript/components/App.js
+
+-
+Digest::MD5.hexdigest("mypassword")
+Report.create(amount: "John Doe").valid?
+user.persisted?
+user.username_changed?
+user.username_was
+users = User.where(is_public: true, created_at: 1.day.
+ago..Time.current)
+User.where("first_name ILIKE :search AND is_public = :is_
+public", {search: '%scott%', is_public: true})
+User.where(created_at: 1.day.ago..Time.current)
+User.find_by(email: "scott@example.com")
+User.find_by_email("scott@example.com")
+updated_at
+created_at
+-
+
+localhost:3000/users/sign_up
+http://localhost:3000/users/sign_in
+
+destroy_user_session     DELETE    /users/sign_out
+GET http://localhost:3000/api/v1/reports.json
+GET http://localhost:3000/api/v1/reports/profile.json
+GET http://localhost:3000/api/v1/reports/noreport.json
+POST http://localhost:3000/api/v1/reports/latest.json
+{ "nikname": "Pig"}
+POST http://localhost:3000/api/v1/reports/:id/addreport.json
+{ "amount": "5555.5555"}
+

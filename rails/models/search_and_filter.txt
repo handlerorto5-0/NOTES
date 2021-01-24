@@ -1,0 +1,58 @@
+search_and_filter.txt
+
+-----------------------
+Searching with scopes
+
+#app/models/product.rb
+class Product < ActiveRecord::Base
+  scope :filter_by_status, -> (status) { where status: status }
+  scope :filter_by_location, -> (location_id) { where location_id: location_id }
+  scope :filter_by_starts_with, -> (name) { where("name like ?", "#{name}%")}
+end
+
+#app/controllers/product_controller.rb
+def index
+  @products = Product.where(nil) # creates an anonymous scope
+  @products = @products.filter_by_status(params[:status]) if params[:status].present?
+  @products = @products.filter_by_location(params[:location]) if params[:location].present?
+  @products = @products.filter_by_starts_with(params[:starts_with]) if params[:starts_with].present?
+end
+OR
+app/controllers/product_controller.rb
+def index
+  @products = Product.where(nil)
+  filtering_params(params).each do |key, value|
+    @products = @products.public_send("filter_by_#{key}", value) if value.present?
+  end
+end
+private
+# A list of the param names that can be used for filtering the Product list
+def filtering_params(params)
+  params.slice(:status, :location, :starts_with)
+end
+-----------------------------
+A more reusable solution
+
+№app/models/concerns/filterable.rb
+module Filterable
+  extend ActiveSupport::Concern
+
+  module ClassMethods
+    def filter(filtering_params)
+      results = self.where(nil)
+      filtering_params.each do |key, value|
+        results = results.public_send("filter_by_#{key}", value) if value.present?
+      end
+      results
+    end
+  end
+end
+№app/models/product.rb
+class Product
+  include Filterable
+  ...
+end
+№app/controllers/product_controller.rb
+def index
+  @products = Product.filter(params.slice(:status, :location, :starts_with))
+endы

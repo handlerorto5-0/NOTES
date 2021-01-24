@@ -20,4 +20,10 @@ rake --tasks - вывод задач доступных в Rakefile
 gem query  список установленных
 gem query --remote  список всех существующих
 gem query --remote --name-matches "test"
-
+--------------------------------
+Подчеркивание - это специальная переменная irb. Возвращает последнее определение.
+Person.new("David")
+#<Person:0x000001018ba360 @name="David">
+david = _
+#<Person:0x000001018ba360 @name="David">
+--------------------------------
