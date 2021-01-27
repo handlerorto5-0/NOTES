@@ -1,0 +1,18 @@
+flip_flop.txt
+
+# этот метод вернёт ActiveRecord::Relation
+User.includes( :profile_pictures,:address,:contact_detail).where("user.id = ?",self)
+
+# этот метод вернёт Boolean(NOTE THE !! signs before result)
+!!User.includes( :profile_pictures,:address,:contact_detail).where("user.id = ?",self)
+
+# .map не работают в запросах с .where , надо применят joins
+#найти все профили пользователей (UserProfile), которые являются активными, которые не являются пользователем (пользователем) с id = 10.
+UserProfiles.includes(:user=>:profile_pictures]).where(:active=>true).joins(:user).where.not(:id=>10)
+
+# gem 'bullet' помогает вам убить все N + 1 запросов, а также излишне нетерпеливые загруженные отношения
+https://github.com/flyerhzm/bullet
+
+# Мы можем избежать дублирования, используя distinct.
+User.joins(:posts).select('distinct users.*')
+User.joins(:posts).select('distinct users.*, posts.title as posts_title')

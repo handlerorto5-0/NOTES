@@ -1,0 +1,99 @@
+areil.txt
+
+ARel - менеджер синтаксических деревьев для составления sql-запросов
+===========================
+Группировка и агрегирование
+Необходимо получить население по областям (штатам) в виде массива объектов:
+[{
+:country=>"Страна",
+:state=>"Область",
+:population=>20000
+ },
+...] 
+
+На чистом SQL:
+City.find_by_sql("
+ SELECT `country`,
+ `state`,
+ sum(`population`) as `population`
+ FROM `cities`
+ GROUP BY `country`, `state`
+")
+
+ActiveRecord:
+City.select(
+ [
+ :country,
+ :state,
+ "sum(`population`) as `population`"
+ ])
+ .group(:country, :state)
+
+SQL by ARel:
+at = City.arel_table
+City.find_by_sql(
+at.project(
+at[:country],
+at[:state], at[:population].sum.as
+("population")
+).group(at[:country],at[:state])
+)
+
+ActiveRecord + ARel:
+at = City.arel_table
+	City.select(
+	[
+		:country,
+		:state, 
+		at[:population].sum.as("population")
+	]
+	).group(:country, :state)
+
+==========================
+Вложенные запросы
+
+Необходимо получить список городов, которые посещали люди, посещавшие так же город Х, в виде массива объектов модели City:
+[<City>, ...] 
+
+На чистом SQL:
+
+City.find_by_sql("
+SELECT * FROM `cities`
+WHERE `cities`.`id` IN (
+	SELECT `v1`.`city_id` FROM `visits` as `v1`
+	WHERE `v1`.`person_id` IN(
+		SELECT `v2`.`person_id` FROM `visits` as `v2`
+		WHERE `city_id` = #{city_id}
+	)
+)
+
+ARel:
+at = City.arel_table
+v1_alias = Visit.arel_table.alias("v1")
+v1 = Arel::SelectManager.new(ActiveRecord::Base).from(v1_alias)
+v2_alias = Visit.arel_table.alias("v2")
+v2 = Arel::SelectManager.new(ActiveRecord::Base).from(v2_alias)
+
+
+ARel:
+City.find_by_sql(
+	at.project(Arel.star).where(
+		at[:id].in(
+				v1.project(v1_alias[:city_id]).where(
+					v1_alias[:person_id].in(
+						v2.project(v2_alias[:person_id]).where(
+							v2_alias[:city_id].eq(city_id)
+					)
+				)
+			)
+		)
+	)
+)
+
+ActiveRecord only:
+City.where(
+	:id => Visit.select(:city_id).where(
+		:person_id => Visit.select(:person_id).where(:city_id=>city_id)
+	)
+)
+

@@ -1,0 +1,22 @@
+404.txt
+
+Rescue from record not found error вместо того, чтобы показывать исключение или белую
+страницу:
+class ApplicationController < ActionController::Base
+	# ... your other stuff here
+	rescue_from ActiveRecord::RecordNotFound do |exception|
+		redirect_to root_path, 404, alert: 'Record not found'
+		# redirect_to root_path, 404, alert: I18n.t("errors.record_not_found")
+	end
+end
+
+показывать страницу
+
+lass ApplicationController < ActionController::Base 
+	protect_from_forgery with: :exception 
+	rescue_from ActiveRecord::RecordNotFound, with: :record_not_found 
+	private 
+	def record_not_found 
+		render html: "Record <strong>not found</strong>", status: 404 
+	end 
+end

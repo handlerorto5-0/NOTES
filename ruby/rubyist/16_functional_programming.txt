@@ -1,0 +1,102 @@
+16_functional_programming.txt
+Ruby и функциональное программирование
+=====================================
+Методы без побочных эффектов называются чистыми функциями(pure functions).
+
+Функция, которая при одинаковых аргументах всегда возвращает один и тот же результат без побочных эффектов, обладает ссылочной прозрачностью.
+num = num + 1 - это правильно в Ruby, но не явл функциональным программированием, потоиу что в математике 1 = num - num -> 1=0
+new_num = num + 1 - это функ прога потому что  1 = new_num - mum
+
+Побочный эффект - это практически все, что делает метод, кроме возврата значения. Напрмер, меняеет значение переменной, возвращает ошибку и пр. Побочные эффекты могут быть преднамеренными или непреднамеренными.
+----------------------
+В Ruby много встроенных чистых функций, которые не меняют состояние
+str.upcase - pure , str.upcace! - not pure
+Объекты Ruby всегда можно изменить. Поэтому, в классах для чистоты избегаются инициализация переменных
+----------------------
+Неизменяемые объекты не меняются после создания.
+применяют Object#freeze and Object#frozen?
+CONSTANT = "can't change me!"
+CONSTANT.freeze -> "can change me"
+CONSTANT.gsub!(/can/, 'can\'t') -> FrozenError (can't modify frozen String)
+CONSTANT.frozen? -> true
+----------------------
+Замороженные строковые литералы
+есть способ сделать строки замороженными по умолчанию (без freeze) двумя способами:
+ruby --enable-frozen-string-literal my_program.rb - вызов с параметром
+# frozen_string_literal: true - добавить вверху
+для irb
+RUBYOPT=--enable-frozen-string-literal irb
+только так можно будет получить модифицируемую строку:
+str = "a frozen string"
+new_str = str.dup
+str = String.new("an unfrozen string")
+unfrozen_str = +str
+----------------------
+Higher-order functions 
+Метод, который принимает функцию в качестве аргумента или возвращает функцию в качестве результата, называется функцией высшего порядка.
+--
+Функции, принимаюцие функции
+[1,3,5].map { |x| x * 5 }
+
+Kernel#itself
+Он просто возвращает объект, для которого был вызван:
+"Ruby".itself -> "Ruby"
+%w(joe, joe, david, matz, david, matz, joe)group_by { |name | name }
+или
+%w(joe, joe, david, matz, david, matz, joe).group_by(&:itself)
+вернут {"joe"=>["joe", "joe", "joe"], "david"=>["david", "david"],
+"matz"=>["matz", "matz"]}
+!! это пользуют как аргумент по умолчанию:
+def filter_arr(arr, method=:itself)
+	arr.public_send(method)
+end
+a = [1,1,2,2,3,5,6]
+filter_arr(a, :uniq) -> [1, 2, 3, 5, 6]
+filter_arr(a) -> [1, 1, 2, 2, 3, 5, 6]
+
+Kernel#yield_self (похоже на Object#tap)
+возьмите блок и отдайте получателя этому блоку
+"Ruby".yield_self { |str| str + " Roundtable" } -> "Ruby Roundtable"
+пример с лямбдой
+add_newline = -> (str) { str + "\n" }
+welcome = -> (str) { "Welcome, " + str.upcase + "!" }
+"joe".yield_self(&welcome).yield_self(&add_newline) + "We’re glad you’re
+here!"
+=> "Welcome, JOE!\nWe’re glad you’re here!"
+--
+Функции, возвращающие функции
+В Ruby это означает написание методов, возвращающих proc, содержащий инструкции преобразования, а не значение.
+def multiply_by(m)
+	Proc.new {|x| puts x * m }
+end
+mult = multiply_by(10)
+mult.call(12)
+
+Partial function application - функции передается любое количество аргументов меньше ее арности
+add = -> (a, b, c) { a + b + c }
+find_multiples = -> (x, arr) { arr.select { |el| el % x == 0 } }
+Currying возвращает серию функций, каждая из которых принимает один аргумент. пример каррирования финкции с лямбдой
+add = -> (a, b, c) { a + b + c }
+fun = add.curry
+fun.(1,2,3) => 6 или fun.(1).(2).(3) => 6 или fun.call(1,2,3) => 6 или fun[1,2,3] => 6 или fun[1,2][3] => 6
+Метод тоже можно карировать:
+def add(a, b, c) ; a + b + c ; end
+fun = method(:add).curry
+------------------------
+Recursion
+пример с фибоначи
+def fibonacci(x)
+	x <= 1 ? x : fibonacci(x - 1) + fibonacci(x - 2)
+end
+terminal clause(конечная выражение)- сообщает функции, что оценка завершена, и она должна возвращать значение, а не продолжать вызывать себя. x <= 1 - конечное выражение
+
+использование ленивых вычислений для работы с очень большими или даже бесконечными наборами данных
+powers = -> (power) { (1..Float::INFINITY).lazy.map { |x| x**power } }
+
+Tail-call optimization - позволяет оценивать хвостовые рекурсивные функции без добавления последовательных кадров стека в стек вызовов, для этого последняя инструкция в функции - это вызов самой функции.
+def fibonacci_helper(x, y, num)
+	num < 1 ? x : fibonacci_helper(y, x + y, num - 1)
+end
+def fibonacci(x)
+	fibonacci_helper(0, 1, x)
+end

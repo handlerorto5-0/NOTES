@@ -1,0 +1,160 @@
+requests.txt
+
+=====================================
+.where 
+принимает хэш, где ключи соответствуют именам столбцов в таблице
+
+# найти всех людей с первым именем Sven :
+people = Person.where(first_name: 'Sven')
+
+# найти всех людей с именем Sven и фамилией Schrodinger :
+people = Person.where(first_name: 'Sven', last_name: 'Schrodinger')
+# записи будут возвращаться только в том случае, если совпадают имя first_name и last_name
+
+# найти записи с first_name == 'Bruce' OR last_name == 'Wayne':
+User.where('first_name = ? or last_name = ?', 'Bruce', 'Wayne')
+====================================
+.where с массивом
+
+people = Person.where(first_name: ['Mark', 'Mary'])
+people.to_sql # "SELECT * FROM people WHERE first_name IN ('Mark', 'Mary')"
+
+# Если массив содержит nil , то SQL будет изменено , чтобы проверить , если столбец является null :
+people = Person.where(first_name: ['Mark', 'Mary', nil])
+====================================
+scope
+
+# define a scope to get all people under 17
+scope :minors, -> { where(age: 0..17) }
+# define a scope to search a person by last name
+scope :with_last_name, ->(name) { where(last_name: name) }
+
+minors = Person.minors
+peters_children = Person.minors.with_last_name('Peters')
+mary_smith = Person.with_last_name('Smith').where(first_name: 'Mary')
+========================================
+where.not
+
+people = Person.where.not(first_name: ['Mark', 'Mary'])
+========================================
+.order
+заказать результаты запроса ActiveRecord
+
+User.order(:created_at)
+
+# в прямом порядке (по умолчанию)
+User.order(created_at: :asc)
+
+# в обратном порядке
+User.order(created_at: :desc)  или
+User.order("created_at DESC")
+
+# заказать users соответствии с их именем role:
+# User: belongs_to :role, Role: has_many :users
+User.includes(:role).order("roles.name ASC")
+
+# order также может принимать узел Arel:
+User.includes(:role).order(User.arel_table[:name].asc)
+================================
+Методы ActiveRecord Bang (!)
+Если вам нужен метод ActiveRecord для создания исключения вместо false значения в случае сбоя, вы можете добавить ! им.
+Class User < ActiveRecord::Base
+	validates :last_name, presence: true
+end
+User.create!(first_name: "John")
+#=> ActiveRecord::RecordInvalid: Validation failed: Last name can't be blank
+принимают: .create!, .take!, .first!,.last!, .find_by!, .find_or_create_by!, #save!, #update!
+=================================
+.find_by
+найти записи по любому полю. Если результатом является пустой набор, он возвращает nil вместо find .
+User.find_by(first_name: "John")
+=================================
+.delete_all
+для вызова непосредственно на модели, для удаления всех записей в этой таблице или коллекции
+User.where(name: "John").delete_all
+=================================
+Нечувствительный к регистру поиск по регистру ActiveRecord
+like создаёт проблеммы с производительностью, всесто этого лучше:
+addresses = Address.arel_table
+Address.where(addresses[:address].matches("%street%"))
+=================================
+Получить первую и последнюю запись
+User.first
+User.last
+Передача целочисленного значения первому и последнему методу создает запрос LIMIT и возвращает массив объектов.
+User.first(5)
+===================================
+.группа и .count
+
+# Product сгруппировать их по их category
+Product.select(:category).group(:category)
+# подсчет появления - в данном случае - categories
+Product.select(:category).group(:category).count
+====================================
+.distinct (или .uniq устарел)
+удалить дубликаты из результата
+
+Customers.select(:country).distinct
+=====================================
+joins()
+позволяет присоединить таблицы к текущей модели
+Если ваше отношение :has_many , то аргумент join joins() должен быть плюрализован
+
+User.joins(:posts)
+
+# после соединения таблицы будет доступ к ней:
+User.joins(:posts).where(posts: { title: "Hello world" })
+
+# Вложенные joins :
+User.joins(posts: :images).where(images: { caption: 'First post' })
+=====================================
+includes 
+гарантирует , что все указанные ассоциаций загружаются с использованием минимально возможного количества запросов. Поэтому при запросе таблицы для данных со связанной таблицей обе таблицы загружаются в память.
+
+@authors = Author.includes(:books).where(books: { bestseller: true } )
+
+# this will print results without additional db hitting
+@authors.each do |author|
+	author.books.each do |book|
+		puts book.title
+	end
+end
+
+создаёт один LEFT OUTER JOIN из двух запросов
+=========================================
+limit чтобы указать количество записей, которые нужно извлечь
+User.limit(3) #returns first three records
+offset чтобы сообщить количество пропущенных записей, прежде чем начинать возвращать записи.
+User.limit(5).offset(30) #returns 5 records starting from 31th i.e from 31 to 35
+============================================
+Preload
+загружает данные ассоциации в виде отдельного запроса. Всегда создаёт два запроса.
+
+User.preload(:posts).to_a
+# =>
+SELECT "users".* FROM "users"
+SELECT "posts".* FROM "posts"  WHERE "posts"."user_id" IN (1)
+============================================
+Eager load
+загружает все ассоциации в одном запросе, используя LEFT OUTER JOIN
+
+User.eager_load(:posts).to_a
+=============================================
+Решение проблем предзагрузки(includes, preload, eager_load)
+База данных попытается загрузить сразу миллионы записей и встанет.
+----------------------------
+Использовать batch loading:
+Загружать записи партиями. Это минимизирует нагрузку на базу данных для одновременной загрузки всех записей, что снижает потребление памяти.
+---------------------------
+Использовать представление SQL:
+Это хороший способ получить данные из нескольких таблиц и условий, если они вам нужны. Возможно, это один из лучших способов в данном случае, потому что ORM не может обрабатывать все варианты использования сложного бизнес-приложения.
+-------------------------------
+Использовать eager loading:
+выполняется один запрос с LEFT JOIN. Подобно представлению SQL, но только с использованием одного метода в Rails. Подходит для простых случаев использования, когда требуется загрузить одну или две ассоциации.
+User.eager_load(:posts)
+# SELECT "users"."id" AS t0_r0, "users"."name" AS t0_r1, ...
+# FROM "users" LEFT OUTER JOIN "posts" ON "posts"."user_id" =
+# "users"."id"
+------------------------------
+Используйте lazy loading с кешированием запросов:
+Иногда кажется, что запускается несколько запросов, но может случиться так, что один и тот же запрос запускается несколько раз. В этом случае Rails обрабатывает его, кэшируя запрос, чтобы он больше не обращался к базе данных. Так что здесь ничего делать не нужно. Можно также вручную кэшировать запросы.
