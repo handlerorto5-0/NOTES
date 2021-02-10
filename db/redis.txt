@@ -1,8 +1,21 @@
 Установка:
-
+ubuntu 18-04:
+sudo apt update
+sudo apt install redis-server
+sudo nano /etc/redis/redis.conf
+отредактировать
+supervised systemd
+sudo systemctl restart redis.service
+-------------------------------------
+Заруск:
+sudo systemctl status redis
+redis-cli войти в ком оболочку, выйти quit
+>ping -> PONG
+>set test "It's working!" -> OK
+>get test -> "It's working!"
+>exit
 -------------------------------------
 Bootcamp:
-redis-cli войти в ком оболочку, выйти quit
 
 есть расширения для всех языков (посмотреть для ruby)
 хранит ключь значение, по умолчанию строки

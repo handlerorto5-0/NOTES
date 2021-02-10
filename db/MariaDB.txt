@@ -1,8 +1,10 @@
+sudo apt install mariadb-server
+sudo mysql_secure_installation (pass 123)
 sudo apt-get install libmariadbd-dev (for Rails, mysql2 gem)
 sudo mysqladmin version
 sudo systemctl status mariadb
 sudo systemctl start mariadb
-donkey donkey
+
 ---------------------------------------
 mysql -u root -p | запуск клиента
 CREATE DATABASE test_database | создать БД

@@ -1,6 +1,6 @@
 видеокурс / книга                  | № или страница
 --------------------------------------------------------------
-A Common-Sense Guide               | 15
+A Common-Sense Guide               | 26
 --------------------------------------------------------------
 Learning SQL                       | 101
 --------------------------------------------------------------
@@ -8,7 +8,8 @@ RabbitMQ in Depth                  | 11
 --------------------------------------------------------------
 Design and Build Great Web API     | 53
 --------------------------------------------------------------
-Fullstack React with TypeScript    | 60 (code/ react_ts_full)
+Fullstack React,TypeScript, and
+Node                               | 48 (code/ react_ts_node)
 --------------------------------------------------------------
 Learn React Hooks                  | 277
 https://github.com/PacktPublishing/Learn-React-Hooks

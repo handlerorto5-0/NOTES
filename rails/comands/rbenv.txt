@@ -58,3 +58,6 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 Затем
 rm -rf `rbenv root`
+
+----------------------------------
+install ChromeDriver ?? gromium

@@ -1,0 +1,92 @@
+task.txt
+Доступы к тестовому репо:
+https://rscz.ru/travel/test_task_10
+str_token@mail.ru
+ToyGotika230GT
+---------------------------
+Тестовая задача:
+https://rtrack.ru/projects/travel/issues/5122
+
+Данные доступа к API проверке уникальности
+https://text.ru/api-check
+e98c5932bdc9afc33030959e7e733cea++
+
+Задача
+
+Нужно проверять контент добавляемых авторами отзывов на уникальность
+Пример такого контента по этой ссылке http://travelask.ru/reviews/last﻿
+Проверять будем не весь добавляемый контент, а только контент от определенной группы авторов.
+Эти авторы выбирают о чем написать по нижеперечисленным ссылкам и "занимают" тему (занимают=нажатие на кнопку "занять").
+
+﻿http://travelask.ru/authors/cities﻿
+﻿http://travelask.ru/authors/countries﻿
+﻿http://travelask.ru/authors/places﻿
+
+﻿Таким образом нам нужно сопоставить 2 условия. Если юзер, который запостил отзыв, "занял" эту тему в одной из трех ссылок выше, то мы отправляем отзыв на проверку. Если это какой-либо другой отзыв (был сделан мимо кнопки "занять") - мы его НЕ проверяем.
+
+Результаты уникальности выводим вот тут, внизу отзыва, справа от цифр (эти цифры видны только юзерам со спец правами т.е. все кроме обычного юзера) Т.е. просто смотрите для какой группы юзеров сделана видимость по цифрам 3204 и делаете такие же права видимости для цифр уникальности.
+
+Добавил сервис:
+req = Services::RequestUniqArticle.new('text')
+
+Ищу точку входа:
+Не могу понять как проверить, занял ли автор нужную тему?
+В модели article есть поля:
+publication_kind:
+Article.select(:publication_kind).where.not(publication_kind: nil)
+#<Article:0x00005649acde22d0 id: nil, publication_kind: "place">
+kind:
+Article.select(:kind).where.not(kind: nil)
+article = Article.where.not(kind: nil).last
+article.kind -> "insurance_country"
+#<Article:0x000055cb6162bf88 id: nil, kind: "insurance_country">,
+#<Article:0x000055cb6162ae80 id: nil, kind: "rentcar_city">,
+
+в протектед артикле лонтроллера city place country
+def is_kind_reserver article
+  publication_kind = article.publication_kind
+  kind = article.kind
+  ['city','country'].any? { |word| kind.include?(word) } or publication_kind = "place"
+end
+
+
+
+routes: 
+117 resources :articles
+333 namespace :authors
+353 scope module: 'cities'
+356 scope module: 'places'
+375 scope module: 'countries' do
+461 resources :cities
+472 resources :countries
+485 resources :cities
+
+models:
+user
+Думаю здесь собака зарыта, надо текущго узера проверять перед сохранением статьи
+103 has_many :author_profiles, class_name: 'UserAuthorField'
+231 has_many :articles, class_name: 'Article'
+731 def is_article_author?
+      has_role?(:article_author)
+    end
+
+user_author_fiels
+28 belongs_to :user 
+31 enumerize :kind, in: %i(city place country), scope: true
+39 scope :by_kind, ->(section)
+article
+belongs_to :category, class_name: 'ArticleCategory'
+belongs_to :theme, class_name: 'ArticleTheme'
+belongs_to :subject, polymorphic: true
+
+controllers/authors/articles
+
+controllers/authors/(cities, countries, places)
+занимается тема
+
+надо в виде прикрутить сообщение
+добавить @uniq_message
+views/shared/post_info/_question_info.slim 
+views/shared/post_info/_question_info.slim
+
+

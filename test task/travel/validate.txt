@@ -1,0 +1,64 @@
+validate.txt
+
+exclusion - проводит валидацию того, что значения атрибутов не включены в указанный набор. Фактически, этот набор может быть любым перечисляемым объектом. Имеет опцию :in, которая получает набор значений, которые не должны приниматься проверяемыми атрибутами. Опция :in имеет псевдоним :within
+
+class Account < ApplicationRecord
+  validates :subdomain, exclusion: { in: %w(www us ca jp),
+    message: "%{value} is reserved." }
+end
+-----------------
+inclusion - проводит валидацию значений атрибутов на включение в указанный набор. Фактически этот набор может быть любым перечисляемым объектом.Имеет опцию :in, которая получает набор значений, которые должны быть приняты. Опция :in имеет псевдоним :within, который используется для тех же целей.
+
+class Coffee < ApplicationRecord
+  validates :size, inclusion: { in: %w(small medium large),
+    message: "%{value} is not a valid size" }
+end
+-----------------------
+validates_with - передает запись в отдельный класс для валидации.
+принимает опции :if, :unless и :on.
+нет сообщения об ошибке по умолчанию.
+
+class GoodnessValidator < ActiveModel::Validator
+  def validate(record)
+    if record.first_name == "Evil"
+      # относятся к состоянию записи в целом, а не к определенному атрибуту.
+      record.errors.add :base, "This person is evil"
+    end
+  end
+end
+
+class Person < ApplicationRecord
+  validates_with GoodnessValidator
+end
+---
+Если передадите любые другие опции, они будут переданы в класс валидатора как options:
+class GoodnessValidator < ActiveModel::Validator
+  def validate(record)
+    if options[:fields].any? { |field| record.send(field) == "Evil" }
+      record.errors.add :base, "This person is evil"
+    end
+  end
+end
+
+class Person < ApplicationRecord
+  validates_with GoodnessValidator, fields: [:first_name, :last_name]
+end
+
+-------------------------
+опции валидаций
+-------------------------
+:allow_nil пропускает валидацию, когда проверяемое значение равно nil.
+class Coffee < ApplicationRecord
+  validates :size, inclusion: { in: %w(small medium large),
+    message: "%{value} is not a valid size" }, allow_nil: true
+end
+
+:if и :unless с символом, соответствующим имени метода, который будет вызван перед валидацией. Это наиболее часто используемый вариант.
+
+class Order < ApplicationRecord
+  validates :card_number, presence: true, if: :paid_with_card?
+
+  def paid_with_card?
+    payment_type == "card"
+  end
+end

@@ -29,7 +29,7 @@ db:setup Runs db:create, db:schema:load and db:seed.
 db:reset Runs db:drop and db:setup.
 db:migrate:reset Runs db:drop, db:create and db:migrate.
 
-db:test:prepare Check for pending migrations and load the test schema. (If you run rake without any arguments it will do this by default.)
+db:test:prepare Проверьте ожидающие миграции и загрузите тестовую схему. (Если вы запустите rake без аргументов, он сделает это по умолчанию.)
 db:test:clone Recreate the test database from the current environment’s database schema.
 db:test:clone_structure Similar to db:test:clone, but it will ensure that your test database has the same structure, including charsets and collations, as your current environment’s database.
 

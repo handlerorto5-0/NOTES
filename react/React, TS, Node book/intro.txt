@@ -1,0 +1,20 @@
+Full-Stack React, TypeScript, and Node
+Искодный код:
+https://github.com/PacktPublishing/Full-Stack-React-TypeScript-and-Node 
+
+npm i typescript@3
+sudo apt install node-typescript
+запуск ts файлов, для перекодирования в js:
+tsc file.ts это создаст file.js
+tsc --target "ES6" getSet.ts зфдать стандарт
+node file.js
+
+разница между типами any и unknown.
+any примет любой тип, даже тот которого нет
+unknown требует подтверждения типя instanceof
+
+
+
+
+
+

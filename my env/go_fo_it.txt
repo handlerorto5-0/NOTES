@@ -1,0 +1,9 @@
+go_fo_it.txt
+Simple To Do App for Linux
+https://itsfoss.com/go-for-it-to-do-app-in-linux/
+
+You can type the commands below to install it on any Ubuntu-based distro (prior to Ubuntu 20.04):
+
+sudo add-apt-repository ppa:go-for-it-team/go-for-it-stable 
+sudo apt update
+sudo apt install go-for-it

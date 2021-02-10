@@ -1,0 +1,72 @@
+terminal.txt
+
+запустить сервер баз данных:
+pg_ctlcluster 13 main start
+sudo systemctl start postgresql@13-main
+------------------------------
+После установки у вас появится пользователь postgres, добавьте его в группу sudo:
+usermod -a -G sudo postgres
+Установите пароль пользователю:
+passwd postgres
+Подключитесь от имени пользователя postgres:
+sudo -i -u postgres
+Для подключения к СУБД PostgreSQL, наберите:
+psql
+Для выхода используйте команду:
+\q
+
+Создание новой роли
+На текущий момент в системе есть только роль postgres для подключения к СУБД. Для создания роли используйте следующую команду:
+sudo -u postgres createuser --interactive
+Необходимо задать следующие параметры - имя пользователя, привилегии суперпользователя, возможность создания БД, возможность создания ролей:
+Enter name of role to add: barmaley
+Shall the new role be a superuser? (y/n) n
+Shall the new role be allowed to create databases? (y/n) y
+Shall the new role be allowed to create more new roles? (y/n) n
+
+Создание новой базы данных
+Если вы работаете в системе как пользователь postgres, введите следующую команду:
+createdb <имя_БД>
+Если вы подключены к другой учетной записи, введите:
+sudo -u postgres createdb <имя_БД>
+
+Открытие приглашения Postgres с новой ролью
+Создайте одноименного с ролью пользователя Ubuntu, введя информацию:
+sudo adduser barmaley   (123456)
+Для подключения используйте следующую команду:
+sudo -u <роль> psql <имя_БД>
+Например:
+sudo -u barmaley psql test_db
+
+Создание и удаление таблиц
+CREATE TABLE playground (
+equip_id serial PRIMARY KEY,
+type varchar (50) NOT NULL,
+color varchar (25) NOT NULL,
+location varchar(25) check (location in ('north', 'south', 'west', 'east', 'northeast', 'southeast', 'southwest', 'northwest')),
+install_date date
+);
+Для просмотра таблицы введите:
+\d
+
+Добавление, выбор и удаление данных из таблицы
+
+INSERT INTO playground (type, color, location, install_date) VALUES ('slide', 'blue', 'south', '2017-04-28');
+INSERT INTO playground (type, color, location, install_date) VALUES ('swing', 'yellow', 'northwest', '2018-08-16');
+SELECT * FROM playground;
+DELETE FROM playground WHERE type = 'slide';
+
+Удаление и добавление столбцов таблицы
+Для добавления столбца используйте следующую команду:
+ALTER TABLE playground ADD last_maint date;
+Чтобы удалить столбец используйте команду:
+ALTER TABLE playground DROP last_maint;
+Обновление данных в таблице
+UPDATE playground SET color = 'red' WHERE type = 'swing';
+
+
+------------------------------
+
+
+DROP ROLE IF EXISTS demo_role;
+DROP TABLE films, distributors;

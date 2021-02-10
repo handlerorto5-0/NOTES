@@ -1,0 +1,35 @@
+launch.txt
+
+travel/test_task_10 - папка с проектом
+/home/kv-2/travel/db_dump - папка с дампами
+username: barmaley
+password: 123456
+
+travel_dev
+travel_hotels_pg
+travel_hotels_pg_test
+travel_test
+
+PGPASSWORD='123456' pg_restore --no-owner -Fc -c -U barmaley -d travel_dev ~/travel/db_dump/travel.pg.bak
+
+PGPASSWORD='123456' pg_restore --no-owner -Fc -c -U barmaley -d travel_hotels_pg ~/travel/db_dump/hotels_pg.bak
+
+pg_restore: [внешний архиватор] не удалось открыть входной файл "/var/lib/postgresql/travel/db_dump/hotels_pg.bak": Нет такого файла или каталога
+
+
+sudo cp -a /home/kv-2/travel/db_dump/hotels_pg.bak  /var/lib/postgresql/dump/
+pg_restore: ошибка: ошибка в PQputCopyData: сервер неожиданно закрыл соединение
+
+sudo systemctl status elasticsearch
+sudo systemctl start elasticsearch
+sudo systemctl status postgresql
+sudo systemctl start postgresql
+
+------------------------------------
+{"text_uid"=>"601d688e77940"}
+601d688e77940
+{"text_unique"=>"0.00", "result_json"=>"{\"date_check\":\"05.02.2021 18:47:44\",\"unique\":0,\"urls\":[{\"url\":\"https:\\/\\/kollege.ru\\/biografii\\/sovremennye-primery-bioniki-v-arhitekture-i-dizaine-intererov-primery-bioniki.html\",\"plagiat\":100},{\"url\":\"https:\\/\\/www.architect4u.ru\\/articles\\/article02.html\",\"plagiat\":100},{\"url\":\"https:\\/\\/alluz.ru\\/prazdniki-v-shkole\\/arhitekturnaya-forma-i-priroda-bahaiskii-hram-v-stolice.html\",\"plagiat\":100},{\"url\":\"https:\\/\\/haiar.ru\\/biologiya-i-arhitektura-ot-kletochnogo-stroeniya-k-edinomu-organizmu-mir.html\",\"plagiat\":100},{\"url\":\"https:\\/\\/sherstinka.ru\\/time-to-pump\\/po-prosbam-chitatelei-arhitekturnaya-bionika-prirodnye-faktory-v\\/\",\"plagiat\":100},{\"url\":\"https:\\/\\/tsiolkovsky.ru\\/idei-v-arhitekture-porozhdennye-analizom-prirodnyh-form-mir.html\",\"plagiat\":100},{\"url\":\"https:\\/\\/musings.ru\\/personality\\/prirodnye-formy-v-arhitekture-bionika-v-arhitekture\\/\",\"plagiat\":100},{\"url\":\"https:\\/\\/www.mega-podarki.ru\\/organicheskaya-arhitektura-prirodnye-faktory-v-arhitekture-solnce.html\",\"plagiat\":100},{\"url\":\"https:\\/\\/www.kia-abakan.ru\\/prevention\\/prirodnye-faktory-v-arhitekture-solnce-muzei-solomona-gugenhaima-v-nyu-iorke\\/\",\"plagiat\":100},{\"url\":\"https:\\/\\/telegra.ph\\/Arhitekturnaya-forma-i-priroda-05-11\",\"plagiat\":100},{\"url\":\"https:\\/\\/petryashin.ru\\/mir-arhitektury-po-prosbam-chitatelei-arhitekturnaya-bionika-park-guel\\/\",\"plagiat\":100},{\"url\":\"https:\\/\\/studfile.net\\/preview\\/2779995\\/\",\"plagiat\":100},{\"url\":\"https:\\/\\/pinsbar.ru\\/po-prosbam-chitatelei-arhitekturnaya-bionika-arhitekturnaya-forma-i\\/\",\"plagiat\":99.48},{\"url\":\"https:\\/\\/koon.ru\\/mir-arhitektury-sovremennye-primery-bioniki-v-arhitekture-i-dizaine\\/\",\"plagiat\":99.48},{\"url\":\"https:\\/\\/infopedia.su\\/9xc929.html\",\"plagiat\":99.48},{\"url\":\"https:\\/\\/naruhog.ru\\/vegetables-and-fruits\\/arhitekturnaya-forma-i-priroda-biologiya-i-arhitektura-ot-kletochnogo\\/\",\"plagiat\":99.48},{\"url\":\"https:\\/\\/artistexpo.ru\\/spending-the-donation\\/mir-arhitektury-organicheskaya-arhitektura-osobennosti\\/\",\"plagiat\":99.48},{\"url\":\"https:\\/\\/himkiuch.ru\\/kvartira\\/arhitekturnaya-forma-i-priroda-prirodnye-formy-v-arhitekture.html\",\"plagiat\":99.48},{\"url\":\"https:\\/\\/zadocs.ru\\/literatura\\/13743\\/index.html?page=3\",\"plagiat\":29.53},{\"url\":\"https:\\/\\/kosygin-rgu.ru\\/filemanag\\/Uploads\\/news\\/06-12-2017\\/disk2017\\/\\u0414\\u0418\\u0421\\u041a 2017 - \\u0421\\u0431\\u043e\\u0440\\u043d\\u0438\\u043a \\u043c\\u0430\\u0442\\u0435\\u0440\\u0438\\u0430\\u043b\\u043e\\u0432 - \\u0427\\u0430\\u0441\\u0442\\u044c 2.pdf\",\"plagiat\":15.81},{\"url\":\"https:\\/\\/science.volgatech.net\\/upload\\/documents\\/conf\\/np_tm\\/\\u0447\\u0430\\u0441\\u0442\\u044c 2.pdf\",\"plagiat\":11.62}]}", "spell_check"=>"", "seo_check"=>"", "unique"=>"0.00"}
+
+{"text_uid"=>"601d68d85ff84"}
+601d68d85ff84
+{"error_code"=>181, "error_desc"=>"Текст ещё не проверен", "queuetext"=>"2", "queueproc"=>"0", "spell_check"=>"", "seo_check"=>""}

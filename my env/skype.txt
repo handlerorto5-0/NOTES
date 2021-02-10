@@ -1,0 +1,9 @@
+skype.txt
+
+How to change skype default browser
+Ubuntu 18.04 Cromium
+
+Quit skype
+ln -s ~/.config/mimeapps.list ~/snap/skype/common/.config/mimeapps.list
+rm -rf ~/snap/skype/common/.config/google-chrome
+sudo ln -s ~/.config/google-chrome ~/snap/skype/common/.config/

@@ -56,30 +56,15 @@ postgres=# CREATE USER sample_user WITH password 'sample_password';
 postgres=# GRANT ALL privileges ON DATABASE  sample_database TO sample_user; 
 GRANT 
 postgres=# q
-
-
-RAils
+---------------------------------
 create a PostgreSQL super user role
 sudo -u postgres createuser -s sammy -P
 sudo -u postgres psql
 #\password sammy
 #\q
-
 barmaley
 123456
-
-kv-2
-
-panda
-panda
-
-pundit  123
 --------------------------------------------
-superuser donkey:
-username: donkey
-password: donkey
-db: donkeydb
-
 /etc/postgresql/11/main/pg_hba.conf peer->trust
 /etc/postgresql/11/main/postgresql.conf
 listen_addresses = 'localhost'

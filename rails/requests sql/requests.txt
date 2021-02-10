@@ -140,6 +140,27 @@ Eager load
 
 User.eager_load(:posts).to_a
 =============================================
+.select
+
+select(*fields) все поля
+
+# Принимает блок, поэтому его можно использовать так же, как Array # select
+Model.all.select { |m| m.field == value }
+
+# Изменяет инструкцию SELECT для запроса так, чтобы извлекались только определенные поля:
+Model.select(:field, :other_field, :and_one_more)
+
+# добавить псевдоним
+Model.select('field AS field_one', 'other_field AS field_two')
+
+# Если был указан псевдоним, он будет доступен из результирующих объектов:
+Model.select('field AS field_one').first.field_one
+# => "value"
+
+Model.select('field_one', 'field_two AS something').count(:all)
+# где where надо с first
+User.select(:id, :channel).where(:id => rand(1..User.count)).first.channel
+=============================================
 Решение проблем предзагрузки(includes, preload, eager_load)
 База данных попытается загрузить сразу миллионы записей и встанет.
 ----------------------------
