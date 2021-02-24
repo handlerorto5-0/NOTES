@@ -1,0 +1,31 @@
+Full-Stack React, TypeScript, and Node
+Искодный код:
+https://github.com/PacktPublishing/Full-Stack-React-TypeScript-and-Node 
+примеры:
+code/react_ts_node/ts/02_chap
+
+npm i typescript@3
+sudo apt install node-typescript
+запуск ts файлов, для перекодирования в js:
+tsc file.ts это создаст file.js
+tsc --target "ES6" getSet.ts зфдать стандарт
+node file.js
+
+разница между типами any и unknown.
+any примет любой тип, даже тот которого нет
+unknown требует подтверждения типя instanceof
+
+tsc tsfile.ts –lib 'es5, dom':
+• --lib: используется, чтобы указать, какую версию JavaScript вы будете использовать во время разработки.
+• --target: указывает, какую версию JavaScript вы хотите передать в файлы .js.
+• --noImplicitAny: не разрешает любой тип без явного его объявления.
+• --outDir: это каталог, в котором будут сохраняться файлы JavaScript.
+• --outFile: это последнее имя файла JavaScript.
+• --rootDirs: это массив, в котором хранится исходный код файла .ts.
+• --exclude: это массив папок и файлов, которые нужно исключить из компиляции.
+• --include: это массив папок и файлов для включения в компиляцию.
+
+npm i node-fetch
+
+
+

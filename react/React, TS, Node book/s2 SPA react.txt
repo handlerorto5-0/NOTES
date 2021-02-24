@@ -1,0 +1,10 @@
+npx create-react-app try-react -–template typescript
+npm install --save typescript @types/node @types/react @types/react-dom @types/jest
+rename any file to be a TypeScript file (e.g. src/index.js to src/index.tsx)
+App.tsx
+App.test.tsx
+index.tsx
+setupTests.ts
+npm run build
+npm i --save react-router-dom
+npm i --save @types/react-router-dom

@@ -1,0 +1,2 @@
+npx create-react-app class-components -–template typescript
+npx create-react-app hooks-components –-template typescript

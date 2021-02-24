@@ -9,7 +9,7 @@ RabbitMQ in Depth                  | 11
 Design and Build Great Web API     | 53
 --------------------------------------------------------------
 Fullstack React,TypeScript, and
-Node                               | 48 (code/ react_ts_node)
+Node                               | 113 (code/ react_ts_node)
 --------------------------------------------------------------
 Learn React Hooks                  | 277
 https://github.com/PacktPublishing/Learn-React-Hooks

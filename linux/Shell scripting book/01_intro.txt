@@ -1,0 +1,55 @@
+/code/scripts/
+
+Установите bashdb, который является обязательным пакетом для плагина отладки bash.
+sudo apt-get install bashdb
+не поддерживается с ubuntu 18.04 , есть пак кину в аржив bashdb_4.2.0.8-1.1_all.deb
+plugin for VS Code - bash debug
+
+$ type -t ls - алиас или нет
+
+Linux будет проверять наличие исполняемых файлов в среде PATH только в том случае, если указан полный или относительный путь к программе. Как правило, текущий каталог не ищется, если он не находится в PATH. Можно включить наш текущий каталог в PATH, добавив каталог в переменную PATH.
+$ export PATH=$PATH:. - ??? надо разобраться
+
+echo $PATH - показать где ищет скрипты
+в .bashrc добавил 
+export PATH="$HOME/code/scripts:$PATH"
+source ~/.bashrc
+
+Следующий список командной строки создаст каталог, только если он еще не существует:
+test -d $HOME/code/scripts || mkdir $HOME/code/scripts
+конфиг nano:
+test -d $HOME/.nanorc || mkdir $HOME/.nanorc 
+set autoindent
+set tabsize 2
+include /usr/share/nano/sh.nanorc
+
+code/scripts/hello1.sh:
+#!/bin/bash  - всегда первая линия
+echo "Hello word"
+exit 0 - ожидает int аргумент всегда, 0 укажет на какой то тип ошибки
+
+принудительный запуск, без прав доступа
+bash $HOME/code/scripts/hello1.sh
+добавить доступ на исполнение
+$ chmod +x $HOME/code/scripts/hello1.sh
+вызывать
+sh hello1.sh
+hello1.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

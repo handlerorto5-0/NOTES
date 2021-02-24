@@ -87,7 +87,7 @@ MyClass.private_instance_methods
 Строки:
 негативный поиск знаков с строке:
 string.count("^aey. ")
-string.count("ag-m", "^l") считает "а" и "g-m", ероме "l"
+string.count("ag-m", "^l") считает "а" и "g-m", кроме "l"
 Трансформация:
 string.rjust(25,'.')
 "...........David A. Black"

@@ -1,0 +1,10 @@
+npx create-react-app ejected-app --template typescript
+npm run eject
+
+Jest and Enzyme
+
+npm run test
+selected a
+
+можете разместить тесты в отдельной папке, обычно называемой __test__, или вы можете разместить ее рядом с файлом вашего компонента. Мы разместим их рядом для удобства. Если мы это сделаем, нам нужно будет обновить наш файл tsconfig.json, включив в него эту compilerOption:
+"types": ["node", "jest"]                         ааааа
