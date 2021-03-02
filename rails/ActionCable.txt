@@ -1,0 +1,57 @@
+Использование Action Cable - это трехэтапный процесс: создание канала, передача некоторых данных и получение данных.
+
+depot> bin/rails generate channel products
+invoke test_unit
+create test/channels/products_channel_test.rb
+create app/channels/products_channel.rb
+identical app/javascript/channels/index.js
+identical app/javascript/channels/consumer.js
+create app/javascript/channels/products_channel.js
+
+# app/channels/products_channel.rb
+class ProductsChannel < ApplicationCable::Channel
+	def subscribed
+		stream_from "products"
+	end
+	def unsubscribed
+		# Any cleanup needed when channel is unsubscribed
+	end
+end
+
+Здесь важно имя класса (ProductsChannel) и имя потока (продукты). Канал может поддерживать несколько потоков (например, приложение чата может иметь несколько комнат).
+
+Каналы могут иметь последствия для безопасности, поэтому по умолчанию Rails разрешает доступ только с локального хоста при работе в режиме разработки. Если вы разрабатываете на нескольких машинах, вы должны отключить эту проверку. Сделайте это, добавив следующую строку в config / environment / development.rb:
+config.action_cable.disable_request_forgery_protection = true
+
+Затем мы собираемся транслировать весь каталог при каждом обновлении.
+# app/controllers/products_controller.rb
+def update
+...
+ActionCable.server.broadcast 'products',
+html: render_to_string('store/index', layout: false)
+...
+end
+
+Rails сгенерировал схему того, что вам нужно сделать, в app/ java-script/channels/products_channel.js. Он сгенерировал класс с тремя методами: connected (), disconnected () и receive (). Мы заботимся о received (), потому что он вызывается с данными, которые отправляются по каналу. Эти данные имеют атрибут html, который содержит обновленный HTML. Затем вы можете использовать querySelector (), чтобы найти основной элемент на странице, на которой есть хранилище классов CSS. Итак, мы проверяем, получили ли мы элемент обратно из querySelector (), и, если да, мы назначаем data.html элементам innerHTML следующим образом:
+
+# app/javascript/channels/products_channel.js
+import consumer from "./consumer"
+consumer.subscriptions.create("ProductsChannel", {
+connected() {
+// Called when the subscription is ready for use on the server
+},
+disconnected() {
+// Called when the subscription has been terminated by the server
+},
+	received(data) {
+		const storeElement = document.querySelector("main.store")
+		if (storeElement) {
+			storeElement.innerHTML = data.html
+		}
+	}
+});
+
+
+
+
+

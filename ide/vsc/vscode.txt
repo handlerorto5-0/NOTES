@@ -27,3 +27,5 @@ Ruby Solargraph
 Gem Lens
 
 SynthWave '84 - VS Code theme
+----------------------------------------------
+Alt + Shift + F форматировать код в vscode
