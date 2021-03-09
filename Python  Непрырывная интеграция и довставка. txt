@@ -1,0 +1,33 @@
+Серверы непрерывной интеграции (Continuous integration (CI) servers) следят за репозиторием с контролем версий и автоматически запускают наборы тестов при каждом новом коммите, возможно, на самых разных платформах. Они могут уведомить разработчиков, когда они вызвали сбой некоторых тестов, дать обзор истории тестового задания и визуализировать данные трендов, таких как тестовое покрытие.
+Локальные сервисы: Jenkins, Buildbot 2, CruiseControl, TeamCity, JetBrains, Atlassian’s Bamboo
+Хостинговые сервисы: Travis CI, AppVeyor
+
+Запуск Jenkins в Docker.
+https://hub.docker.com/r/liulantao/jenkins-ruby/dockerfile
+Через Dockerfile (стр 53) создаётся работающий сервер Jenkins.
+Пример для Python
+FROM jenkins/jenkins:lts
+USER root
+RUN apt-get update \
+&& apt-get install -y python-pip python3.5 \
+&& rm -rf /var/lib/apt/lists/*
+RUN pip install tox
+Строим образ:
+$ docker build -t jenkins-python .
+Запускаем образ
+$ docker run --rm -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins-python
+Скопируйте пароль, затем укажите ваш браузер на http://127.0.0.1:8080/ и следуйте инструкциям по настройке ...
+Далее происходит настройка к git-репозиторию.
+Cщздать задание стр 54
+
+
+
+
+
+
+
+
+
+
+
+

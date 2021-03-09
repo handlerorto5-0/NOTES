@@ -1,0 +1,106 @@
+Глава 4 Профиль стр 53
+
+Профилирование - единственный верный способ ответить на вопрос «Что замедляет этот код?»
+
+Оптимизировация памяти
+
+Инструмент ruby-prof измеряет время выполнения программы и разбивает его на отдельные функции, которые программа использует.
+Измерения от ruby-prof визуализируют либо с помощью встроенных инструментов печати ruby-prof, либо с помощью KCachegrind.
+* Чтобы получить значимые результаты, всегда отключайте сборку мусора.
+* gem install ruby-prof , убедится в наличии гема
+
+Пример:
+# ruby_prof_example_api1.rb
+require 'date'
+require 'rubygems'
+require 'ruby-prof'
+GC.disable
+RubyProf.start
+Date.parse("2014-07-01")
+result = RubyProf.stop
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(File.open("ruby_prof_example_api1_profile.txt", "w+"))
+главное обернуть измеряемое, можно и так
+result = RubyProf.profile do
+	Date.parse("2014-07-01")
+end
+
+Зауск ruby-prof из командной строки
+# ruby_prof_example_command.rb
+require 'date'
+GC.disable
+Date.parse("2014-07-01")
+----
+$ ruby-prof -p flat -m 1 -f ruby_prof_example_command_profile.txt 
+ruby_prof_example_command.rb
+
+В обоих примерах получим файл с отчётом об исползовании cpu
+
+-------------------------------
+Rails применение ruby-prof
+
+gem 'ruby-prof' в Gemfile
+Добавить адаптер ruby-prof Rack в стек промежуточного программного обеспечения, например, в config / application.rb:
+config.middleware.use Rack::RubyProf, path: '/tmp/rails_profile'
+* use будет включать код инициализации Rails без промежуточного ПО
+Если нужно профилировать промежуточное ПО, вставьте профилировщик перед Rack :: Runtime:
+config.middleware.insert_before Rack::Runtime, Rack::RubyProf, path: '/tmp/rails_profile'
+* После загрузки промежуточного ПО Rack::RubyProf придут плоские отчеты и отчеты в формате HTML, сохраненные по указанному пути.
+
+Для отключения сборщика мусора перед Rack::RubyProf, лучше исползовать обёртку:
+class GCDisabler
+	def initialize(app)
+		@app = app
+	end
+	def call(env)
+		GC.start
+		GC.disable
+		response = @app.call(env)
+		GC.enable
+		response
+	end
+end
+# in config/application.rb
+config.middleware.insert_before Rack::RubyProf, GCDisabler
+---
+
+Отображение резульатов Ruby-Prof Printers
+
+Наиболее полезные типы отчётов ruby-prof:
+- плоские отчеты, показывает количество времени, потраченного на каждую функцию,  RubyProf::FlatPrinter.new(result)
+- отчеты с графом вызовов, отсортирует по общему времени, затраченному на выполнение функции, включая время выполнения функций, которые она вызывает, RubyProf::GraphPrinter.new(result), RubyProf::GraphHtmlPrinter.new(result)
+- отчеты по стеку вызовов, показывает дерево вызовов,   RubyProf::CallStackPrinter.new(result)
+
+Визуализация KCachegrind (QCachegrind)
+Туториал:
+https://kcachegrind.github.io/html/Home.html
+Устоновка ubuntu
+$ sudo apt-get update -y
+$ sudo apt-get install -y kcachegrind
+
+Вывести отчёт в файл и просматривать 
+printer = RubyProf::CallTreePrinter.new(result)
+printer.print(File.open("callgrind.out.app", "w+"))
+вызвать програму в терминале
+kcachegrind
+
+Инструменты профилирования и визуализации подвержены двойному счету.
+
+Правильный способ взглянуть на график звонков(call graph) - это поиск и оптимизация снизу вверх, в ширину. Сначала вы смотрите на листья графика и оптимизируете их. Затем вы продвигаетесь вверх и пытаетесь оптимизировать следующий уровень узлов и так далее.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

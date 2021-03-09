@@ -1,0 +1,3 @@
+https://github.com/settings/tokens
+
+ищи в  data/веб архив/token.txt

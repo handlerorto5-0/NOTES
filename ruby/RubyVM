@@ -1,0 +1,32 @@
+Поскольку метод RubyVM::InstructionSequence.load может загружать скомпилированные инструкции VM в виде массива, вы можете свободно использовать его для целей сериализации (de):
+
+irb> # compile simple ruby program into its instruction sequence
+irb> seq = RubyVM::InstructionSequence.new <<-EOS
+irb:   p 'Hello, world !'
+irb:   EOS
+=> <RubyVM::InstructionSequence:<compiled>@<compiled>
+
+irb> # serialize sequence as Array instance representation
+irb> data = Marshal.dump seq.to_a
+=> "\x04\b[\x13\"-YARVInstructionSequence/SimpleDataFormat … ]"
+
+irb> # de-serialize previously serialized sequence
+irb> seq_loaded = Marshal.load data
+=> ["YARVInstructionSequence/SimpleDataFormat", 2, 2, 1, { … ]
+
+irb> # load deserialized Array back into instruction sequence
+irb> new_iseq = RubyVM::InstructionSequence.load seq_loaded
+=> <RubyVM::InstructionSequence:<compiled>@<compiled>>
+
+irb> # execute instruction sequence in current context
+irb> new_iseq.eval
+"Hello, world !"
+=> "Hello, world !"
+------------------------------------
+Это очень просто.
+
+iseq = RubyVM::InstructionSequence.compile("a = 1 + 2") # just an example
+File.open('iseq.bin', 'wb') { |file| file.write iseq.to_binary }
+
+# later
+RubyVM::InstructionSequence.load_from_binary(File.read('iseq.bin')).eval # returns 3

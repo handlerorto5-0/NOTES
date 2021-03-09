@@ -1,0 +1,57 @@
+Глава 1. Реляционные базы данных
+Tеорема CAP, известная также как теорема Брюера, утверждает, что распределенная вычислительная система не может одновременно обеспечить все три следующих свойства:
+- согласованность
+- доступность
+- устойчивость к разделению
+
+В PostgreSQL договечность данных обеспечивается журналом предзаписи (write-ahead log – WAL).
+
+Понятия реляционной модели. База данных в ней представлена в виде набора отношений . Состояние базы данных в целом определяется состоянием всех имеющихся в ней отношений. Из отношений можно извлекать различную информацию, применяя операции соединения, агрегирования и фильтрации.
+
+- Отношение состоит из множества кортежей. 
+- Кортеж – это упорядоченный набор атрибутов.
+- Значений истинности три: истина (true), ложь (false) и неизвестно (unknown), или NULL.
+- Домен определяет множество допустимых значений атрибута. Один из способов задать домен – указать тип данных и ограничения на этот тип.
+
+Первичный ключ, генерируемый СУБД, называют суррогатным, или синтетическим. В противном случае ключ называется натуральным. В роли суррогатных ключей-кандидатов могут выступать порядковые номера или универсальные уникальные идентификаторы (UUID).
+Отношение может также ссылаться само на себя. Тогда внешний ключ называется автореферентным, или рекурсивным.
+---------------------------
+sudo -u postgres psql
+psql -d database -U  user -W
+psql -h host -d database -U user -W
+psql -U user -h host "dbname=db sslmode=require"
+
+---------------------------
+Commands inside psql
+
+Task	               Psql command
+Close conection	\q
+Connect to a database	\c basename
+List databases	\l
+Show table definition including triggers	\d  tablename
+Listar Schemas	\dn
+List functions	\df
+List views	\dv
+Show function SQL code	\df+  function
+Pretty-format	\x
+List available tables \dt
+Describe a table \d table_name
+List available views \dv
+List users and their roles \du
+Execute the previous command \g
+Command history \s
+If you want to save the command history to a file \s filename
+Execute psql commands from a file \i filename
+Get help on psql commands \?
+Get help on specific PostgreSQL statement \h ALTER TABLE
+Turn on query execution time \timing
+Edit command in your own editor \e
+When you edit a function in the editor \ef [function name]
+Switch output options \a  \H  неподвисанный и html
+Quit psql \q
+
+---------------------------------
+
+
+
+
