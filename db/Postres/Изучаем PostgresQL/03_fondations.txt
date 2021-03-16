@@ -12,7 +12,7 @@
 В PostgreSQL однострочные комментарии начинаются двумя дефисами (--), а многострочные заключаются между /* и */.
 
 Управление версиями:
-Для каждой базы данных в кластере PostgreSQL заведите DDL-скрипт для объектов, являющихся частью схемы, и DML-скрипт, который заполняет таб­лицы статическими данными.
+Для каждой базы данных в кластере PostgreSQL заведите DDL-скрипт для объектов, являющихся частью схемы, и DML-скрипт, который заполняет таблицы статическими данными.
 Существует возможность интегрировать средство миграции базы данных, на-
 пример Flywaydb (https://flywaydb.org), с Git. Это позволяет настроить непрерывную интеграцию, а кроме того, администратор будет видеть, что происходит с базой данных.
 
@@ -51,9 +51,7 @@
 дочерняя – такая таблица наследует одну или несколько таблиц
 
 * postgres=# SHOW timezone;
-pg_timezone_names и pg_timezone_abbrevs дают полный список
-полных и сокращенных названий часовых поясов соответственно
-postgres=# SET timezone TO 'Asia/jerusalem';
+pg_timezone_names и pg_timezone_abbrevs дают полный список полных и сокращенных названий часовых поясов соответственно postgres=# SET timezone TO 'Asia/jerusalem';
 ostgres=# SELECT now();
 
 -------------------------------------------
@@ -69,7 +67,7 @@ CREATE SCHEMA car_portal_app AUTHORIZATION car_portal_app;
 
 postgres=# \c car_portal
 
-postgres=# \set VERBOSITY 'verbose';
+postgres=# \set VERBOSITY 'verbose'
 postgres=# CREATE TABLE "user" AS SELECT 1;
 
 CREATE TABLE account (

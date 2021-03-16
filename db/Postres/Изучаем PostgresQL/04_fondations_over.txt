@@ -1,1 +1,240 @@
 Глава 4 Дополнительные строительные блоки PostgreSQL стр97
+
+Представления
+Именованный запрос или оберткой вокруг команды SELECT. Задачи:
+- упростить сложные запросы и повысить степень модульности кода;
+- повышение производительности посредством кеширования результатов и использования их в будущем;
+- уменьшить объем SQL-кода;
+- перебросить мост между реляционными базами данных и объектно-ориентированными языками (особенно в этом смысле полезны обновляемые представления);
+- реализовать авторизацию на уровне строк – не давать доступа к строкам, не удовлетворяющим заданному условию;
+- реализация интерфейсов и уровня абстракции, расположенного между языками высокого уровня и реляционными базами;
+- для реализации срочных изменений.
+
+Синтаксис определения представления
+CREATE [ OR REPLACE ] [ TEMP | TEMPORARY ] [ RECURSIVE ] VIEW name [ (column_name [, ...] ) ]
+		 [ WITH ( view_option_name [= view_option_value] [, ... ] ) ]
+		AS query
+		 [ WITH [ CASCADED | LOCAL ] CHECK OPTION ]
+* REPLACE заменить уже существующее представление, списки столбцов в старом и новом представлениях должны быть одинаковы, включая имя, тип и порядок следования.
+
+Пример:
+car_portal=> CREATE VIEW account_information AS SELECT account_id, first_name, last_name, email FROM account;
+car_portal=> \d account_information
+* Имена столбцов представления можно задать явно:
+CREATE OR REPLACE VIEW account_information (account_id,first_name,last_name,email) AS SELECT account_id, first_name, last_name, email FROM account;
+
+Категории представлений:
+- Временные представления, автоматически удаляется в конце сеанса. (TEMPORARY или TEMP)
+- Рекурсивные представления. Для сложных запровов.
+- Обновляемые представления. Позволяют выполнять INSERT, UPDATE и DELETE.
+- Материализованные представления, периодически обновляется заранее заданным запросом.
+
+Материализованные представления
+CREATE MATERIALIZED VIEW [ IF NOT EXISTS ] table_name
+		 [ (column_name [, ...] ) ]
+		 [ WITH ( storage_parameter [= value] [, ... ] ) ]
+		 [ TABLESPACE tablespace_name ]
+		AS query
+		 [ WITH [ NO ] DATA ]
+* материализованного представления его можно заполнить или оставить пустым, заполнения пустого материализованного представления:
+REFRESH MATERIALIZED VIEW [ CONCURRENTLY ] name [ WITH [ NO ] DATA ]
+пример:
+car_portal=> CREATE MATERIALIZED VIEW test_mat AS SELECT 1 WITH NO DATA;
+car_portal=> REFRESH MATERIALIZED VIEW test_mat;
+car_portal=> TABLE test_mat;
+---------------
+Обновляемые представления
+Все представления по умолчанию являются автообновляемыми(можно DELETE, INSERT и UPDATE), если выполнены следующие условия:
+- построено только над одной таблицей или одним обновляемым представлением;
+- не содержит на верхнем уровне следующих фраз и операторов: DISTINCT, WITH, GROUP BY, OFFSET, HAVING, LIMIT, UNION, EXCEPT, INTERSECT;
+- в списке select должны быть только сами столбцы базовой таблицы, использование функций и выражений не допускается, столбцы не должны повторяться;
+- не должно быть установлено свойство security_barrier.
+пример:
+car_portal=> CREATE VIEW user_account AS SELECT account_id, first_name, last_name, email, password FROM account WHERE account_id NOT IN (SELECT account_id FROM seller_account);
+car_portal=> INSERT INTO user_account VALUES (default,'first_name1','last_name1','test@email.com','password');
+car_portal=> SELECT * FROM account where first_name like 'first_name%';
+
+* WITH CHECK OPTION, если отсутствует, то команды UPDATE и INSERT
+успешно выполняются, даже если строка не видна в представлении
+* прмер проверки, является представление автоматически обновляемым или нет: SELECT table_name, is_insertable_into FROM
+information_schema.tables WHERE table_name = 'user_account';
+
+=====================================
+Индексы
+Это физический объект базы данных, построенный над одним или несколькими столбцами таблицы.
+Задачи:
+- оптимизация производительности
+- контроль ограничений
+* Для первичных и уникальных ключей индексы создаются автоматически
+* Планировщик решает, применять индекс или нет, сообразуясь со стоимостью плана выполнения.
+
+Синтаксис создания индекса
+CREATE [ UNIQUE ] INDEX [ CONCURRENTLY ] [ [ IF NOT EXISTS ] name ] ON
+table_name [ USING method ]
+( { column_name | ( expression ) } [ COLLATE collation ] [ opclass ] [ ASC | DESC ] [ NULLS { FIRST | LAST } ] [, ...] )
+[ WITH ( storage_parameter = value [, ... ] ) ]
+[ TABLESPACE tablespace_name ]
+[ WHERE predicate ]
+* Индекс можно строить по столбцам или по выражениям
+* collation если индекс создается по текстовым полям, то можно также задать порядок сравнения
+* storage_parameter параметр хранения
+* ASC | DESC элементы индекса можно сортировать
+* NULLS { FIRST | LAST } порядок сортировки для значений NULL – в начале или в конце индекса
+
+Типы индексов:
+- B-дерево (B-tree), по умолчанию, эффективны для поиска по условию равенства, принадлежности диапазону и совпадения с null.
+- Хеш-индексы полезны для поиска по условию равенства.
+- Обобщенный обратный индекс (GIN), полезен, когда несколько значений нужно отобразить на одну строку. Он используется со сложными структурами данных, например массивами, и для полнотекстового поиска.
+- Обобщенное дерево поиска (GiST), полезны для индексации геометрических типов данных, а также для полнотекстового поиска.
+- GiST с двоичным разбиением пространства (SP-GiST).
+- Блочно-диапазонный индекс (BRIN), медленый, полезен для очень больших таблиц, когда место на диске ограничено.
+
+Категории индексов:
+- частичный индекс – индексируется только подмножество таблицы, удовлетворяющее заданному предикату; в определении индекса присутствует фраза WHERE.
+- уникальный индекс – гарантирует, что каждое значение встречается
+только один раз.
+- индекс по нескольким столбцам применяется для поддержки запросов определенного вида.
+- индекс по выражению можно строить не только по нескольким столбцам, но и по выражениям, включающим вызовы функций.
+
+Пример индекса по выражению:
+CREATE index on account(lower(first_name));
+* ищет без учета регистра
+SELECT * FROM account WHERE lower(first_name) = lower('foo');
+
+Рекомендации по использованию индексов:
+- выигрыш не только при выполнении SELECT, но также DELETE и UPDATE.
+- наличие индексов снижает скорость вставки
+- таблица pg_stat_all_indexes хранит статистика использования
+- IF NOT EXISTS проверка существования индексов обязательна, postgres не предупреждает
+- REINDEX для перестраивания индекса PostgreSQL, есть блокирущий способ и не блокирующий стр110
+
+========================================
+Функции
+Функции в PostgreSQL решают конкретную задачу и обычно состоят из объ-
+явлений, выражений и команд.
+
+Встроенные языки программирования PostgreSQL PostgreSQL безо всяких расширений поддерживает написание пользовательских функций на языках C, SQL и PL/pgSQL. Еще три процедурных языка – PL/Tcl, PL/Python и PL/Perl – входят в стандартный дистрибутив, но их надо явно добавить командой CREATE EXTENSION или с помощью утилиты createlang.
+
+Создание функции на языке C  стр 111
+
+Язык PL/pgSQL обладает более развитыми возможностями, и в повседнев-
+ной работе лучше пользоваться им.
+CREATE OR REPLACE FUNCTION test_dep (INT) RETURNS INT AS $$
+BEGIN
+				RETURN $1;
+END;
+$$
+LANGUAGE plpgsql;
+
+Категории функций в PostgreSQL(помогает планировщику генерировать
+оптимальные планы выполнения):
+- volatile: (по умолчанию) может возвращать различные результаты, даже если ее аргументы не изменяются, либо изменять данные в базе. Примером может служить функция random();
+- stable и immutable: такие функции не изменяют базу данных и гарантированно возвращают один и тот же результат при вызовах с оди-
+наковыми аргументами. stable, дает такую гарантию в контексте команды, а immutable – глобально.
+------------
+Анонимные функции в PostgreSQL
+В PostgreSQL имеется команда DO, позволяющая выполнять анонимные блоки
+кода.
+
+==================================
+Пользовательские типы данных
+- CREATE DOMAIN: позволяет создавать пользовательские типы данных
+
+CREATE DOMAIN text_without_space_and_null AS TEXT NOT NULL CHECK (value !~ '\s');
+CREATE TABLE test_domain (
+test_att text_without_space_and_null
+);
+
+- ALTER DOMAIN изменить домен
+
+ALTER DOMAIN text_without_space_and_null ADD CONSTRAINT text_without_
+space_and_null_length_chk check (length(value)<=15) NOT VALID;
+* NOT VALID если надо применять ограничение к новым данным, а старые пока оставить как есть
+
+- CREATE TYPE: часто используется для создания составного типа
+psql \dT список типов
+CREATE TYPE rank AS ENUM ('poor', 'fair', 'good', 'very good', 'excellent');
+postgres=# SELECT enum_range(null::rank);
+
+======================================
+Триггеры и правила
+Позволяют автоматически выполнять некоторые действия при возникновении событий, например выполнении команд INSERT, UPDATE или DELETE.
+По производительности правила быстрее, зато триггеры проще и совместимы с другими РСУБД
+--------------------------------------
+Правила
+CREATE RULE car_log AS ON INSERT TO car DO ALSO
+INSERT INTO car_log (car_id, car_model_id, number_of_owners,
+registration_number, number_of_doors, manufacture_year,car_log_action,
+car_log_time)
+VALUES (new.car_id, new.car_model_id,new.number_of_owners,
+new.registration_number, new.number_of_doors, new.manufacture_year,'I',
+now());
+----------------------------------------
+Триггеры стр 121
+* Имя триггера обычно отражает временной контекст его выполнения
+
+Выполняются, когда пользователь пытается модифицировать данные  INSERT, UPDATE, DELETE или TRUNCATE:
+CREATE [ CONSTRAINT ] TRIGGER name { BEFORE | AFTER | INSTEAD OF } { event [ OR ... ] }
+ON table_name
+		 [ FROM referenced_table_name ]
+		 [ NOT DEFERRABLE | [ DEFERRABLE ] [ INITIALLY IMMEDIATE | INITIALLY DEFERRED ] ]
+		 [ REFERENCING { { OLD | NEW } TABLE [ AS ] transition_relation_name } [ ... ] ]
+		 [ FOR [ EACH ] { ROW | STATEMENT } ]
+		 [ WHEN ( condition ) ]
+		 EXECUTE PROCEDURE function_name ( arguments )
+где event – одно из событий:
+		INSERT
+		UPDATE [ OF column_name [, ... ] ]
+		DELETE
+		TRUNCATE
+
+* INSTEAD OF: применяется к представлениям
+* FOR EACH ROW для каждой строки, затронутой операцией.
+* FOR EACH STATEMENT выполняется один раз для операции.
+* WHEN к строкам, удовлетворяющим условию.
+
+CONSTRAINT - в какой момент выполняется: в конце команды или в конце транз­акции. Триггер-ограничение может быть только типа AFTER или FOR EACH ROW, а время его срабатывания определяется следующими ключевыми словами:
+- NOT DEFERRABLE: это поведение по умолчанию – триггер срабатывает после
+каждой команды;
+- DEFERRABLE: срабатывание триггера откладывается до конца транзакции;
+- INITIALLY DEFERRED: определяет время выполнения триггера и означает, что триггер выполняется в конце транзакции. Триггер должен быть определен как DEFERRABLE;
+- INITIALLY IMMEDIATE: определяет время выполнения триггера и означает,
+что триггер выполняется после каждой команды. Триггер должен быть
+определен как DEFERRABLE.
+
+Прежде чем создавать триггер, нужно создать функцию:
+CREATE OR REPLACE FUNCTION car_log_trg () RETURNS TRIGGER AS
+$$
+BEGIN
+	...
+END;
+$$
+LANGUAGE plpgsql;
+Создадим триггер командой:
+CREATE TRIGGER car_log AFTER INSERT OR UPDATE OR DELETE ON car FOR EACH ROW EXECUTE PROCEDURE car_log_trg ();
+подробнее стр 123
+
+---------------------------------
+Представления, которые не являются автоматически обновляемыми, мож-
+но сделать обновляемыми с помощью триггеров.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+-----------------------------------
+Предположим, что имеется таблица employee, в которой у каждого
+работника, за исключением главы компании, имеется начальник. Это можно
+смоделировать с помощью самоссылающейся таблицы:
+CREATE TABLE employee (employee_id INT PRIMARY KEY, supervisor_id INT);
+ALTER TABLE employee ADD CONSTRAINT supervisor_id_fkey FOREIGN KEY
+(supervisor_id) REFERENCES employee(employee_id);
+
+Для гарантии того, что существует только одна строка без начальника, можно добавить такой уникальный индекс:
+CREATE UNIQUE INDEX ON employee ((1)) WHERE supervisor_id IS NULL;
+-------------------------------------
+добавить свой тип данных с перечислениями
+CREATE TYPE rank AS ENUM ('poor', 'fair', 'good', 'very good', 'excellent');
+postgres=# SELECT enum_range(null::rank)
+--------------------------------------
+создаем таблицу car_log, структурно аналогичную таблице car , и модифицировать
+CREATE TABLE car_log (LIKE car);
+ALTER TABLE car_log
+ADD COLUMN car_log_action varchar (1) NOT NULL,
+ADD COLUMN car_log_time TIMESTAMP WITH TIME ZONE NOT NULL;
+-----------------------------------------
+выбрать данные в формате json
+SELECT to_json(car) FROM car;
+кравиво
+SELECT jsonb_pretty((to_json(car))::jsonb) FROM car;
+-----------------------------------------
