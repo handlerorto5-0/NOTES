@@ -1,0 +1,48 @@
+Глава 3 Сеть с сокетами стр 27
+/code/node8/ch3/networking
+
+Прослушивание Socket Connections
+Сетевые сервисы существуют для двух вещей: соединяют конечные точки и передают информацию между ними.
+
+Привязка сервера к TCP-порту
+- В Node.js операции привязки и подключения предоставляются сетевым модулем net.
+- Метод net.createServer() принимает функцию обратного вызова и возвращает объект Server.
+- Вызов server.listen () привязывает указанный порт.
+
+Шаблон:
+const net = require('net'),
+server = net.createServer(connection => {
+// Use the connection object for data transfer.
+});
+server.listen(60300);
+
+* netcat, служебная программа для сокетов
+nc localhost 60300
+
+Сокеты TCP полезны для связи между компьютерами в сети. Но если нужны процессы на одном компьютере для взаимодействия, сокеты Unix предлагают более эффективную альтернативу. net module также может создавать такие сокеты.
+
+Прослушивание Unix Sockets
+const net = require('net'),
+server = net.createServer();
+server.listen('/tmp/watcher.sock', () => console.log('Listening for subscribers...'));
+
+------------------------------
+Создание Socket Client соединения
+const net = require('net');
+const client = net.connect({port: 60300});
+client.on('data', data => { ... })
+
+-------------------------------
+Тестирование функциональности сетевых приложений
+
+
+
+
+
+
+
+
+
+
+
+

@@ -84,6 +84,7 @@ React for Real
 
 “Practical Object-Oriented Design in Ruby” от Sandi Metz
 “Exceptional Ruby” от Avdi Grimm
+POSTGRESQL 11. МАСТЕРСТВО РАЗРАБОТКИ
 
 прочитано:
 React on Road

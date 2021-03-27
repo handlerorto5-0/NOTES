@@ -1,3 +1,342 @@
 Глава 5 Язык SQL стр 130
 
+SQL состоит из трех частей:
+- язык определения данных (DDL), для создания и управления структурой данных
+- язык манипулирования данными (DML), для управления самими данными
+- язык управления данными (DCL), для управления доступом
+к данным
+
+- В PostgreSQL допускается два вида кавычек: одиночные и специфичные для PostgreSQL долларовые. 
+- Е перед строковой константой поставить, то внутри кавычек можно употреблять экранированные специальные символы: \n,\t. 
+- Одиночная кавычка внутри литерала должна быть повторена дважды ('') или экранирована (\'). 
+- U с амперсандом перед строкой позволяет задавать внутри кавычек символы Юникода в виде кода, предваряемого обратной косой чертой.
+
+SELECT 'a', 'aa''aa', E'aa\naa', $$aa'aa$$, U&'\041C\0418\0420';
+
+- Строковые константы в долларовых кавычках интерпретируются точно так,
+как написаны. Можно вкладывать одну закавыченную строку в другую.
+SELECT $str1$SELECT $$dollar-quoted string$$;$str1$;
+
+- X включать любые цифры, а также буквы A–F – в таком случае строка записывается в шестнадцатеричной системе счисления.
+- В битовые строки
+Пример преобразования к чиловому виду
+SELECT B'01010101'::int, X'AB21'::int;
+-------------------------------
+- операторы: + - * / < > = ~ ! @ # % ^ & | ` ?
+- комментарии /* ... */ , --
+
+специальные символы:
+- круглые скобки (()) используются для задания порядка операций и для
+группировки выражений. В некоторых SQL-командах имеют специальный смысл. Также употребляются в заголовке функции;
+- квадратные скобки ([]) используются для выбора элементов массива;
+- двоеточие (:) используется для доступа к части массива;
+- двойное двоеточие (::) используется для приведения типа;
+- запятая (,) используется для разделения элементов списка;
+- точка (.) используется для разделения имени схемы, имени таблицы
+и имени столбца;
+- точка с запятой (;) завершает команду;
+- звездочка (*) обозначает все столбцы таблицы или все элементы составного значения.
+------------------------------------
+Запрос данных командой SELECT стр 135
+
+* Если в запросе встречается волатильная функция, то она может изменить данные.
+
+SELECT [DISTINCT | ALL] <expression>[[AS] <output_name>][, ...]
+[FROM <table>[, <table>... | <JOIN clause>...]
+[WHERE <condition>]
+[GROUP BY <expression>|<output_name>|<output_number> [,...]]
+[HAVING <condition>]
+[ORDER BY <expression>|<output_name>|<output_number> [ASC | DESC] [NULLS
+FIRST | LAST] [,...]]
+[OFFSET <expression>]
+[LIMIT <expression>];
+* Все части команды SELECT необязательны
+* WINDOW, WITH и FOR UPDATE
+-------------------------------
+SQL-выражения
+
+- полныхе имена в списке выборки:
+SELECT car.car_id, car.number_of_owners FROM car_portal_app.car;
+- рифметические операторы:
+SELECT 1+1 AS two, 13%4 AS one, -5 AS minus_five, 5! AS factorial, |/25 AS square_root;
+- вызовы функций:
+SELECT substring('this is a string constant',11,6);
+- скалярные подзапросы - если запрос возвращает ровно один столбец и нуль либо одну строку:
+SELECT (SELECT 1) + (SELECT 2) AS three;
+
+Приведением типа, синтаксис:
+- CAST ( <value> AS <type>); из языка sql
+- <value>::<type>; спец для postgresql
+- <type> '<value>'; толко к строковым константам
+- <type> (<value>). при совпадении имён типа и функции
+* Во многих случаях PostgreSQL выполняет приведение типа неявно:
+SELECT 'One plus one equals ' || (1+1) AS str;
+
+Условное выражение:
+CASE WHEN <condition1> THEN <expression1> [WHEN <condition2> THEN
+<expression2> ...] [ELSE <expression n>] END
+* ELSE необязательна, и если она отсутствует и ни одно условие не равно true, то все выражение CASE возвращает NULL
+упрощенный синтаксис:
+CASE <checked_expression> WHEN <value1> THEN <result1> [WHEN <value2> THEN <result2> ...] [ELSE <result_n>] END
+Пример:
+SELECT CASE WHEN now() > date_trunc('day', now()) + interval '12 hours'
+THEN 'PM' ELSE 'AM' END;
+----------------------------------------
+Если присутствует DISTINCT, то из выходного набора данных удаляются дубликаты.
+SELECT ALL make FROM car_portal_app.car_model;
+SELECT DISTINCT make FROM car_portal_app.car_model;
+* удаляет дубликаты, ориентируясь на список выборки, а не на данные в исходной таблице
+SELECT DISTINCT substring(make, 1, 1) FROM car_portal_app.car_model;
+---------------------------------------
+Фраза FROM
+
+Возможны следующие источники строк:
+- таблица;
+- представление;
+- функция;
+- подзапрос;
+- фраза VALUES.
+* несколько источников перечисляется через запятую или включается во фразы JOIN
+* если во фразе FROM встречается подзапрос, то задавать для него псевдоним обязательно.
+
+Выборка из нескольких таблиц:
+SELECT * FROM car_portal_app.a, car_portal_app.b;
+SELECT * FROM car_portal_app.a, car_portal_app.b WHERE a_int=b_int;
+SELECT * FROM car_portal_app.a JOIN car_portal_app.b ON a_int=b_int;
+- по условию
+<first table> JOIN <second table> ON <condition>
+- соединение по равенству всех полей, перечисленных через запятую в  списке <field list>
+<first table> JOIN <second table> USING (<field list>)
+- соединение по равенству всех одноименных полей в обеих таблицах
+<first table> NATURAL JOIN <second table>
+
+- внутреннее соединение, если не для всех строк первой таблицы существует соответствие во второй
+SELECT * FROM car_portal_app.a JOIN car_portal_app.b ON a_int=b_int;
+- внешнее соединение, если выбираются все записи из одной таблицы вне зависимости от су­ществования парной записи в другой: левое, правое, полное
+* ключевые слова INNER и OUTER необязательны
+SELECT * FROM car_portal_app.a LEFT JOIN car_portal_app.b ON a_int=b_int;
+SELECT * FROM car_portal_app.a RIGHT JOIN car_portal_app.b ON a_int=b_int;
+SELECT * FROM car_portal_app.a FULL JOIN car_portal_app.b ON a_int=b_int;
+
+оединять можно и больше двух таблиц:
+SELECT *
+FROM table_a
+		 JOIN table_b ON table_a.field1=table_b.field1
+		 JOIN table_c ON table_a.field2=table_c.field2 AND
+table_b.field3=table_c.field3;
+
+Множество всех возможных комбинаций строк, взятых по одной из каждой
+таблицы, называется декартовым произведением:
+SELECT * FROM car_portal_app.a, car_portal_app.b;
+тоже можно реализовать с помощью соединения
+SELECT * FROM car_portal_app.a CROSS JOIN car_portal_app.b;
+------------------------------------
+Самосоединения
+
+Можно соединять таблицу саму с собой:
+SELECT t1.a_int AS current, t2.a_int AS bigger
+FROM car_portal_app.a t1
+INNER JOIN car_portal_app.a t2 ON t2.a_int > t1.a_int;
+====================================
+Фраза WHERE
+Возвращающет булево значение.
+
+SELECT * FROM t WHERE CASE WHEN a=0 THEN false ELSE b/a>0.5 END;
+SELECT * FROM car_portal_app.car_model WHERE length(model)=4;
+
+Операторы сравнения
+-  < (меньше)
+-  > (больше)
+-  <= (меньше или равно)
+-  >= (больше или равно)
+-  = (равно)
+-  <> или != (то и другое означает не равно)
+-  x BETWEEN a AND b (x>=a AND a<=b)
+-  OVERLAPS проверяет, перекрываются ли два диапазона дат:
+SELECT 1 WHERE (date '2017-10-15', date '2017-10-31')
+OVERLAPS (date '2017-10-25', date '2017-11-15');
+
+Сопоставление с образцом
+LIKE и ILIKE отличаются только тем, что первый чувствителен к регистру, а второй – нет.
+SELECT * FROM car_portal_app.car_model WHERE model ILIKE 's___';
+Существуют еще два оператора сопоставления с образцом: SIMILAR и ~ (тильда). Они производят сравнение с регулярным выражением. Разница в том, что SIMILAR применяет синтаксис регулярных выражений, определенный в стандарте SQL, а ~ – синтаксис из стандарта POSIX.
+SELECT * FROM car_portal_app.car_model WHERE model ~ '^\w+\W+\w+$';
+
+Конструкции сравнения строк и массивов
+- IN проверяет, совпадает ли значение хотя бы с одним значением из списка: a IN (1, 2, 3)
+- проверить, что a больше какого-нибудь из значений x, y, z:
+a > ANY (ARRAY[x, y, z])
+- проверить, что a больше каждого из x, y, z:
+a > ALL (ARRAY[x, y, z])
+
+Фраза GROUP BY
+Для получения одной результирующей строки для каждой группы.
+SELECT a.make, a.model, count(*)
+FROM car_portal_app.car_model a
+INNER JOIN car_portal_app.car b ON a.car_model_id=b.car_model_id
+GROUP BY a.make, a.model;
+- специальные агрегатные функции, указываемые в списке выборки: count, sum, max, min и avg
+- подсчитать количество уникальных значений выражения:
+SELECT count(*), count(DISTINCT car_model_id) FROM car_portal_app.car;
+
+Фраза HAVING
+Разрешены агрегатные функции. Фраза HAVING следует после GROUP BY.
+
+Упорядочение и ограничение количества результатов
+- По умолчанию результаты запроса не упорядочены.
+- ORDER BY можно указать порядок сортировки: по возрастанию (ASC) или по убыванию (DESC).
+- NULLS FIRST означает, что значения NULL должны располагаться в начале, а NULLS LAST – что в конце
+- разрешается использовать в списке ORDER BY псевдонимы, сопоставленные выходным столбцам
+- можно указывать не имена, а номера столбцов
+SELECT number_of_owners, manufacture_year, trunc(mileage/1000) as kmiles
+FROM car_portal_app.car
+ORDER BY 1, 2, 3 DESC;
+- LIMIT
+SELECT * FROM car_portal_app.car_model LIMIT 5;
+– OFFSET пропустить несколько начальных строк
+SELECT * FROM car_portal_app.car_model OFFSET 5 LIMIT 5;
+* OFFSET и LIMIT – разбиение результата на страницы в веб-приложениях
+
+Подзапросы
+- Когда подзапрос используется во фразе FROM, ему должен быть сопоставлен псевдоним:
+SELECT * FROM
+(SELECT car_model_id, count(*) c FROM car_portal_app.car
+GROUP BY car_model_id) subq
+WHERE c = 1;
+- в составе выражения IN:
+SELECT car_id, registration_number
+FROM car_portal_app.car
+WHERE car_model_id IN
+(SELECT car_model_id FROM car_portal_app.car_model WHERE make='Peugeot');
+- Скалярные подзапросы можно использовать в любом месте выражения:
+SELECT (SELECT count(*) FROM car_portal_app.car_model)
+FROM car_portal_app.car
+LIMIT (SELECT MIN(car_id)+2 FROM car_portal_app.car);
+- подзапрос может ссылаться на элементы главного запроса:
+SELECT make, model,
+	(SELECT count(*) FROM car_portal_app.car WHERE car_model_id = main.car_model_id)
+FROM car_portal_app.car_model AS main;
+
+============================================
+Теоретико-множественные операции – UNION, EXCEPT, INTERSECT
+
+Используются для объединения результатов нескольких запросов. Hезультат одного запроса располагается под результатом другого. Количество столбцов остается тем же самым, а количество строк суммируется.
+* join - записи, взятые из двух таблиц, помещаются рядом друг с другом горизонтально.
+- UNION, добавляет результат одного запроса к результату другого:
+<query1> UNION <query2>;
+- INTERSECT, возвращает записи, присутствующие в результатах обоих запросов:
+<query1> INTERSECT <query2>;
+- EXCEPT, возвращает записи, присутствующие в результатах первого запроса, но отсутствующие в результатах второго, – разность:
+<query1> EXCEPT <query2>;
+
+По умолчанию все теоретико-множественные операции удаляют дубликаты, если требуется вернуть все записи:
+<query1> UNION ALL <query2>
+--------------------------------
+Значения NULL
+- NULL означает отсутствие всякого значения
+- При попытке сравнить значения, одно из которых равно NULL, получится NULL, а вовсе не true и не false
+- a = b или a и b одновременно принимают значение NULL:
+WHERE a IS NOT DISTINCT FROM b
+- Функция COALESCE возвращает значение первого аргумента, отличного от NULL:
+COALESCE(a, b, c)
+Этот код эквивалентен такому:
+CASE WHEN a IS NOT NULL THEN a WHEN b IS NOT NULL THEN b ELSE c END
+- Функция NULLIF принимает два аргумента и возвращает NULL, если они равны. В противном случае возвращается значение первого аргумента:
+NULLIF (a, b)
+Этот код эквивалентен такому:
+CASE WHEN a = b THEN NULL ELSE a END
+
+=========================================
+И зменение данных в базе стр 163
+
+Команда INSERT
+
+INSERT INTO <table_name> [(<field_list>)]
+{VALUES (<expression_list>)[,...]}|{DEFAULT VALUES}|<SELECT query>;
+
+- Для вставки одной или нескольких записей используется ключевое слово
+VALUES, за которым следует список значений. Если заполняются не все поля, то имена заполняемых полей должны быть указаны в скобках после имени таб­лицы. Те поля, что не указаны, получат значения по умолчанию, если таковые определены, или будут установлены в NULL.
+
+INSERT INTO car_portal_app.a (a_int) VALUES (6);
+INSERT INTO car_portal_app.a (a_text) VALUES (default);
+INSERT INTO car_portal_app.a DEFAULT VALUES;
+
+- вставить сразу несколько записей(PostgreSQL):
+INSERT INTO car_portal_app.a (a_int, a_text) VALUES (7, 'seven'), (8,'eight');
+
+- Подзапросы:
+INSERT INTO car_portal_app.a SELECT * FROM car_portal_app.a;
+вернуть сами вставленные записи или некоторые их поля
+INSERT INTO car_portal_app.a SELECT * FROM car_portal_app.b RETURNING a_int;
+
+- Если существует ограничение уникальности, но надо вставить:
+INSERT INTO b VALUES (2, 'new_two')
+ON CONFLICT (b_int) DO UPDATE SET b_text = excluded.b_text
+RETURNING *;
+==================================================
+
+Команда UPDATE
+для изменения данных в строках таблицы без изменения их количества
+UPDATE <table_name>
+SET <field_name> = <expression>[, ...]
+[FROM <table_name> [JOIN clause]]
+[WHERE <condition>];
+
+- UPDATE с подвыборкой
+UPDATE t SET f = f+1 WHERE a = 5;
+
+- подзапросы:
+UPDATE car_portal_app.a updated SET a_text =
+(SELECT b_text FROM car_portal_app.b WHERE b_int = updated.a_int);
+
+- UPDATE с дополнительными таблицами:
+UPDATE car_portal_app.a SET a_int = b_int FROM car_portal_app.b
+WHERE a.a_text=b.b_text;
+UPDATE car_portal_app.a
+SET a_int = (SELECT b_int FROM car_portal_app.b WHERE a.a_text=b.b_text)
+WHERE a_text IN (SELECT b_text FROM car_portal_app.b);
+* преимущество формы с FROM состоит в том, что зачастую она работает гораздо быстрее
+
+- с возвратом записей:
+UPDATE car_portal_app.a SET a_int = 0 RETURNING *;
+=====================================================
+Команда DELETE
+DELETE FROM <table_name> [WHERE <condition>];
+
+Форма DELETE с использованием другой таблицы аналогична форме UPDATE
+с фразой FROM.
+DELETE FROM car_portal_app.a USING car_portal_app.b
+WHERE a.a_int=b.b_int;
+
+возвращает удаленные строки:
+DELETE FROM car_portal_app.a RETURNING *;
+
+======================================================
+Команда TRUNCATE
+очищает таблицу целиком и почти мгновенно.
+TRUNCATE TABLE car_portal_app.a;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

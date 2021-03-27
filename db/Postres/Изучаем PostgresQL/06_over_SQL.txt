@@ -1,0 +1,255 @@
+==============================================
+Глава 6 Дополнительные сведения о написании запросов. стр169
+
+- Общие табличные выражения (common table expressions – CTE) позволяют один раз определить подзапрос и присвоить ему имя, а затем использовать его в нескольких местах главного запроса.
+В CTE можно использовать не только команды SELECT, но также INSERT, UPDATE и DELETE.
+В одном WITH-запросе может быть несколько CTE.
+
+WITH <subquery name> AS (<subquery code>) [, ...]
+SELECT <Select list> FROM <subquery name>;
+
+- Таким образом, реализация логики запроса оказывается похожа на императивный язык программирования:
+WITH pre_select AS
+(
+SELECT car_id, number_of_owners, car_model_id
+		 FROM car_portal_app.car WHERE manufacture_year >= 2010
+),
+joined_data AS
+(
+SELECT car_id, make, model, number_of_owners
+		FROM pre_select
+			 INNER JOIN car_portal_app.car_model ON pre_select.car_model_id=
+car_model.car_model_id
+),
+minimal_owners AS (SELECT min(number_of_owners) AS min_number_of_owners
+FROM pre_select)
+SELECT car_id, make, model, number_of_owners
+FROM joined_data INNER JOIN minimal_owners
+		 ON joined_data.number_of_owners = minimal_owners.min_number_of_owners;
+-----------------------------------------
+- CTE как средство повторного использования SQL-кода
+PostgreSQL исполняет CTE только один раз, кеширует результаты в памяти
+или на диске – в зависимости от размера, а затем использует повторно.
+
+WITH age_subq AS
+(
+SELECT car_model_id, avg(EXTRACT(YEAR FROM now())-manufacture_year) AS avg_age
+		FROM car_portal_app.car
+		 GROUP BY car_model_id
+)
+SELECT make, model, avg_age
+FROM age_subq
+		 INNER JOIN car_portal_app.car_model ON car_model.car_model_id =
+age_subq.car_model_id
+WHERE avg_age < (SELECT avg(avg_age) FROM age_subq);
+---------------------------------------
+- Рекурсивные и иерархические запросы
+CTE может ссылаться на себя же.
+* алгоритм выполнения рекурсивного запроса подразумевает итерацию,
+а не рекурсию. Однако в стандарте SQL такие запросы называются рекурсивными
+
+WITH RECURSIVE <subquery_name> (<field list>) AS
+(
+		<non-recursive term>
+		UNION [ALL|DISTINCT]
+		<recursive term>
+)
+[,...]
+<main query>
+
+Обе части – нерекурсивная(якорная) и рекурсивная(итеративная) – подзапросы, которые должны возвращать одинаковое число полей одинаковых типов. Имена полей задаются в объявлении рекурсивного запроса в целом, поэтому не важно, как они названы в подзапросах.
+Якорный подзапрос – отправная точка для выполнения рекурсивного запро-
+са. Он не может ссылаться на имя рекурсивного запроса и выполняется только один раз. Результаты якорного подзапроса передаются назад тому же самому CTE, после чего выполняется рекурсивная часть.
+Если присутствует UNION ALL, то возвращаются все строки, а если UNION DISTINCT или просто UNION, то дубликаты удаляются.
+
+WITH RECURSIVE subq (n, factorial) AS
+(
+SELECT 1, 1
+UNION ALL
+SELECT n + 1, factorial * (n + 1) from subq WHERE n < 5
+)
+SELECT * FROM subq;
+
+Существуют задачи, которые без рекурсивных запросов не решаются, – это запросы к иерархии объектов.
+Например созадим:
+CREATE TABLE family (
+	person text PRIMARY KEY, 
+	parent text REFERENCES family
+);
+INSERT INTO family VALUES ('Alan', NULL),
+('Bert', 'Alan'), ('Bob', 'Alan'), ('Carl', 'Bert'), ('Carmen', 'Bert'),
+('Cecil', 'Bob'),
+('Dave', 'Cecil'), ('Den', 'Cecil');
+Пусть требуется построить полные родословные всех детей:
+WITH RECURSIVE genealogy (bloodline, person, level) AS
+(
+	SELECT person, person, 0 FROM family WHERE parent IS NULL
+	UNION ALL
+	SELECT g.bloodline || ' -> ' || f.person, f.person, g.level + 1
+		FROM family f, genealogy g 
+		WHERE f.parent = g.person
+)
+SELECT bloodline, level FROM genealogy;
+
+-----------------------------------------------
+Изменение данных сразу в нескольких таблицах
+
+Результаты INSERT, UPDATE и DELETE можно передать последующим CTE
+или главному запросу, если добавить фразу RETURNING.
+
+INSERT INTO car_portal_app.car_model (make, model) VALUES
+('Ford','Mustang') RETURNING car_model_id;
+INSERT INTO car_portal_app.car (number_of_owners,
+registration_number, manufacture_year, number_of_doors, car_model_id,
+mileage)
+VALUES (1, 'GTR1231', 2014, 4, 100, 10423);
+
+============================================
+Оконные функции
+Затрагивают несколко записей.
+
+- Определение окна
+<function_name> (<function_arguments>)
+OVER(   - определение окна
+[PARTITION BY <expression_list>]   - раздел
+[ORDER BY <order_by_list>]
+[{ROWS | RANGE} <frame_start> |    - определение фрейма
+{ROWS | RANGE} BETWEEN <frame_start> AND <frame_end>])
+* PARTITION BY - отбираются все записи, для которых выражения, перечисленные в списке expression_list
+
+У фрейма есть начало и конец. 
+Начало фрейма, которое в синтаксической диаграмме названо frame_start, может принимать следующие значения:
+- UNBOUNDED PRECEDING: самая первая запись раздела;
+- <N> PRECEDING: запись, предшествующая текущей в упорядоченном разделе и отстоящая от нее на N записей.
+- CURRENT ROW: текущая строка;
+- <N> FOLLOWING: запись, следующая за текущей в упорядоченном разделе
+и отстоящая от нее на N записей.
+Конец фрейма, frame_end, может принимать следующие значения:
+- <N> PRECEDING;
+- CURRENT ROW;
+- <N> FOLLOWING;
+- UNBOUNDED FOLLOWING: последняя запись раздела.
+* В режиме ROWS CURRENT ROW указывает на саму текущую запись, а в режиме RANGE – на первую или последнюю запись с такой же позицией
+
+Фраза WINDOW
+способ определять и именовать окна, которые затем используются во фразе OVER оконной функции
+SELECT count() OVER w, sum(b) OVER w,
+		 avg(b) OVER (w ORDER BY c ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)
+FROM table1
+WINDOW w AS (PARTITION BY a)
+
+WITH monthly_data AS (
+SELECT date_trunc('month', advertisement_date) AS month, count(*) as cnt
+		FROM car_portal_app.advertisement
+		 GROUP BY date_trunc('month', advertisement_date)
+)
+SELECT to_char(month,'YYYY-MM') as month, cnt,
+		 sum(cnt) OVER (w ORDER BY month) AS cnt_year,
+		 round(avg(cnt) OVER (ORDER BY month ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING), 1)
+			AS mov_avg,
+		 round(cnt / sum(cnt) OVER w * 100,1) AS ratio_year
+FROM monthly_data WINDOW w AS (PARTITION BY date_trunc('year',month));
+* Во фразе WITH данные агрегируются по месяцам. В главном запросе определяется окно w, предполагающее разбиение по годам.
+
+оконные функции:
+- http://www.postgresql.org/docs/current/static/functions-window.html.
+- lag возвращает значение указанного выражения для записи, отсто-
+ящей на заданное число записей (по умолчанию 1) назад от текущей.
+- lead возвращает значение выражения, вычисленное
+для записи, отстоящей от текущей на указанное количество записей
+вперед
+- first_value, last_value, nth_value: возвращают значения выражения,
+вычисленные соответственно для первой, последней и n-й записи фрейма
+- row_number: возвращает номер текущей строки в разделе
+- dense_rank: возвращает ранг текущей строки без промежутков (плотный
+ранг)
+- percent_rank и cume_dist: возвращает относительный ранг текущей строки
+Разница между функциями состоит в том, что в первой числителем дроби является ранг, а во второй – номер строки
+- ntile: делит раздел на заданное количество равных частей и возвращает
+номер части, в которую попала текущая строка.
+-----------------------------------------------
+Оконные функции с группировкой и агрегированием
+
+Поскольку оконные функции вычисляются после группировки, агрегатные
+функции могут быть аргументами оконных, но не наоборот. Код sum(count(*)) OVER() правилен, как и код sum(a) OVER(ORDER BY count(*)). Однако код sum(count(*) OVER()) недопустим.
+
+SELECT seller_account_id, dense_rank() OVER(ORDER BY count(*) DESC)
+FROM car_portal_app.advertisement
+GROUP BY seller_account_id;
+
+==============================================
+Продвинутые методы работы с SQL
+----------------------------------------------
+Выборка первых записей
+
+PostgreSQL предлагает явный способ выбрать первую запись из каждой
+группы – ключевое слово DISTINCT ON:
+SELECT DISTINCT ON (<expression_list>) <Select-List>
+...
+ORDER BY <order_by_list>
+* для каждой уникальной комбинации значений из списка выражений
+expression_list команда SELECT возвращает только первую запись. 
+* ORDER BY определяет , что такое «первая». 
+* Все выражения из списка expression_list должны присутствовать в списке order_by_list.
+
+SELECT DISTINCT ON (car_id) advertisement_id, advertisement_date, car_id,
+seller_account_id
+FROM car_portal_app.advertisement
+ORDER BY car_id, advertisement_date;
+-----------------------------------------
+Извлечение выборочных данных
+
+SELECT ... FROM <table> TABLESAMPLE <sampling_method> ( <argument> [, ...] )
+[ REPEATABLE ( <seed> ) ]
+* sampling_method, может принимать значения BERNOULLI или SYSTEM, принимают один аргумент – вероятность включения строки в вы-
+борку в процентах.
+* BERNOULLI предполагает полный просмотр таблицы
+* SYSTEM делает то же самое, но на уровне блоков строк
+
+SELECT count(*) * 100 FROM advertisement TABLESAMPLE SYSTEM(1);
+-------------------------------------
+Функции, возвращающие множества
+В PostgreSQL могут возвращать не только одиночные значения, но и отношения.
+
+Предположим, к примеру, что в базе car_portal нужно подсчитать количество автомобилей, выпущенных в каждом году от 2010-го до 2015-го, показав нули, если автомобилей за какойто год в базе нет:
+
+Функция generate_series, специально предназначенная для этой цели. Она возвращает множество целых чисел между двумя заданными.
+
+SELECT years.manufacture_year, count(car_id)
+FROM generate_series(2010, 2015) as years (manufacture_year)
+		 LEFT JOIN car_portal_app.car ON car.manufacture_year = years.manufacture_year
+GROUP BY years.manufacture_year
+ORDER BY 1;
+
+generate_series может также возвращать множество значений типа timestamp:
+SELECT * FROM generate_series('2015-01-01'::date, '2015-01-31'::date, interval '7 days');
+
+еще табличными функ­ции:
+- generate_subscripts: генерирует набор индексов для указанной размерности заданного массива. Полезна для перечисления элементов массива в команде SQL;
+- unnest: преобразует заданный массив в набор строк, каждая запись которого соответствует элементу массива.
+
+использование табличных функций в запросе может сопровождаться определением структуры строки возвращаемого множества:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

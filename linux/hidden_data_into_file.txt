@@ -1,0 +1,19 @@
+Установка
+apt-get install steghide
+
+Шаблон команды шифрования
+steghide embed -ef secretFile -cf coverFile -sf outputFile -z compressionLevel -e scheme
+Шаблон команды извдечения данных
+steghide extract -sf stegoFile -xf outputFile
+
+Аргументы:
+-ef указывает путь к файлу, который вы хотите скрыть.
+-cf - это файл, в который вставляются данные. Это ограничено файлами BMP, JPEG, WAV и AU.
+-sf - необязательный аргумент, указывающий выходной файл.
+-z указывает уровень сжатия от 1 до 9. Если вы предпочитаете не сжимать файл, используйте вместо этого аргумент -Z.
+-e указывает тип шифрования. Steghide поддерживает множество схем шифрования, и если этот аргумент по умолчанию опущен, Steghide будет использовать 128-битное шифрование AES. Если вы предпочитаете не использовать шифрование, просто введите -e none.
+
+пример:
+steghide embed -ef secret.txt -cf StegoCat.jpg -e none -Z
+steghide extract -sf StegoCat.jpg -xf secret.txt 
+

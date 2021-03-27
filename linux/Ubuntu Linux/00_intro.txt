@@ -1,0 +1,18 @@
+Информация о сетевой карте:
+$ lspci -knn | grep "Eth\|Net" -A2
+Инфа о видеокарте
+$ lspci -k | grep -EA2 "VGA|3D"
+подключить архив пакетов c драйверами
+$ sudo add-apt-repository ppa:oibaf/graphics-drivers
+$ sudo apt-get update
+$ sudo apt-get dist-upgrade (обновить систему)
+переключиться между рабочими местами
+Ctrl+Alt+стрелки вверх\вниз
+по умолчанию в ubuntu раскладка переключается
+<Super>+<Пробел> или <Win>+<Пробел>
+Переход в режим
+$ sudo pm-hibernate  спящий
+$ sudo pm-suspend ждущий
+
+
+
