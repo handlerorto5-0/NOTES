@@ -21,6 +21,23 @@ ADD COLUMN car_log_time TIMESTAMP WITH TIME ZONE NOT NULL;
 -----------------------------------------
 выбрать данные в формате json
 SELECT to_json(car) FROM car;
-кравиво
+красиво
 SELECT jsonb_pretty((to_json(car))::jsonb) FROM car;
 -----------------------------------------
+mode - функция по упорядоченному множеству, возвращает самое часто встречающееся значение в группе:
+SELECT mode() WITHIN GROUP (ORDER BY car_model_id)
+FROM car_portal_app.car;
+* возвращает идентификатор самой частой встречающейся модели автомобиля в базе данных.
+------------------------------------------
+Пример, требуется подсчитать количество автомобилей для каждой модели и каждого значения количества дверей:
+SELECT car_model_id,
+	count(*) FILTER (WHERE number_of_doors = 2) doors2,
+	count(*) FILTER (WHERE number_of_doors = 3) doors3,
+	count(*) FILTER (WHERE number_of_doors = 4) doors4,
+	count(*) FILTER (WHERE number_of_doors = 5) doors5
+FROM car_portal_app.car GROUP BY car_model_id;
+------------------------------------------
+изменим work_mem в сеансе
+set work_mem to '100MB';
+------------------------------------------
+

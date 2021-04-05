@@ -229,6 +229,74 @@ SELECT * FROM generate_series('2015-01-01'::date, '2015-01-31'::date, interval '
 - unnest: преобразует заданный массив в набор строк, каждая запись которого соответствует элементу массива.
 
 использование табличных функций в запросе может сопровождаться определением структуры строки возвращаемого множества:
+--------------------------------------
+Латеральные подзапросы стр 190
+
+Если поместить ключевое слово LATERAL перед подзапросом во фразе FROM, то он сможет ссылаться на любой элемент, предшествующий ему во фразе FROM.
+
+Пусть требуется для каждого автомобиля в таблице car оценить его возраст, сравнив с возрастом других автомобилей той же модели:
+SELECT car_id, manufacture_year,
+	CASE WHEN manufacture_year <= avg_year THEN 'old' ELSE 'new' END as age, same_model_count
+FROM car_portal_app.car c,
+LATERAL (
+	SELECT avg(manufacture_year) avg_year,count(*) same_model_count
+	FROM car_portal_app.car
+	WHERE car_model_id = c.car_model_id) subq;
+----------------------------------------------
+Дополнительные средства группировки
+
+PostgreSQL позволяет объединить все три запроса в один с помощью специальной конструкции GROUP BY GROUPING SETS.
+Например, отчет о количестве объявлений в разрезе марок и кварталов, в котором требуется также показать итоги по каждому кварталу (суммарно по всем маркам) и общий итог:
+SELECT to_char(advertisement_date, 'YYYY-Q') as quarter, make, count(*)
+FROM advertisement a
+		 INNER JOIN car c ON a.car_id = c.car_id
+		 INNER JOIN car_model m ON m.car_model_id = c.car_model_id
+GROUP BY GROUPING SETS ((quarter, make), (quarter), ())
+ORDER BY quarter NULLS LAST, make NULLS LAST;
+
+Два других группирующих элемента – ROLLUP и CUBE:
+- ROLLUP (a, b, c) эквивалентно GROUPING SETS ((a, b, c), (a, b), (c), ())
+- CUBE (a, b, c) эквивалентно GROUPING SETS ((a, b, c), (a, b), (a, c), (b, c), (a), (b), (c), ()) – все возможные комбинации аргументов
+
+------------------------------------------
+Дополнительные виды агрегирования
+
+агрегаты по упорядоченному множеству (ordered-set aggregates). Они учитывают не только значения выражений, переданных в качестве аргументов, но и их порядок.
+
+* Процентиль – это значение группы, в которой процентное значение общих
+значений равно этому значению или меньше его. Например, если некоторое
+значение равно 95-му процентилю, значит, оно больше 95 процентов осталь-
+ных значений. Дискретный процентиль совпадает с одним из значений группы, а непрерывный – результат интерполяции двух существующих значений.
+
+PostgreSQL позволяет вычислить непрерывный или дискретный процентиль с помощью функций percentile_cont и percentile_disc.
+
+Пример, запрос о распределении количества объявлений по автомобилям:
+SELECT percentile_disc(ARRAY[0.25, 0.5, 0.75]) WITHIN GROUP
+(ORDER BY cnt)
+FROM (SELECT count(*) cnt FROM car_portal_app.advertisement
+GROUP BY car_id) subq;
+* Вернёт {2,3,5}, означает, что для 25 процентов автомобилей существует не более двух объявлений, для 50 процентов – три объявления и для 75 процентов – пять объявлений.
+-------
+mode - функция по упорядоченному множеству, возвращает самое часто встречающееся значение в группе:
+SELECT mode() WITHIN GROUP (ORDER BY car_model_id)
+FROM car_portal_app.car;
+* возвращает идентификатор самой частой встречающейся модели автомобиля в базе данных.
+-------
+rank возвращает ранг заданного значения в упорядоченном множестве, если бы оно в этом множестве присутствовало:
+SELECT rank(2) WITHIN GROUP (ORDER BY a)
+FROM generate_series(1,10,3) a;
+* существуют также dense_rank, percent_rank и cume_dist
+-------
+фраза FILTER, по заданному условию отфильтровывает строки, передаваемые агрегатной функции.
+
+Пример, требуется подсчитать количество автомобилей для каждой модели и каждого значения количества дверей:
+SELECT car_model_id,
+		 count(*) FILTER (WHERE number_of_doors = 2) doors2,
+		 count(*) FILTER (WHERE number_of_doors = 3) doors3,
+		 count(*) FILTER (WHERE number_of_doors = 4) doors4,
+		 count(*) FILTER (WHERE number_of_doors = 5) doors5
+		 FROM car_portal_app.car GROUP BY car_model_id;
+
 
 
 

@@ -1,0 +1,41 @@
+Практическое программирование на Node-RED 2021г.
+
+Загрузка примеров кода:
+https://github.com/PacktPublishing/-Practical-Node-RED-Programming
+Заерузка цветных илюстраций:
+https://static.packt-cdn.com/downloads/9781800201590_ColorImages.pdf
+===============================================
+Часть 1 Основы Node-RED стр 1
+
+flow-based programming (FBP) - потоковое программирование
+
+В обычном рабочем процессе прямоугольники и стрелочки обозначают ход процесса.В прямоуголт=ьниках явно описывается происходящее.
+В потоково-орентированном программировании каждая часть процесса представлена в виде черного ящика. Процессы черного ящика можно многократно соединять для формирования нескольких приложений без необходимости внутренней модификации.
+
+Node-RED - это инструмент FBP разработан командой IBM Emerging Technology Services. Также это среда исполнения.
+Нужно использовать редактор потоков для создания приложений Node-RED для Интернета вещей, веб-сервисов и многого другого. Редактор потока также является веб-приложением Node.js.
+Документация на 
+https://nodered.org/about/
+Node-RED библиотека
+https://flows.nodered.org/
+Node-RED доступен на платформе IBM Cloud как одно из приложений Starter Kits в их каталоге. Начать использовать редактор потоков в качестве веб-приложения в IBM Cloud очень просто (https://nodered.org/docs/getting-started/ibmcloud)
+
+MQTT — это протокол обмена сообщениями по шаблону издатель-подписчик (pub/sub).Он идеален для устройств слабой мощности и с ограниченным временем автономной работы. Построен на протоколе TCP/IP, но есть ответвление MQTT-SN для работы по Bluetooth, UDP, ZigBee и в других сетях IoT, отличных от TCP/IP.
+================================================
+Установка
+https://nodered.org/docs/getting-started/
+Устаноыка Ubuntu
+sudo apt install build-essential git
+sudo apt update
+bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
+управление процессом
+node-red-start
+node-red-stop
+node-red-restart
+node-red-log
+настройка автостарта
+sudo systemctl enable nodered.service
+sudo systemctl disable nodered.service
+запуск через терминал 
+node-red
+http://localhost:1880/

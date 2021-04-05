@@ -1,0 +1,70 @@
+Глава 2 Управление состоянием компонента с помощью хука useReducer стр 65
+
+- React предоставляет ловушку useReducer, позволяющую вашему компоненту указывать начальное состояние, получать доступ к текущему состоянию и отправлять действия для обновления состояния и запуска повторного рендеринга.
+--------------------------------------------
+Как попросить React управлять несколькими связанными значениями состояния с помощью вызова useReducer
+
+функция редуктор
+let count = 0;
+function reducer (state, action) {
+	if (action.type === "add") {
+		return state + action.payload;
+	} 
+	...
+	return state;
+}
+передача обьекта для определения каждого действия
+count = reducer(count, { type: "add", payload: 3 });
+--------------------------------------------
+Размещение логики управления состоянием компонентов в одном месте
+в отделном файле reducer.js
+export default function reducer (state, action){
+  switch(action.type){
+    case "SET_GROUP":
+      return {
+        ...state,
+        group: action.payload,
+        bookableIndex: 0
+      }
+...
+			default:
+      	return state
+  }
+}
+в вайле импортере
+import {useReducer} from "react";
+import reducer from "./reducer";
+
+Указать начальное состояние.
+const initialState = {
+	group: "Rooms",
+	...
+};
+
+export default function List () {
+	Вызовать useReducer, передав редуктор и начальное состояние.
+	const [state, dispatch] = useReducer(reducer, initialState);
+	Присвоить значения состояния локальным переменным
+	const {group, ...} = state;
+	Отправить действие с типом и полезной нагрузкой.
+	function changeGroup (e) {
+		dispatch({
+			type: "SET_GROUP",
+			payload: e.target.value
+		});
+	}
+--------------------------------------------
+Обновление состояния и запуск повторного рендеринга путем отправки действий редуктору
+
+--------------------------------------------
+Состояние инициализации с аргументами инициализации и функциями инициализации
+
+
+
+
+
+
+
+
+
+

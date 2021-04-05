@@ -1,0 +1,128 @@
+Rails 5 Test Prescriptions
+Рецепты тестирования для Rails 5
+
+Образцы кода:
+http://pragprog.com/book/nrtest3
+
+Инфраструстура(черновик)
+rbenv install -l
+rbenv install 2.5.8
+rbenv global 2.5.8
+ruby -v
+gem install bundler
+
+gem list --local rails
+gem install rails -v 5.2.0
+mkdir /code/todo_prs/ && cd /code/todo_prs/
+gem install sqlite3
+rails _5.2.0_ new . --skip-bundle
+
+bundle install
+
+rake db:create:all
+rake db:migrate
+
+group :development, :test do
+gem "rspec-rails", "~> 3.7.0"
+end
+$ bundle install
+$ rails generate rspec:install
+$ bundle exec rspec
+
+Лучшее начало - создание модели
+--
+# spec/models/some_model_spec.rb
+require "rails_helper"
+RSpec.describe Some_model do
+	# рассматривает some_model без каких-либо задач
+	it "considers a some_model with no tasks to be done" do
+		object = Some_model.new
+		# если есть инстанс и у него есть метод done? который возвращает true , тогда тест пройдёт
+		expect(object.done?).to be_truthy
+	end
+end
+--
+* вместо it можно использовать алиас specify
+specify { expect(user.name).to eq("fred") }
+describe "user behavior"
+	me = User.new
+	you = User.new
+	specify { User.count.should == 2 }
+end
+------------------------------
+Rspec матчеры:
+
+expect(array).to all(matcher)
+expect(actual).to be > expected # (<, >=, <=, and ==)
+- be truthy - быть правдой
+expect(actual).to be_a(type)
+expect(actual).to be_truthy
+expect(actual).to be_falsy
+expect(actual).to be_nil
+expect(actual).to be_between(min, max)
+expect(actual).to be_within(delta).of(expected)
+- Change-matcher принимает аргумент блока, который передается, если значение Receiver.message изменяется при оценке блока.
+expect { block }.to change(receiver, message, &block)
+- contain_exactly истинно, если ожидаемый массив и фактический массив содержат одни и те же элементы, независимо от порядка.
+expect(actual).to contain_exactly(expected)
+expect(range).to cover(actual_value)
+expect(actual).to eq(expected)
+expect(actual).to exist
+expect(actual).to have_attributes(key/value pairs)
+expect(actual).to include(*expected)
+expect(actual).to match(regex)
+- output и raise_error предназначены для указания побочного эффекта выполнения блока - что он вызывает ошибку или что он изменяет другое значение - а не состояние конкретного объекта.
+expect { block }.to output(value).to_stdout # also to_stderr
+expect { block }.to raise_error(exception)
+- satisfy проходит, если блок оценивается как истина
+expect(actual).to satisfy { block }
+
+RSpec позволяет составлять _matchers для выражения сложного поведения, и у большинства этих сопоставителей есть альтернативные формы, которые позволяют им лучше читать при составлении. Составление _matchers позволяет указать, например, несколько значений массива в одном операторе и получать полезные сообщения об ошибках.
+Например:
+expect(["cheese", "burger"]).to contain_exactly(a_string_matching(/ch/), a_string_matching(/urg/))
+* a_string_matching это алиас для match
+
+Запуск теста:
+$ rspec
+-----------------------------------
+Оператор let и динамические сопоставители
+
+# spec/models/project_spec.rb
+--
+require "rails_helper"
+	RSpec.describe Project do
+	let(:project) { Project.new }
+	let(:task) { Task.new }
+
+	it "considers a project with no tasks to be done" do
+		expect(project).to be_done
+	end
+	it "knows that a project with an incomplete task is not done" do
+		project.tasks << task
+		expect(project).not_to be_done
+	end
+end
+---
+
+По сути, вызов let - это синтаксический сахар для определения метода и запоминания результата, например:
+def me
+	me ||= User.new(name: "Noel")
+end
+
+Блок let не выполняется, пока он не вызывается. Иногда у вас могут возникнуть проблемы, если вы ожидаете, что объект уже существует. Два блока let никогда не вызываются.
+let! - предоставляет механизм в случаях, когда элемент должен присутствовать, даже если он никогда не вызывается по имени.
+
+Неявные сопоставители.
+Любой сопоставитель формы be_whatever или be_a_whatever предполагает связанный с ним метод предиката с именем _whatever? - с вопросительным знаком - на объекте и вызывает этот метод предиката.
+expect(project.done?).to be_truthy
+эквивалентно
+expect(project).to be_done
+
+
+В RSpec все, что находится в блоке before (: each) или _before (: example), выполняется как часть настройки перед каждой спецификацией.
+
+
+
+
+
+

@@ -5,11 +5,78 @@ React предоставляет несколько хуков, позволяю
 Тот факт, что вы изменяете значение переменной в функции компонента, не означает, что React заметит это.
 Каждый раз, когда React вызывает наш компонент, чтобы получить доступ к его пользовательскому интерфейсу, компонент может запросить у React последнее значение состояния и функцию для обновления значения.
 const [bookIndex, setBookIndex] = useState(1);
+в кнопке
+onClick={() => setBookIndex(2)}
+
 --------------------------------------
 - Изменение значений состояния и запуск повторного рендеринга с функцией обновления
+
+если передаём объект, функция может выглядеть так:
+function BookablesList () {
+	const [state, setState] = useState({
+		bookableIndex: 1,
+		group: "Rooms"
+	});
+}
+если мы будем обрабватывать ттолко один елемент:
+function handleClick (index) {
+	setState({
+		bookableIndex: index
+	});
+}
+мы потеряем не переданные !!!
+Правильно исползовать спред в этой ситуации, 
+function handleClick (index) {
+	setState({
+		...state,
+		bookableIndex: index
+	});
+}
+ещё лучше так,здесть состоянее обновляется, а не заменяется
+function handleClick (index) {
+	setState(state => {
+		return {
+			...state,
+			bookableIndex: index
+		};
+	});
+}
 --------------------------------------
-- Использование предыдущего состояния для создания новых значений состояния
+Использование ленивого начального состояния, если нужно выполнить дорогостоящую работу по генерации начального значения для части состояния.
+function ShinyString ({tangledWeb}) {
+const [shiny, setShiny] = useState(() => untangle(tangledWeb));
+}
+--------------------------------------
+- Использование предыдущего состояния для создания новых значений состояния стр 50
+В примере текушее состояние изменяется прямо в функции
+const [index, setIndex] = useState(1)
+
+  function next () {
+    setIndex((index + 1) + some)
+  }
+
 --------------------------------------
 - Управление несколькими частями состояния
---------------------------------------
-- Рассмотрение того, как React и компоненты взаимодействуют для сохранения и обновления состояния, а также для синхронизации состояния и пользовательского интерфейса.
+
+С выпадающим select
+const [group, setGroup] = useState("Kit")
+const groups = [...new Set(bookables.map(b => b.group))]
+<select
+	value={group}
+	onChange={(e) => setGroup(e.target.value)}
+>
+	{groups.map(g => <option value={g} key={g}>{g}</option>)}
+</select>
+
+С использованием чекбокса
+const [hasDetails, setHasDetails] = useState(false);
+<input 
+	type="checkbox"
+	checked={hasDetals}
+	onChange={() => setHasDetals(has => !has)}
+/>
+отображается если сушествует some
+{ some && (
+	<div ....
+)}
+

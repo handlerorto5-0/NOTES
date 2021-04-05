@@ -1,0 +1,434 @@
+Глава 7 Серверное програмирование на PL/pgSQL стр 197
+
+План выполнения PL/pgSQL-функции кешируется, что позволяет уменьшить
+время выполнения, но может и нанести вред, если план не является оптимальным для конкретных параметров функции.
+
+====================================
+Параметры функций в PostgreSQL
+------------------------------------
+Параметры функций, относящиеся к авторизации:
+- SECURITY DEFINER, функция выполняется с привилегиями создавшего ее пользователя
+- SECURITY INVOKER, по умолчанию, функция выполняется с привилегиями вызывающей стороны.
+* в конце определения функции 
+CREATE FUNCTION...;
+$$ LANGUAGE SQL SECURITY DEFINER;
+------------------------------------
+Параметры функции, относящиеся к планировщику:
+
+Нужны для передачи планировщику информации о стоимости выполнения функции, что позволяет генерировать хорошие планы выполнения:
+- LEAKPROOF, означает, что у функции нет побочных эффектов. Она не раскрывает никакой информации о своих аргументах и, в частности, не генерирует сообщений об ошибке, относящихся к аргументу. Этот параметр влияет на представления с параметром security_barrier.
+- COST, объявляет стоимость выполнения в расчете на строку. По умолчанию для функции на C она равна 1, а для функции на PL/pgSQL – 100. Эта стоимость используется планировщиком для построения оптимального плана выполнения.
+- ROWS, оценка количества строк, возвращаемых функцией (для функций, возвращающих множества). По умолчанию 1000.
+
+* $$ LANGUAGE PLPGSQL COST 0.0001;
+--------------------------------------
+Параметры функции, относящиеся к конфигурации
+
+С помощью параметров можно затребовать ресурсы, например объем памяти, необходимой для выполнения операции (work_mem), или определять поведение, скажем, запрет последовательного просмотра или соединения методом вложенных циклов.
+
+В команде SET задается новое значение, принимаемое параметром при входе
+в функцию. По выходе из функции параметр возвращается к прежнему значению. Конфигурационный параметр можно явно задать для всей функции или локально переопределить внутри функции. Можно также унаследовать значение параметра от сеанса, воспользовавшись ключевым словом CURRENT.
+
+...
+$$ LANGUAGE SQL
+SET enable_seqscan FROM CURRENT
+SET work_mem = '100MB';
+======================================
+К оманды управления в PL/ pg SQL
+--------------------------------------
+Объявления переменной:
+
+Синтаксис:
+name [ CONSTANT ] type [ COLLATE collation_name ] [ NOT NULL ]
+[ { DEFAULT | := | = } expression ];
+- name: имя, в частности, имя не может начинаться цифрой.
+- CONSTANT: такой переменной нельзя присваивать значение после инициализации.
+- type: переменная может иметь простой тип, скажем integer, пользовательский тип, псевдотип, тип record и т.д.
+- NOT NULL: вызывает ошибку при попытке записать в переменную значение null.
+- DEFAULT: откладывает инициализацию переменной до момента входа в блок.
+- Выражение expression – комбинация одного или нескольких явно заданных значений, операторов и функций, вычисление которой дает новое значение.
+---------------------------------------
+Тело PL/pgSQL-функции состоит из вложенных блоков с необязательной секцией объявлений и меткой:
+
+[ <<label>> ]
+[ DECLARE declarations ]
+BEGIN
+		statements
+END [ label ];
+- BEGIN и END используются для группировки.
+- Секция объявлений предназначена для объявления переменных
+- label – для именования блока и образования полных имен переменных
+* в любой PL/pgSQL-функции имеется скрытый блок, помеченный именем функции, в котором собраны предопределенные переменные
+
+Пример функции:
+CREATE OR REPLACE FUNCTION factorial(INTEGER ) RETURNS INTEGER AS $$
+DECLARE
+	fact ALIAS FOR $1;
+BEGIN
+	IF fact IS NULL OR fact < 0 THEN
+		RAISE NOTICE 'Invalid Number';
+		RETURN NULL;
+	ELSIF fact = 1 THEN
+		RETURN 1;
+	END IF;
+	DECLARE
+		result INT;
+	BEGIN
+		result = factorial(fact - 1) * fact;
+		RETURN result;
+	END;
+END;
+$$ LANGUAGE 'plpgsql';
+* $1 первый аргумент
+-------------------------------------
+Присваивание
+
+Операторы := и = служат для присваивания переменной значения выражения:
+variable { := | = } expression;
+* поскольку оператор = используется в SQL для сравнения, то во избежание недоразумений лучше для присваивания использовать оператор :=
+* когда присваивается значение по умолчанию, обязательно использовать оператор =
+* для обозначения именованных параметров при вызове функции используется только оператор :=
+
+-------------------------------------
+Условные команды
+
+IF выглядит следующим образом:
+- IF ... THEN ... END IF
+- IF ... THEN ... ELSE ... END IF
+- IF ... THEN ... ELSIF ... THEN ... ELSE ... END IF
+
+Пример IF:
+CREATE OR REPLACE FUNCTION cast_rank_to_text (rank int) RETURNS TEXT AS $$
+DECLARE
+rank ALIAS FOR $1;
+rank_result TEXT;
+BEGIN
+IF rank = 5 THEN rank_result = 'Excellent';
+ELSIF rank = 4 THEN rank_result = 'Very Good';
+ELSIF rank = 3 THEN rank_result = 'Good';
+ELSIF rank = 2 THEN rank_result ='Fair';
+ELSIF rank = 1 THEN rank_result ='Poor';
+ELSE rank_result ='No such rank';
+END IF;
+RETURN rank_result;
+END;
+$$ Language plpgsql;
+--- для тестирования функции
+SELECT n,cast_rank_to_text(n) FROM generate_series(1,6) as foo(n);
+
+-------
+У команды CASE есть две формы:
+- CASE ... WHEN ... THEN ... ELSE ... END CASE
+- CASE WHEN ... THEN ... ELSE ... END CASE
+
+Пример CASE:
+CREATE OR REPLACE FUNCTION cast_rank_to_text (rank int) RETURNS TEXT AS
+$$
+DECLARE
+rank ALIAS FOR $1;
+rank_result TEXT;
+BEGIN
+CASE rank
+		 WHEN 5 THEN rank_result = 'Excellent';
+		 WHEN 4 THEN rank_result = 'Very Good';
+		 WHEN 3 THEN rank_result = 'Good';
+		 WHEN 2 THEN rank_result ='Fair';
+		 WHEN 1 THEN rank_result ='Poor';
+		 WHEN rank IS NULL THEN RAISE EXCEPTION 'Rank should be not NULL';
+		 ELSE rank_result ='No such rank';
+END CASE;
+RETURN rank_result;
+END;
+$$ Language plpgsql;
+========================================
+Итерирование стр 210
+В PostgreSQL есть: LOOP, CONTINUE, EXIT, FOR, WHILE и FOR EACH.
+----------------------------------------
+Команда LOOP
+
+[ <<label>> ]
+LOOP
+		statements
+END LOOP [ label ];
+
+Пример:
+DROP FUNCTION IF EXISTS factorial (int);
+CREATE OR REPLACE FUNCTION factorial (fact int) RETURNS BIGINT AS $$
+DECLARE
+result bigint = 1;
+BEGIN
+IF fact = 1 THEN RETURN 1;
+ELSIF fact IS NULL or fact < 1 THEN RAISE EXCEPTION 'Provide a positive integer';
+ELSE
+		LOOP
+			result = result*fact;
+			fact = fact-1;
+			EXIT WHEN fact = 1;
+		END LOOP;
+END IF;
+RETURN result;
+END; $$ LANGUAGE plpgsql;
+* EXIT предотвращает зацикливание
+* CONTINUE, похожа на EXIT, передает управление на начало цикла
+-------------------------------------
+Команда WHILE
+Продолжает выполнять блок команд, пока истинно заданное условие:
+[ <<label>> ]
+WHILE boolean-expression LOOP
+		statements
+END LOOP [ label ];
+
+Пример,печатаем дни текущего месяца в цикле while:
+
+DO $$
+DECLARE
+first_day_in_month date := date_trunc('month', current_date)::date;
+last_day_in_month date := (date_trunc('month', current_date)+
+			 INTERVAL '1 MONTH - 1 day')::date;
+counter date = first_day_in_month;
+BEGIN
+WHILE (counter <= last_day_in_month) LOOP
+		 RAISE notice '%', counter;
+		 counter := counter + interval '1 day';
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+--------------------------------------------
+Команда FOR
+
+Синтаксис, обхода диапазона целых чисел:
+[ <<label>> ]
+FOR name IN [ REVERSE ] expression1 .. expression2 [ BY expression ] LOOP
+		statements
+END LOOP [ label ];
+* name – имя локальной переменной типа integer, внутри цикла FOR.
+* REVERSE определяет порядок, в котором генерируется диапазон (возрастающий или убывающий)
+* если REVERSE опущено, то expression1 должно быть меньше expression2
+* BY задает шаг между двумя последовательными числами
+
+Пример, обход диапазона отрицательных чисел в обратном порядке:
+DO $$
+BEGIN
+FOR j IN REVERSE -1 .. -10 BY 2 LOOP
+		 RAISE NOTICE '%', j;
+END LOOP;
+END; $$
+LANGUAGE plpgsql;
+---
+Синтаксис цикла для обхода результатов запроса SQL:
+[ <<label>> ]
+FOR target IN query LOOP
+		statements
+END LOOP [ label ];
+
+* target может быть простого типа(integer,text) или составного(RECORD)
+* Обходить можно результат выполнения курсора или команды SELECT. 
+* Курсор – это специальный объект, инкапсулирующий запрос SELECT и позволяющий читать результаты по нескольку строк за раз
+
+В примере печатаются имена всех баз данных:
+DO $$
+DECLARE
+	database RECORD;
+BEGIN
+	FOR database IN SELECT * FROM pg_database LOOP
+		RAISE notice '%', database.datname;
+	END LOOP;
+END; $$;
+===================================
+Возврат из функции
+Команда возврата завершает функцию и передает управление вызывающей
+стороне. Существует несколько разновидностей команды возврата: RETURN, RETURN NEXT, RETURN QUERY, RETURN QUERY EXECUTE и т. д.
+-----------------------------------
+RETURN может возвращать одно значение или множество
+Пример:
+DO $$
+BEGIN
+	RETURN;
+	RAISE NOTICE 'Эта не выведется!';
+END
+$$
+LANGUAGE plpgsql;
+------------------------------------
+Возврат void
+Тип void используется, когда смысл функции заключается в побочных эффек-
+тах, например записи в журнал
+postgres=# \df pg_sleep
+------------------------------------
+Возврат одной строки
+Тип возвращаемого значения может быть базовым, составным, доменным
+или псевдотипом. 
+Пример с возвратом JSON:
+
+CREATE OR REPLACE FUNCTION car_portal_app.get_account_in_json1 (acc_id INT)
+RETURNS JSON AS $$
+BEGIN
+	RETURN (SELECT row_to_json(account) FROM car_portal_app.account
+		WHERE account_id = acc_id);
+END;
+$$ LANGUAGE plpgsql;
+------------------------------------
+Возврат нескольких строк
+Функция, возвращающая множество, помечается ключевым словом SETOF:
+Пример (бестрее SQL):
+CREATE OR REPLACE FUNCTION car_portal_app.car_model(model_name TEXT)
+RETURNS SETOF car_portal_app.car_model AS $$
+BEGIN
+	RETURN QUERY SELECT car_model_id, make, model 
+		FROM  car_portal_app.car_model
+		WHERE model = model_name;
+END;
+$$ LANGUAGE plpgsql;
+Вызов:
+> SELECT * FROM car_portal_app.car_model('A1');
+=========================================
+Предопределенные переменные в функциях
+
+- в триггерной функции создаются переменные NEW, OLD и TG_OP
+- FOUND булева переменная, SELECT, INSERT, UPDATE, DELETE, PERFORM устанавливают ее в true,если, соответственно, выбрана, вставлена, обновлена или удалена хотя бы одна строка
+* EXECUTE не изменяет значения FOUND
+- PERFORM похожа на SELECT, но отбрасывает результат запроса
+* PERFORM * FROM t1 WHERE f1 = 0;
+- OID идентификатор объекта последней вставленной строки
+ 
+Получить количество строк, затронутых INSERT, UPDATE и DELETE:
+GET DIAGNOSTICS variable = item;
+Например:
+GET DIAGNOSTICS i = ROW_COUNT;
+
+========================================
+Обработка исключений
+команды EXCEPTION и RAISE
+Полный перечень ошибок:
+http://www.postgresql.org/docs/current/interactive/errcodes-appendix.html
+* код ошибки ERRCODE должен содержать 5 цифр и (или) букв в кодировке ASCII, но не должен быть равен 00000
+
+Пример:
+CREATE OR REPLACE FUNCTION check_not_null (value anyelement ) RETURNS VOID AS $$
+BEGIN
+	IF (value IS NULL) THEN
+		RAISE EXCEPTION USING ERRCODE = 'check_violation';
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+* функция check_not_null просто возбуждает ошибку
+> SELECT check_not_null(null::text);
+
+Для определения причины ошибки в команде EXCEPTION можно сравнивать SQLSTATE или название условия:
+WHEN unique_violation THEN ...
+WHEN SQLSTATE '23505' THEN ...
+
+При возбуждении ошибки можно задать сообщение об ошибке и SQLSTATE:
+DO $$
+BEGIN
+	RAISE EXCEPTION USING ERRCODE = '1234X', 
+		MESSAGE = 'test customized SQLSTATE:';
+	EXCEPTION WHEN SQLSTATE '1234X' THEN
+		RAISE NOTICE '% %', SQLERRM, SQLSTATE;
+END;
+$$ LANGUAGE plpgsql;
+
+Пример с факториалом:
+DROP FUNCTION IF EXISTS factorial( INTEGER );
+CREATE OR REPLACE FUNCTION factorial(INTEGER ) RETURNS BIGINT AS $$
+DECLARE
+	fact ALIAS FOR $1;
+BEGIN
+	PERFORM check_not_null(fact);
+	IF fact > 1 THEN RETURN factorial(fact - 1) * fact;
+	ELSIF fact IN (0,1) THEN RETURN 1;
+	ELSE RETURN NULL;
+END IF;
+EXCEPTION
+	WHEN check_violation THEN RETURN NULL;
+	WHEN OTHERS THEN RAISE NOTICE '% %', SQLERRM, SQLSTATE;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-  OTHERS специальное имя условия , соответствует любой ошибке.
+
+Можно получить дополнительную информацию:
+GET STACKED DIAGNOSTICS variable { = | := } item [ , ... ];
+* item – ключевое слово, идентифицирующее некоторый аспект исклю-
+чения. Например, ключевые слова COLUMN_NAME, TABLE_NAME и SCHEMA_NAME обозначают, соответственно, имя столбца, таблицы и схемы.
+=======================================
+Динамический SQL
+Служит для построения и выполнения запросов «на лету».
+
+Синтаксис:
+EXECUTE command-string [ INTO [STRICT] target ] [ USING expression [, ...] ];
+* EXECUTE, не кешируются
+-------------------------------------------
+Динамическое выполнение команд DDL
+на уровне объектов базы данных: таблиц, индексов, столбцов, ролей и т. д
+
+Пример анализа таблиц:
+DO $$
+DECLARE
+	table_name text;
+BEGIN
+	FOR table_name IN SELECT tablename FROM pg_tables
+		WHERE schemaname ='car_portal_app'
+	LOOP
+		RAISE NOTICE 'Analyzing %', table_name;
+		EXECUTE 'ANALYZE car_portal_app.' || table_name;
+	END LOOP;
+END;$$;
+--------------------------------------
+Динамическое выполнение команд DML
+Например, ежемесячно могут генерироваться данные для выставления счетов.
+
+CREATE OR REPLACE FUNCTION car_portal_app.get_account (predicate TEXT)
+RETURNS SETOF car_portal_app.account AS
+$$
+BEGIN
+	RETURN QUERY EXECUTE 'SELECT * FROM car_portal_app.account WHERE ' || predicate;
+END;
+$$ LANGUAGE plpgsql;
+Вызов:
+> SELECT * FROM car_portal_app.get_account(E'first_name=\'James\'');
+----------------------------------
+Динамический SQL и кеширование
+
+Пример, EXECUTE применяется для отключения кеширования:
+CREATE OR REPLACE FUNCTION car_portal_app.get_advertisement_count
+(some_date timestamptz ) RETURNS BIGINT AS $$
+DECLARE
+	count BIGINT;
+BEGIN
+	EXECUTE 'SELECT count (*) FROM car_portal_app.advertisement
+	WHERE advertisement_date >= $1' USING some_date INTO count;
+	RETURN count;
+END;
+$$ LANGUAGE plpgsql;
+------------------------------------------
+Рекомендации по использованию динамического SQL
+Уязвим для атак внедрением SQL
+Чтобы защитить код:
+- для параметризованных динамических SQL-команд используйте фразу
+USING;
+- используйте для построения запросов функцию format. Спе­цификатор %I экранирует аргумент как идентификатор, а %L – как литерал
+- для правильного форматирования идентификаторов и литералов используйте функции quote_ident(), quote_literal() и quote_nullable()
+
+Пример, безопасного кода:
+CREATE OR REPLACE FUNCTION car_portal_app.can_login (email text, pass text)
+RETURNS BOOLEAN AS $$
+DECLARE
+	stmt TEXT;
+	result bool;
+BEGIN
+	stmt = format('SELECT COALESCE (count(*)=1, false) 
+		FROM car_portal_app.account 
+		WHERE email = %Land password = %L', $1,$2);
+	RAISE NOTICE '%' , stmt;
+	EXECUTE stmt INTO result;
+	RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+
+
+
+

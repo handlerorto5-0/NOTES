@@ -1,0 +1,21 @@
+Advanced Usage, Distribution
+Расширенное использование, распространение стр 274
+------------------------------------
+# /code/radis
+Cоздать тестовый проект на Ruby
+# Gemfile
+source 'https://rubygems.org'
+gem 'redis'
+-----
+bundle
+
+# test_redis.rb
+require 'redis'
+redis = Redis.new(:host => "127.0.0.1", :port => 6379)
+puts "Inter something"
+msg = gets.strip
+redis.set("something", msg)
+val = redis.get("something")
+puts val
+redis.flushall
+--------------------------------------------
