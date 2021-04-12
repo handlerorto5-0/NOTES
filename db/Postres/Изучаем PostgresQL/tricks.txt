@@ -38,6 +38,8 @@ SELECT car_model_id,
 FROM car_portal_app.car GROUP BY car_model_id;
 ------------------------------------------
 изменим work_mem в сеансе
-set work_mem to '100MB';
+SET work_mem TO '100MB';
 ------------------------------------------
-
+Чтобы заставить просматривать индекс в explain
+SET enable_seqscan TO off;
+------------------------------------------

@@ -1,0 +1,134 @@
+ssh root@82.196.7.231
+так защёл на
+root@production-workers:~# 
+дальше что можно смотреть?
+root@production-workers:~# cd ..
+root@production-workers:/# cd home
+root@production-workers:/home# cd deploy/deploy/app/
+current  releases  repo  revisions.log  shared
+куда не следует не хочу влазить
+
+Первые впечатления:
+- надо создать нормалный репозиторий для обслуживания кода
+- git нет, это проблемма
+- тестов не нашёл, без покрытия ими, тяжко будет что то менять в проекте
+- много внешних сервисов и гемов к ним, могли устареть
+- ключ от бд прямо в yml, бардак
+- инвентаризировать внешние сервисы и ключи к ним
+- уточнить по docker, видимо недавно создавалась эта функция, это работает?
+===============================================
+Задача с WS
+На лdстмине реализованы интеграции с туроператорами, парсеры запрашивают данные от нескольких компаний и отправляют их в пользовательский интерфейс.
+В связи с остановкой сервера и паразапуском его (или какими то ошибками, возникшими за последние несколко мечяцев) сейчас работают только две интеграции из 6.
+Надо найти в чём проблема - возможно надо перезагрузить какой то сервис, но может быть действительно что то изменилось на родительском сервере ткроператора и из-за этого слетело у нас.
+Приоритет интеграций которые хорошо бы починить (нужна оценка):
+Alida
+Mouzenidis
+Kuddytour
+TUI
+===============================================
+root@production-workers:/home/deploy/app/current/app/services#
+/home/deploy/app/current/log
+нет нужной инфы
+--------------------------------
+Двигаюсь по списку:
+--------------------------------
+Alida :
+/home/deploy/app/current/app/services/alida_xml
+
+Всё интересное в папке, здесь в модели разбор данных происходит
+/home/deploy/app/current/app/services/alida_xml/parsers/
+
+файл offers.rb
+http://www.alida.lv/xml.php
+
+файл resorts.rb
+https://agents.alida.lv/xml.php
+
+файл schedules.rb
+просто net должно что то приходить, без ключей и пр.
+response = Net::HTTP.get_response(URI("https://agents.alida.lv/xml.php?what=schedule&sid=#{@alida_resort_id}"))
+
+я использую httpie (sudo apt install httpie)
+http http://www.alida.lv/xml.php
+приходит такая красота, в файле только заголовок
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?><xml>
+</xml>
+пробую с параметрами 
+http http://www.alida.lv/xml.php what=schedule
+тоже самое
+пробовал загрузить файл
+http http://www.alida.lv/xml.php > file_1
+тоже самое
+------------------------------------
+Mouzenidis :
+/home/deploy/app/current/app/services/mouzenidis
+
+файл common.rb
+http://api.mouzenidis-travel.com/searchreserv/ServiceMainSearch.svc?wsdl
+данные приходят
+
+http://tempuri.org/
+HTTP/1.1 301 Moved Permanently - перехал навсегда
+не могу знать насколько это критично пока
+
+http://schemas.datacontract.org/2004/07/Mouzenidis.Services.Objects
+вообще неоткликается никак
+пробовал
+http://schemas.datacontract.org
+тоже ничего
+
+http://schemas.microsoft.com/2003/10/Serialization/Arrays
+HTTP/1.1 404 Not Found
+Ресурс, который вы ищете, был удален, изменено название или временно недоступен.
+http://schemas.microsoft.com 
+200 отдаёт, надо мануалы вычитывать
+
+файл hotel_sync_worker.rb
+методы для очередей sidekiq, как бы в экшинаш ловить не пришлось, пока не иду
+-------------------------------------
+Kuddytour :
+две папки? kidytour и kidytour2, во второй ничего интересного
+иду в kidytur
+/home/deploy/app/current/app/services/kidytour
+
+все ссылки https://tourvisio.kidytour.lt работают в
+файл airport.rb
+файл arr_city.rb
+файл board.rb
+файл booking.rb
+файл common.rb
+файл country.rb
+файл dep_city.rb
+файл flight.rb
+файл hotel.rb
+файл location.rb
+файл price_search_client.rb
+файл synchronizer.rb
+
+файл price_search_client.rb есть битая ссылка
+http://www.w3.org/2003/05/soap-envelope
+HTTP/1.1 301 Moved Permanently
+насколько это критично, пока не могу сказать
+--------------------------------------------
+tui :
+/home/deploy/app/current/app/services/tui
+
+в секрет yml есть url и token, я не буду влазить
+надо ключ проверить, и посмотреть что приходит
+неверное платный сервис
+
+https://b2b.tuibaltics.eu
+200 живой
+
+
+
+
+
+
+
+
+
+
+
+

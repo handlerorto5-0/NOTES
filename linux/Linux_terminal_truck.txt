@@ -1,5 +1,11 @@
 свежения о системе
 screenfetch
+----------------------------------------------------------------------
+версия ubuntu
+lsb_release -a 
+lsb_release -d
+cat /etc/issue
+cat /etc/os-release
 ---------------------------------------------------------------------- 
 Обновиться до Ubuntu 20.04 c предыдущих версий
 # sudo apt update && sudo apt upgrade

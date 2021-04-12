@@ -24,7 +24,7 @@ yarn global add bs-platform
 reasonml.github.io/docs/en/installation
 ----------------------------------------
 Создание проекта:
-в каталоге /code/reason_ml$/
+в каталоге /code/reason_ml/
 $ bsb -init first-project -theme basic-reason
 создаст каталог с проектом first-project
 Сборка и запуск программы:

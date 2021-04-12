@@ -1,3 +1,330 @@
 Глава 9 За пределами традиционных типов данных стр 240
 
+==================================================
+Массивы
+
+Массив состоит из набора элементов (значений или переменных) одного типа. По умолчанию индексы начинаются с 1. Поддерживаются также многомерные массивы. 
+В массивах PostgreSQL допускаются дубликаты и значения null.
+
+Распространенное применение массивов – моделирование многозначных атрибутов. Например, у платья может быть несколько цветов, а у газетной статьи­ несколько категорий.
+
+Для инициализации массива используется конструкция {}.
+
+Пример инициализации массива, и получения элемента:
+> SELECT ('{red, green, blue}'::text[])[1] as red ;
+Другой способ инициализации моссива:
+> SELECT array['red','green','blue'] AS primary_colors;
+
+По умолчанию индексирование массива начинается с единицы,это поведение можно изменить:
+> WITH test AS (SELECT '[0:1]={1,2}'::INT[] as arr) SELECT arr, arr[0] from test;
+--
+Функции и операторы массивов, полный перечень в документации https://www.postgresql.org/docs/current/static/functions-array.html
+
+- array_remove() для удаления элемента
+- array_to_string() преобразовать массив в текст
+- array_replace() заменить все элементы с указанным значением
+- array_ndims() уровень вложенности
+- array_dims() диапазоны для вложенности
+- array_length() длина
+- cardinality() общее кол-ва элементов
+- two_dim_array[1][1] извлечение элемента
+- = сравнивает на равенство
+- || производит конкатенацию
+- && возвращает true, если массивы пересекаются
+- @> и <@ возвращают true, если первый массив содержит второй или содержится во втором соответственно
+- array() строит массив из множества
+- unnest() возвращает множество элементов массива. Это полезно, когда требуется произвести над массивами теоретико-множественную операцию: distinct, order by, intersect, union и т. д.:
+> SELECT array(SELECT DISTINCT unnest (array [1,1,1,2,3,3]) ORDER BY 1);
+- array_agg() для агрегирования данных:
+> SELECT make, array_agg(model) FROM car_model group by make;
+- ANY() проверяет принадлежность элемента массиву:
+> SELECT 1 in (1,2,3), 1 = ANY ('{1,2,3}'::INT[]);
+--
+Доступ к элементам массива и их модификация:
+
+К элементу массива обращаются по индексу, если элемент не существует, то возвращается NULL:
+> SELECT color [3] FROM color;
+Можно получить срез массива, указав верхнюю и нижнюю границы:
+> SELECT color [1:2] FROM color;
+Дописать элементы в конец массива с ||:
+> SELECT ARRAY ['red', 'green'] || '{blue}'::text[] AS append;
+Обновить срез массива:
+> UPDATE color SET color[1:2] = '{black, white}';
+Удаление всех массивов с заданым значением:
+> SELECT array_remove ('{Hello, Hello, World}'::TEXT[], 'Hello');
+Удалить элемень по индексу WITH ORDINALITY (в примере индекс 1):
+> SELECT ARRAY(
+SELECT unnest FROM unnest ('{Hello1, Hello2, World}'::TEXT[])
+WITH ordinality WHERE ordinality <> 1);
+--
+Индексирование массивов
+
+GIN-индекс по столбцу color создается следующим образом:
+> CREATE INDEX ON color USING GIN (color);
+
+==============================================
+Хранилище ключей и значений
+
+Хаш или ассоциативный массив в языках програмирования.
+PostgreSQL поддерживает хранилище ключей и значений – hstore, все ключи в хранилище hstore уникальны и чуствительны к регистру. 
+
+Для создания расширения hstore нужно выполнить следующую команду от
+имени суперпользователя:
+CREATE EXTENSION hstore;
+
+Пример представления:
+> SELECT 'tires=>"winter tires", seat=>leather'::hstore;
+Пример генерации одиночное значение с hstore(key, value):
+> SELECT hstore(' ́Hello', 'World');
+Пример добавления колонки:
+> ALTER TABLE car_portal_app.car ADD COLUMN features hstore;
+
+* -> получить значение ключа
+* || конкатенация ключей
+* - удаление ключей
+* ?, ?& и ?| проверяют, что hstore содержит ключ(и)
+
+Создать таблицу хашей:
+CREATE TABLE features (
+features hstore
+);
+Добавить значение:
+INSERT INTO features (features) VALUES
+('Engine=>Diesel'::hstore) RETURNING *;
+Добавить новый ключ:
+UPDATE features SET features = features || hstore ('Seat',
+'Lether') RETURNING *;
+Обновить ключ:
+UPDATE features SET features = features || hstore ('Engine',
+'Petrol') RETURNING *;
+Удалить ключ:
+UPDATE features SET features = features - 'Seat'::TEXT
+RETURNING *;
+--
+Объект hstore можно привести к типу массива, множества или JSON-документа
+
+Тип данных hstore преобразуется во множество с помощью each(hstore)
+
+Получить уникальные ключи:
+SELECT DISTINCT (each(features)).key FROM features;
+Получить hstore в виде множества:
+SELECT (each(features)).* FROM features;
+------
+Индексирование hstore
+Применяются GIN или GIST индексы. 
+
+Создание GIN индекса:
+CREATE INDEX ON features USING GIN (features);
+Создание B-tree индекса:
+CREATE INDEX ON features ((features->'Engine'));
+==================================================
+Структура данных JSON
+
+PostgreSQL поддерживает два типа JSON: JSON и JSONB. JSONB эффективнее, потому что является двоичным форматом и поддерживает индексы. Документ, сохраняемый как объект типа JSON, хранится в текстовом формате. При работе с типом JSON рекомендуется задавать для базы данных кодировку UTF8.
+-----------------------------------
+Доступ к объектам типа JSON и их модификация
+Полный перечень функций https://www.postgresql.org/docs/current/static/functions-json.html
+
+Если текст приводится к типу json, то он сохраняется и отображается без какой-либо обработки:
+SELECT '{"name":"some name", "name":"some name" }'::json;
+В формате jsonb детали не сохраняются:
+SELECT '{"name":"some name", "name":"some name" }'::jsonb;
+
+JSON-объекты могут содержать вложенные JSON-объекты, массивы, вложен-
+ные массивы, массивы JSON-объектов и т. д.
+
+Json Текст Описание
+–>   –>>   Возвращает поле JSON-объекта по индексу или по имени поля
+#>   #>>   Возвращает поле JSON-объекта по указанному пути
+
+Создать таблицу с JSON:
+CREATE TABLE json_doc ( doc jsonb );
+Добавить данные в таблицу:
+INSERT INTO json_doc SELECT '{"name":"John", "Address":{"Street":"Some
+street", "city":"Some city"}, "rank":[5,3,4,5,2,3,4,5]}'::JSONB ;
+Вернуть города в текстовом формате:
+SELECT doc->'Address'->>'city' FROM json_doc WHERE doc->>'name' = 'John';
+или 
+SELECT doc#>>'{Address, city}' FROM json_doc WHERE doc->>'name' = 'John';
+Применение json_insert() для вставки в JSON-объект пары ключ-значение:
+> UPDATE json_doc SET doc = jsonb_insert(doc,'{hobby}','["swim", "read"]', true) RETURNING * ;
+Применение jsonb_set() изменения ключ-значения:
+> UPDATE json_doc SET doc = jsonb_set(doc, '{hobby}','["read"]',
+true) RETURNING * ;
+Удаление ключ-значение:
+> UPDATE json_doc SET doc = doc -'hobby' RETURNING * ;
+--------------------------------------------
+Индексирование JSON-документов
+
+GIN-индекс, поддерживает следующие операторы:
+- @>: содержит ли JSON-документ в левой части значение в правой части?
+- ?: существует ли указанный ключ в JSON-документе?
+- ?&: существует ли в JSON-документе хотя бы один из элементов тексто-
+вого массива?
+- ?|: существуют ли в JSON-документе все элементы текстового массива
+(ключи)?
+
+Добавление индекса:
+CREATE INDEX ON json_doc(doc);
+------------------------------------------
+- json_to_record()  преобразовать JSON во множество, позволяет сортировать и фильтровать данные, как в обычных таблицах.
+- jsosn_agg() агрегировать данные из нескольких строк и сконструировать массив JSON-объектов
+==========================================
+Реализация REST-совместимого интерфейса к PostgreSQL
+
+Существует несколько библиотек с открытым исходным кодом, позволяю-
+щих построить REST-совместимый интерфейс, в т. ч. psql-api и PostgREST.
+Для создания полного API со всеми операциями CRUD на базе веб-сервера
+имеется модуль PostgreSQL для Nginx – ngx_postgres.
+
+В примере представлен REST-совместимый API для выборки данных на основе Nginx и memcached. PostgreSQL отправляет данные серверу memcached,
+и Nginx запрашивает их у этого сервера.
+
+Установка модуля PostgreSQL pgmemcache:
+$ sudo apt-get install -y postgresql-10-pgmemcache
+Добавление модуля в базу данных template1, чтобы он был доступен всем новым базам:
+$ psql template1 -c "CREATE EXTENSION pgmemcache"
+Добавление модуля в базу car_portal:
+$psql car_portal -c "CREATE EXTENSION pgmemcache"
+
+Установка Nginx в Ubuntu:
+$ sudo apt-get install -y nginx
+Установка memcached в Ubuntu:
+$ sudo apt-get install -y memcached
+
+Добавить переменную в PostgreSQL.conf для связывания серверов:
+$ echo "pgmemcache.default_servers = 'localhost'">>/etc/postgresql/10/main/postgresql.conf
+$ /etc/init.d/postgresql reload
+
+Протестировать взаимодействие:
+> SELECT memcache_add('/1', 'hello');
+> SELECT memcache_get('/1');
+
+Разрешить Nginx доступ к memcached (min config):
+* В качестве ключа серверу memcached передается URI. По умолчанию ответ приходит в формате JSON.
+# cat /etc/nginx/nginx.conf
+user www-data;
+worker_processes 4;
+pid /run/nginx.pid;
+events {
+	worker_connections 800;
+}
+http {
+	server {
+		location / {
+			set $memcached_key "$uri";
+			memcached_pass 127.0.0.1:11211;
+			default_type application/json;
+			add_header x-header-memcached true;
+		}
+	}
+}
+--
+Проверить настройку сервера Nginx:
+$ curl -I -X GET http://127.0.0.1/1
+
+Для построения JSON-документа из строки реляционной таблицы предназначены row_to_json(), to_json() и to_jsonb():
+> SELECT to_json (row(account_id,first_name, last_name, email))
+или с подзапросом:
+>WITH account_info(account_id, first_name, last_name, email) AS (
+		 SELECT account_id,first_name, last_name, email
+		 FROM car_portal_app. Account
+		LIMIT 1)
+SELECT to_json(account_info) FROM account_info;
+FROM car_portal_app.account LIMIT 1;
+
+Построить JSON из account:
+> SELECT to_json (account) FROM car_portal_app.account LIMIT 1;
+Cгенерировать записи, соответствующие таблице account:
+SELECT memcache_add('/'||account_id,
+	(SELECT to_json(foo)
+	FROM (SELECT account_id, first_name,last_name, email ) AS FOO )::text
+	)
+FROM car_portal_app.account;
+
+Можно обращаться к данным через сервер Nginx:
+$ curl -sD - -o -X GET http://127.0.0.1/2
+
+* Чтобы гарантировать согласованность таблицы account с данными на сервере memcached, можно добавить триггер AFTER INSERT OR UPDATE OR DELETE, который передаст в memcached изменения, произведенные в таблице. Триггер можно пометить флагами DEFERRABLE INITIALLY DEFERRED, чтобы отложить модификацию данных в memcached. Иными словами, состояние memcached изменяется, только если транзакция завершилась успешно.
+
+===============================================
+Полнотекстовый поиск стр 258
+
+Средства полнотекстового поиска заменяют операторы сопоставления с текстом типа LIKE и ILIKE и резко повышают скорость поиска.
+
+-----------------------------------------------
+Тип данных tsvector, осортированный список уникальных лексем. 
+Лексема – это основа слова (корень).
+
+Приведение текста к типу tsvector:
+> SELECT 'A wise man always has something to say, whereas a fool
+always needs to say something'::tsvector;
+Нормализация, для учёта лингвистических правил to_tsvector():
+> SELECT to_tsvector('english', 'A wise man always has something
+to say, whereas a fool always needs to say something');
+-----------------------------------------------
+Тип данных tsquery используется для поиска лексем. 
+
+Лексемы можно комбинировать с помощью операторов & (И), | (ИЛИ) и ! (НЕ). Оператор НЕ имеет наивысший приоритет, И – следующий по порядку, и самый меньший – ИЛИ. 
+Для группировки лексем и операторов можно также использовать скобки.
+
+Пример поиска лексем:
+* @@ оператор сопоставления
+> SELECT 'A wise man always has something to say, whereas a fool
+always needs to say something'::tsvector @@ 'wise'::tsquery;
+
+to_tsquery() которая преобразует текст в лексемы:
+> SELECT to_tsquery('english', 'wise & man');
+
+Поиск по фразам - результат считается положительным, если два слова соседние и расположены в указанном порядке:
+> SELECT to_tsvector('A wise man always has something to say, whereas a fool always needs to say something') @@ to_tsquery('wise <-> man');
+-------------------------------------------
+Сопоставление с образцом
+
+Проверка вхождения некоторого образца в заданную последовательность слов
+
+Лексемы в векторе tsvector можно снабдить метками A, B, C, D, где D –
+ранг по умолчанию, а A соответствует наивысшему рангу. Чтобы явно назна-
+чить вес вектору tsvector (setweight()):
+> SELECT setweight(to_tsvector('english', 'elephants'),'A') ||
+setweight(to_tsvector('english', 'dolphin'),'B');
+
+Стандартное ранжирование ts_rank().
+Ранжирование с учётом плотности покрытия ts_rank_cd():
+> SELECT ts_rank_cd
+(setweight(to_tsvector('english','elephants'),'A') ||
+setweight(to_tsvector('english', 'dolphin'),'B'),'eleph' );
+
+---------------------------------------------
+Полнотекстовые индексы
+
+Предпочтительны GIN-индексы
+CREATE INDEX ON <table_name> USING GIN (to_tsvector('english', <attribute name>));
+-- или
+CREATE INDEX ON <table_name> USING GIN (to_tsvector(<attribute name>));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
