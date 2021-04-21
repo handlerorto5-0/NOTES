@@ -18,7 +18,7 @@ function BookablesList () {
 		group: "Rooms"
 	});
 }
-если мы будем обрабватывать ттолко один елемент:
+если мы будем обрабватывать только один елемент:
 function handleClick (index) {
 	setState({
 		bookableIndex: index

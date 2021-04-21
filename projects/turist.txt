@@ -54,8 +54,30 @@ http http://www.alida.lv/xml.php
 приходит такая красота, в файле только заголовок
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?><xml>
 </xml>
+-----------
 пробую с параметрами 
-http http://www.alida.lv/xml.php what=schedule
+http http://www.alida.lv/xml.php what=schedule sid=
+* sid для каждого направления разные, шарм-2021, шарм-2022
+в конфиг schedule.rb ecть задачи
+alida:sync_flights  20 минут
+AlidaXml::Synchronizer.sync_tours 5 тинут
+и раз в день тамже
+Flight.remove_old
+alida:update_resort_ids
+alida:update_hotel_ids
+ в контролерах у админа надо искать логику, пока так считаю
+
+curl https://agents.alida.lv/xml.php?what=resorts
+curl: (60) Проблема с сертификатом SSL: невозможно получить сертификат местного эмитента 
+Отключить сертификацию -k/ --insecure
+curl -k https://agents.alida.lv/xml.php?what=resorts
+всё приходит
+проверить с рабочего сервера
+
+разобраться как в httpie отключить сертификат?
+http https://agents.alida.lv/xml.php what=resorts
+------------
+Искать надо вкоде список
 тоже самое
 пробовал загрузить файл
 http http://www.alida.lv/xml.php > file_1

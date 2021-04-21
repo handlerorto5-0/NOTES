@@ -71,9 +71,9 @@ spec/workflows/creates_project_spec.rb
 require "rails_helper"
 RSpec.describe CreatesProject do
 	it "creates a project given a name" do
-	creator = CreatesProject.new(name: "Project Runway")
-	creator.build
-	expect(creator.project.name).to eq("Project Runway")
+		creator = CreatesProject.new(name: "Project Runway")
+		creator.build
+		expect(creator.project.name).to eq("Project Runway")
 	end
 end
 ----------------------------------------
@@ -100,5 +100,64 @@ rspec-given gem
 RSpec предлагает настройку метаданных: aggregate_failures. При применении к любому описанию или блоку, RSpec не остановится после первого сбоя, но покажет все сбои в спецификации.
 Можно установить: aggregate_failures как значение по умолчанию в конфигурации RSpec, не рекомендуeтся
 ----------------------------------------
+Поскольку в Rails 5 было проделано много работы по ускорению интеграционных тестов, тесты контроллеров становятся менее ценными.
+----------------------------------------
+Тестирование видов
+
+Метод has_selector принимает в качестве аргумента селектор в стиле jQuery, где обычный # представляет идентификатор DOM, а точка (.) Представляет класс DOM. Утверждение проходит, если страница содержит элемент DOM, соответствующий селектору. Вы также можете указать параметр text :, который означает, что соответствующий элемент DOM также должен содержать определенный текст (или соответствовать определенному регулярному выражению).
+
+Например в тесте:
+вместо
+expect(page).to have_content("Project Runway")
+более гибко искать по селектору
+expect(page).to have_selector(
+      "#project_#{@project.id} .name", text: "Project Runway"
+    )
+в коде вида
+<% @projects.each do |project| %>
+	<tr class="project-row" id="<%= dom_id(project) %>">
+		<td class="name"><%= project.name %></td>
+		<td class="total-size"><%= project.total_size %></td>
+	</tr>
+<% end %>
+==================================================
+Тестирование на отказ
+
+Один из приёмов, искать селектор на странице, куда нас должно перепраить после цдасной валидации.
+expect(page).to have_selector(".new_project")
+
+Пример классического теста на отказ:
+describe 'failure cases' do
+    it "fails when trying to save a project with no name" do
+      creator = CreatesProject.new(name: "", task_string: "")
+      creator.create 
+      expect(creator).not_to  be_a_success
+    end
+  end
+--
+Есть простой способ заставить RSpec сосредоточиться только на выполнении ошибок, раскомментируйте в spec / spec_helper.rb:
+config.example_status_persistence_file_path = "spec/examples.txt"
+генерирует отчет в spec/examples.txt (добавить .gitignore)
+----------------------------
+Для сохранения уже введёных даннах, при неудачной попытки валидации 
+в модели добавить @success=false в конструктор, и обработать в методах ето свойства, а в акшене создания сделать проверку
+if @workflow.success?
+      redirect_to projects_path
+else
+      @project = @workflow.project
+      render :new
+end
+----------------------------
+
+
+
+
+
+
+
+
+
+
+
 
 

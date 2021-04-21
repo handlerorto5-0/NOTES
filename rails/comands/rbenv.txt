@@ -14,6 +14,8 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 
 список всех доступных версий Ruby:
 rbenv install -l
+rbenv install -L все
+rbenv versions  установленные
 установить ruby
 rbenv install 2.7.2
 исползовать версию
@@ -61,3 +63,32 @@ rm -rf `rbenv root`
 
 ----------------------------------
 install ChromeDriver ?? gromium
+=============================================
+Прблемма установки 2.2.4
+rbenv install 2.2.4
+вываливается
+...
+The Ruby openssl extension was not compiled.
+ERROR: Ruby install aborted due to missing extensions
+Try running `apt-get install -y libssl-dev` to fetch missing dependencies.
+
+Configure options used:
+  --prefix=/home/exc/.rbenv/versions/2.2.4
+  LDFLAGS=-L/home/exc/.rbenv/versions/2.2.4/lib 
+  CPPFLAGS=-I/home/exc/.rbenv/versions/2.2.4/include 
+===
+базовые команды
+openssl version
+openssl help
+
+найти папку
+$ openssl version -a | grep OPENSSLDIR
+OPENSSLDIR: "/usr/lib/ssl
+поймать пакеты которых не хватает
+apt-cache search libssl | grep SSL
+----
+apt-get install libssl1.0-dev
+=========================================
+nokogiri requires Ruby version < 3.1.dev, >= 2.5.
+
+

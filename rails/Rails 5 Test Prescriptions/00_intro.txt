@@ -27,7 +27,13 @@ gem "rspec-rails", "~> 3.7.0"
 end
 $ bundle install
 $ rails generate rspec:install
+-------------------------
+Запуск тестов:
+$ rspec
 $ bundle exec rspec
+* --only-failures только упавшие
+* --next-failure  до первого упавшего
+-----------------------------------
 
 Лучшее начало - создание модели
 --
@@ -83,14 +89,14 @@ expect(["cheese", "burger"]).to contain_exactly(a_string_matching(/ch/), a_strin
 * a_string_matching это алиас для match
 
 Запуск теста:
-$ rspec
+$ bunle exec rspec
 -----------------------------------
 Оператор let и динамические сопоставители
 
 # spec/models/project_spec.rb
 --
 require "rails_helper"
-	RSpec.describe Project do
+RSpec.describe Project do
 	let(:project) { Project.new }
 	let(:task) { Task.new }
 

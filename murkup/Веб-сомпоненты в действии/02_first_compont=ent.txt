@@ -1,0 +1,92 @@
+Глава 2 Ваш первый веб-компонент cnh 42
+
+==============================================
+Основа элемента: HTMLElement
+
+За некоторыми исключениями, такими как SVG, любой элемент, который мы помещаем в HTML или DOM, наследуется от HTMLElement.
+НАпример, теги <span>, <div> и <button>, которые создаются из HTMLSpanElement, HTMLDivElement и HTMLButton-Element соответственно. В свою очередь, все они наследуются от HTMLElement.
+
+спрашиваем, что это за конструктор:
+document.createElement('div').constructor
+вернёт
+ƒ HTMLDivElement() { [native code] }
+
+В HTML можно создать любое имя для тега и добавить его на свою страницу, и он будет работать как <div>.
+<randomElement>Hi!</randomElement>
+document.createElement('randomElement').constructor;
+ƒ HTMLUnknownElement() { [native code] }
+
+Существует соглашение об именах. Надо добавлять знак тире (–) в имя:
+document.createElement('random-element').constructor;
+-> ƒ HTMLElement() { [native code] }
+
+==============================================
+Расширение классов для создания пользовательских элементов
+
+Переопределение HTMLElement:
+customElements.define('my-custom-tag', class extends HTMLElement {});
+НАдо выполнять проверку, для избезания ошибки:
+if (!customElements.get('my-custom-tag')) {
+	customElements.define('my-custom-tag', class extends HTMLElement {});
+}
+
+
+==============================================
+Предоставление логики и интерактивности пользовательским элементам
+connectedCallback - метод жизненного цикла, что то возвращает если компонент уществует
+
+Пример , компонент сообщает что он есть:
+<script>
+	class Slider extends HTMLElement {
+		connectedCallback() {
+			alert('hi from Slider');
+		}
+	}
+	if (!customElements.get('wcia-slider')) {
+		customElements.define('wcia-slider', Slider);
+	}
+</script>;
+<body>
+	<wcia-slider></wcia-slider>
+</body>
+
+==============================================
+Использование пользовательских элементов после определения их с помощью метода customElements.define.
+
+с помощью this можно вызвать внутри класса пользовательского элемента все, что наследуется от HTMLElement, например:
+- this.style получение CSS
+- this.offsetHeight  получение высоты элемента
+- this.addEventListener('click', callback) добавление слушателя событий
+
+Добавляем в класс разметку html:
+this.innerHTML = '<div class="bg-overlay"></div><div class="thumb"></div>';
+Добавляем в клвсс стили css:
+this.style.width = '500px';
+С помощью querySelector добавляем отдельным елементам стили css:
+this.querySelector('.thumb').style.marginLeft = '100px';
+
+Можно связать событие клика с састомным веб-компонентом:
+<wcia-slider onclick="alert('clicked')"></wcia-slider>
+
+Встраивание атрибутов в тег компонета:
+<wcia-slider backgroundcolor="#0000ff" value="180"></wcia-slider>
+селектор в класе тогда:
+this.querySelector('.bg-overlay').style.backgroundColor = this.getAttribute('backgroundcolor');
+value в классу чтобы двигать ползунок:
+this.querySelector('.thumb').style.marginLeft = this.getAttribute('value') + 'px';
+-------------------------
+Можно обойтись без много this просто подключив стили отдельно:
+wcia-slider {...}
+.bg-overlay {...}
+.thumb {...}
+
+стр 60
+
+
+
+
+
+
+
+
+

@@ -28,9 +28,11 @@ reasonml.github.io/docs/en/installation
 $ bsb -init first-project -theme basic-reason
 создаст каталог с проектом first-project
 Сборка и запуск программы:
-npm run build
+$ npm run build
 или
-yarn build
+$ yarn build
+$ bsb -make-world
+
 запуск сoзданного файла
 node src/Demo.bs.js
 

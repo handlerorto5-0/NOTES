@@ -1,0 +1,26 @@
+Глава 3 Создание собственных типов данных стр 29
+/code/reason_ml/datatypes
+
+=======================================
+Переименование типа данных
+
+Простое создания масок для удобства чтения кода:
+type scoreType = int;
+type percentType = float;
+let calcPercent = (score: scoreType, max: scoreType) : percentType =>
+float_of_int(score) /. float_of_int(max) *. 100.0;
+=======================================
+Создание вариантов типов данных
+
+передаются все возможные значения
+type shirtSize =
+	| Small
+	| Medium
+	| Large
+	| XLarge;	
+
+let mySize: shirtSize = Medium;
+let otherSize = Large;
+
+let badSize: shirtSize = "Medium"; ошибка
+

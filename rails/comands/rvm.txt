@@ -40,8 +40,8 @@ gem -v
 echo "gem: --no-document" >> ~/.gemrc   опционально
 
 rvmsudo gem install bundler -v 1.5.0
-gem install bundler -v 1.17.3
-bundle _1.17.3_ install
+gem install bundler -v 1.5.-
+bundle _1.5.0_ install
 
 ---------------------------------------------------------
 _II Работа разными версиями Руби_

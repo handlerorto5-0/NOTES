@@ -33,6 +33,7 @@ SHOW server_version;
 \c namedb -подключится к базе
 \d посмотреть базу
 \du просмотр ролей
+\dx просмотр расширений
 sudo adduser kv-2 Создайте одноименного с ролью пользователя Ubuntu
 
 sudo -u postgres createuser --interactive
