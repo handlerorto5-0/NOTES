@@ -1,0 +1,117 @@
+Вы можете определить блок только при вызове метода. Блок передается прямо в метод, и метод может выполнить обратный вызов блока с ключевым словом yield.
+
+def a_method(a, b)
+	a + yield(a, b)
+end
+a_method(1, 2){|x, y| (x + y) * 3 }  # => 10
+---------------------------------------
+Kernel#block_given?
+
+def a_method
+return yield if block_given?
+'no block'
+end
+a_method  # => "no block"
+a_method { "here's a block!" } # => "here's a block!"
+-------------------------------------
+Есть тонкая разница между классом и модулем с одной стороны и def с другой. Код в определении класса или модуля выполняется немедленно.И наоборот, код в определении метода выполняется позже, когда вы в конечном итоге вызываете метод.
+
+Как передать переменную в класс и метод класса:
+my_var = "Success"
+MyClass = Class.new do  - принимает блок
+	"#{my_var} in the class definition"
+
+	define_method :my_method do
+	"#{my_var} in the method"
+	end
+end
+MyClass.new.my_method
+--------------------------------------
+Как поделиться переменной среди нескольких методов так, чтобы кто-либо другой не видел эту переменную. Вы можете сделать это, определив все методы в той же Flat Scope, что и переменная:
+
+def define_methods
+	shared = 0
+	Kernel.send :define_method, :counter do
+		shared
+	end
+	Kernel.send :define_method, :inc do |x|
+		shared += x
+	end
+end
+
+define_methods
+
+counter # => 0
+inc(4)
+counter # => 4
+--------------------------------------------
+Блок - это замыкание: когда вы определяете блок, он захватывает привязки
+в текущей среде и носит их с собой. Таким образом, вы можете заменить Scope Gate вызовом метода, зафиксировать текущие привязки в замыкании и передать замыкание методу.
+Вы можете заменить class на Class.new, module на Module.new и def на Module #define_method. Это Flat Scope . (см выше)
+-------------------------------------------
+BasicObject#instance_eval, оценивает блок в контексте объекта:
+class MyClass
+	def initialize
+		@v = 1
+	end
+end
+obj = MyClass.new
+obj.instance_eval do
+	self # => #<MyClass:0x3340dc @v=1>
+	@v # => 1
+end
+Даже если instance_eval изменяет себя, блок, который вы передаете instance_eval, все равно может видеть привязки из того места, где он определен, как и любой другой блок:
+v = 2
+obj.instance_eval { @v = v }
+obj.instance_eval { @v } # => 2
+----------------------------
+instance_exec позволяет передавать аргументы блоку.
+
+class C
+	def initialize
+		@x = 1
+	end
+end
+class D
+	def twisted_method
+		@y = 2
+		C.new.instance_exec(@y) {|y| "@x: #{@x}, @y: #{y}" }
+	end
+end
+------------------------------
+Чистые комнаты
+Иногда вы создаете объект, просто чтобы оценить блоки внутри него. Такой объект можно назвать чистой комнатой:
+class CleanRoom
+	def current_temperature
+		# ...
+	end
+end
+clean_room = CleanRoom.new
+clean_room.instance_eval do
+	if current_temperature < 20
+		# TODO: wear jacket
+	end
+end
+===================================
+Callable Objects
+механизм «сначала код пакета, вызов позже» не является эксклюзивным для блоков. В Ruby есть как минимум три других места, где вы можете упаковать код:
+• В proc, который в основном представляет собой объект, превращенный в блок.
+• В lambda, которая представляет собой небольшую вариацию процесса
+• В методе
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

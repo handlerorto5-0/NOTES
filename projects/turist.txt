@@ -73,8 +73,22 @@ curl: (60) Проблема с сертификатом SSL: невозможн�
 curl -k https://agents.alida.lv/xml.php?what=resorts
 всё приходит
 проверить с рабочего сервера
-
-разобраться как в httpie отключить сертификат?
+==
+для irb работает
+require 'net/http'
+require 'open-uri'
+require 'openssl'
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+uri = URI('https://agents.alida.lv/xml.php?what=resorts')
+Net::HTTP.get(uri) # вернёт тело
+Net::HTTP.get_response(uri) # вернёт статус
+==
+Такое решение используют для отладки, в продакшене на свой страх и риск:
+# Add to config/application.rb
+require 'openssl'
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+--
+разобраться как в httpie отключить ssl?
 http https://agents.alida.lv/xml.php what=resorts
 ------------
 Искать надо вкоде список

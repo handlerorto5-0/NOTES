@@ -21,6 +21,9 @@ psql -d database -U  user -W
 psql -h host -d database -U user -W
 psql -U user -h host "dbname=db sslmode=require"
 
+username: postgres
+  password: 22551
+
 ---------------------------
 Commands inside psql
 

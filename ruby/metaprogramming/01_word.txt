@@ -1,2 +1,11 @@
 01_word.txt
 
+my_object = Greeting.new("Hello")
+my_object.class
+my_object.class.instance_methods(false) - false без наследуемых
+my_object.instance_variables - аргументы конструктора
+------------------------------------------------
+Метапрограммирование - это написание кода, который манипулирует языковыми конструкциями во время выполнения.
+
+
+

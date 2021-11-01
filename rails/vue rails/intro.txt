@@ -1,0 +1,56 @@
+Конвейер ресурсов (asset_pipeline) - это внутренняя структура Ruby on Rails для управления Javascript, таблицами стилей, изображениями и другими ресурсами. Он питается от sprockets-rails  gem. Целью конвейера ресурсов является упрощение процесса сборки статических ресурсов с помощью одной простой команды.
+rake assets: precompile
+---------------------------------------
+Installing Webpacker
+1. #At Gemfile
+gem 'webpacker'
+2. Install webpacker and its dependencies:
+bundle install
+rails webpacker:install
+3. Install Vue and its basic dependencies:
+rails webpacker:install:vue
+-----------------------------------------
+vueonrails Ruby gem будет использоваться для создания каркаса проекта Vue on Rails со всей необходимой конфигурацией и зависимостями, которые нам понадобятся для одного компонента
+gem 'vueonrails'
+gem 'webpacker'
+
+bundle install
+yarn install
+rails webpacker:install
+rails webpacker:install:vue
+rails vue:setup
+
+rails generate vue home
+rails generate controller pages home
+to app/vies/layouts/application.html.erb:
+<%= javascript_pack_tag "home" %>
+<%= stylesheet_pack_tag "home" %>
+http://localhost:3000/pages/home
+----------------------------------------
+1. Let’s install vue-cli:
+yarn install vue-cli
+2. Now, let’s create a project called v2_robot:
+vue create v2_robot
+----------------------------------------
+rails new v3_robot --webpack=vue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

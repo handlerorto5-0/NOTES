@@ -26,6 +26,7 @@ echo "gem: --no-document" > ~/.gemrc
 gem install bundler (удалял папаку .bundle когда требовал прав)
 gem env home
 
+
 установить rails gem
 доступные для скачивания:
 gem search '^rails$' --all
@@ -40,6 +41,8 @@ rails _6.0.1_ --version
 rails -v
 создать в версией
 rails _5.2.4_ new .  --skip-webpack-install --skip-bundle и другие
+rails new . --api  --skip-webpack-install --skip-bundle -T --database=postgresql
+rails new cash_flow_api --api --skip-webpack-install --skip-bundle --database=postgresql -T
 
 rbenv создает каталог shims, указывающий на файлы, которые используются текущей активной версией Ruby
 Используя субкоманду rehash, rbenv сохраняет shims в этом каталоге для соответствия всех команд Ruby во всех установленных версиях Ruby на вашем сервере. При установке новой версии Ruby или элемента gem, который предоставляет команды, наподобие Rails, нужно использовать следующую команду:
