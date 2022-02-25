@@ -2,6 +2,16 @@ irb --simple-prompt
 irb --simple-prompt --noecho
 irb --simple-prompt –I. -r name_file
 ---------------------------------------
+irb -r ./lambda_counter.rb - подгрузка файла в irb
+load "exemle.rb" подгрузка ыайла внутри irb
+---------------------------------------
+файл с расширением template.rhtml содержит:
+<p><strong>Wake up!</strong> It's a nice sunny <%= Time.new.strftime("%A") %>.</p>
+erb_example.rb запускает код в нем
+require 'erb'
+erb = ERB.new(File.read('template.rhtml'))
+erb.run
+---------------------------------------
 ruby -cw file.rb 
 ruby -c c2f.rb -проверяет синтаксис
 ruby -w c2f.rb -варнинги

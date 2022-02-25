@@ -1,0 +1,111 @@
+==============================================
+module Greetings
+	def greet
+		"hello"
+	end
+end
+
+class MyClass
+	include Greetings
+	def greet_with_enthusiasm
+		"Hey, #{greet_without_enthusiasm}!"
+	end
+	alias_method :greet_without_enthusiasm, :greet
+	alias_method :greet, :greet_with_enthusiasm
+end
+
+MyClass.new.greet # => "Hey, hello!"
+MyClass.new.greet_without_enthusiasm # => "hello"
+
+Идея обертывания новой функции вокруг существующего метода распространена в Rails. Во всех случаях вы получаете три метода, которые следуют соглашениям об именах, которые я вам только что показал: method, method_with_feature и method_without_feature. Только первые два метода включают новую функцию.
+Вместо того чтобы дублировать эти псевдонимы повсюду, Rails предоставил метод метапрограммирования, который сделает все за вас. Он назывался Module#alias_method_chain и был частью библиотеки Active Support.
+-----------------------------------
+Это был код alias_method_chai в Rails2
+class Module
+	def alias_method_chain(target, feature)
+		# Strip out punctuation on predicates or bang methods since
+		# e.g. target?_without_feature is not a valid method name.
+		aliased_target, punctuation = target.to_s.sub(/([?!=])$/, ''), $1
+		yield(aliased_target, punctuation) if block_given?
+		with_method = "#{aliased_target}_with_#{feature}#{punctuation}"
+		without_method = "#{aliased_target}_without_#{feature}#{punctuation}"
+		alias_method without_method, target
+		alias_method target, with_method
+		case
+		when public_method_defined?(without_method)
+			public target
+		when protected_method_defined?(without_method)
+			protected target
+		when private_method_defined?(without_method)
+			private target
+		end
+	end
+end
+---------------------------------------
+код из старой версии ActiveRecord::Validations:
+def self.included(base)
+	base.extend ClassMethods
+	# ...
+	base.class_eval do
+		alias_method_chain :save, :validation
+		alias_method_chain :save!, :validation
+	end
+	# ...
+end
+
+Модуль валидации , в свою очередь, определял два метода  save_with_validation и save_with_validation!
+---------------------------------------
+Сам Ruby предоставляет более элегантный способ:
+module Greetings
+	def greet
+		"hello"
+	end
+end
+module EnthusiasticGreetings
+	include Greetings
+
+	def greet
+		"Hey, #{super}!"
+	end
+end
+class MyClass
+	include EnthusiasticGreetings
+end
+
+MyClass.ancestors[0..2]  # => [MyClass, EnthusiasticGreetings, Greetings]
+MyClass.new.greet   # => "Hey, hello!"
+
+И применяется такоее решение в рельсах:
+module ActiveRecord
+	module Validations
+		def save(options={})
+			perform_validations(options) ? super : false
+		end
+		def save!(options={})
+			perform_validations(options) ? super : raise(RecordInvalid.new(self))
+		end
+		def perform_validations(options={}) ...
+----------------------------------------
+Module#prepend:
+
+module EnthusiasticGreetings
+	def greet
+		"Hey, #{super}!"
+	end
+end
+class MyClass
+	prepend EnthusiasticGreetings
+
+	def greet
+		"hello"
+	end
+end
+MyClass.ancestors[0..2] # => [MyClass, EnthusiasticGreetings, Object]
+MyClass.new.greet  # => "Hey, hello!"
+
+
+
+
+
+
+

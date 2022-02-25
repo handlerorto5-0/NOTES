@@ -1,0 +1,123 @@
+примеры кода
+github.com/moonhighway/learning-react
+-------------------------------------
+см code/React-patterns/recipes-app
+здесь слорная солянка
+сщбрать
+npm run build
+файл ./dist/index.html зопустиь серуером из vscode
+-------------------------------------
+npm:
+https://www.npmjs.com/package/serve
+https://www.npmjs.com/package/react-dom
+сщздание сборки webpack
+npm install --save-dev webpack webpack-cli
+npm install babel-loader @babel/core --save-dev
+webpack.config.js // в корне
+var path = require("path");
+
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    path: path.join(__dirname, "dist", "assets"),
+    filename: "bundle.js"
+  },
+	module: {
+		rules: [{ test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }]
+	}
+};
+npm install @babel/preset-env @babel/preset-react --save-dev
+.babelrc
+{
+	"presets": ["@babel/preset-env", "@babel/preset-react"]
+}
+можно запускать 
+npx webpack --mode development
+или добавить в package.json
+"scripts": {
+	"build": "webpack --mode production"
+},
+и запускать
+npm run build
+./dist/index.html
+
+-------------------------------------
+создать проект
+npm init -y
+npm install react react-dom serve
+
+создать структуру папок
+recipes-app (folder)
+	> node_modules (already added with npm install command)
+	> package.json (already added with npm init command)
+	> package-lock.json (already added with npm init command)
+	> index.html
+	> /src (folder)
+		> index.js
+		> /data (folder)
+			> recipes.json
+		> /components (folder)
+			> Recipe.js
+			> Instructions.js
+			> Ingredients.js
+---------------------------------------
+e.preventDefault() . Она не даст браузеру отправить форму с помощью POST-запроса
+---------------------------------------
+Создание собственных хуков для контролируемых форм стр 136
+---------------------------------------
+Хук useEffect можно считать функцией, которая выполняется после рендеринга. Когда происходит рендеринг, мы получаем доступ к текущим значениям состояния в компоненте(props , state , refs и т. д.) и можем использовать их для чего-то еще.
+--------------------------------------
+Если вы вернете функцию из эффекта, она будет вызываться при удалении компонента из дерева:
+useEffect(() => {
+	welcomeChime.play();
+	return () => goodbyeChime.play();
+}, []);
+Это означает, что вы можете использовать хук useEffect для настройки и разборки.
+---------------------------------------
+В JavaScript массивы, объекты и функции равны только в случае, если они
+являются одним и тем же экземпляром.
+---------------------------------------
+Хук useMemo вызывает переданную ему функцию и устанавливает words в значе-
+ние, возвращаемое этой функцией. Как и useEffect , useMemo использует массив
+зависимостей
+
+const words = useMemo(() => {
+	const words = children.split(" ");
+	return words;
+}, []);
+-----------------------------------------
+Хук useCallback запоминает значение функции fn . Так же, как useMemo
+и useEffect , он ожидает в качестве второго аргумента массив зависимостей.
+
+const fn = useCallback(() => {
+	console.log("hello");
+	console.log("world");
+}, []);
+useEffect(() => {
+	console.log("fresh render");
+	fn();
+}, [fn]);
+-------------------------------------------
+useLayoutEffect вызывается после рендеринга, но до того, как браузер отобра-
+жает изменение.(до useEffect)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

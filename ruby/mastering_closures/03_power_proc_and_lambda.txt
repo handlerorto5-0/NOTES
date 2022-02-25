@@ -1,0 +1,193 @@
+=========================================
+создание Proc
+p = proc { |x, y| x + y }
+p = Kernel.proc { |x, y| x + y }
+p = Proc.new { |x, y| x + y }
+p = proc { |x,y| x + y }
+-----------------------------------------
+способы запуска Proc
+1. Proc#call(args)
+p = proc { |x,y| x + y }
+p.call("oh", "ai")
+----
+2. .(args)()
+p = proc { |x,y| x + y }
+p.("oh", "ai")
+
+синтаксис .() работает во всех классах, реализующих метод call()
+class Carly
+	def call(who)
+	"call #{who}, maybe"
+	end
+end
+c = Carly.new
+c.("me") # => "call me, maybe"
+----
+3. три равенства (===)
+p = proc { |x,y| x + y }
+p === ["oh", "ai"] # => "ohai"
+
+пример проверки на четность
+even = proc { |x| x % 2 == 0 }
+even === 11 # => false
+even === 10 # => true
+------------------------------------------
+4. Lambdas
+lambda это proc
+lambda {}.class # => Proc
+proc это не lambda
+proc {}.class # => Proc
+
+есть метод отличить
+lambda {}.lambda? # => true
+proc {}.lambda? # => false
+
+запускаетс lambda как и proc
+lambda { |x,y| x+y}.call(x,y)
+lambda { |x,y| x+y}[x,y]
+lambda { |x,y| x+y}.(x,y)
+lambda { |x,y| x+y} === [x,y]
+или запись со стрелкой
+->(x,y){x+y}.call(x,y)
+->(x,y){x+y}[x,y]
+->(x,y){x+y}.(x,y)
+->(x,y){x+y} === [x,y]
+=============================================
+Разница между lambda и proc
+
+1. arity -арность
+l = lambda { |x, y| puts "x: #{x}, y: #{y}" }
+p = proc { |x, y| puts "x: #{x}, y: #{y}" }
+
+l.call("Ohai", "Gentle Reader") # => x: Ohai, y: Gentle Reader
+p.call("Ohai", "Gentle Reader") # => x: Ohai, y: Gentle Reader
+
+proc подстраивает аргументы
+p.call("Ohai") #=> x: Ohai, y:
+p.call("Ohai", "Gentle", "Reader") #=> x: Ohai, y: Gentle Reader
+lambda выбрасывает ошибку, потомучто ожидает определенное количество аргументов
+l.call("Ohai") #=> ArgumentError: wrong number of arguments...
+l.call("Ohai", "Gentle", "Reader") #=> ArgumentError: wrong number of arguments...
+
+2. поведение return
+
+class SomeClass
+	def method_that_calls_proc_or_lambda(procy)
+		puts "calling #{proc_or_lambda(procy)} now!"
+		procy.call
+		puts "#{proc_or_lambda(procy)} gets called!"
+	end
+	def proc_or_lambda(proc_like_thing)
+		proc_like_thing.lambda? ? "Lambda" : "Proc"
+	end
+end
+
+c = SomeClass.new
+c.method_that_calls_proc_or_lambda(lambda { return })
+calling Lambda now!
+Lambda gets called!
+
+Proc всегда возвращается из контекста, в котором он был создан, в данном случае он созается в main, поетому возникает ошибка
+c = SomeClass.new
+c.method_that_calls_proc_or_lambda(proc { return })
+'block in <main>': unexpected return (LocalJumpError)
+=====================================================
+Как Symbol#to_proc работает
+
+words = %w(one two three)
+words.map { |s| s.length }
+может вызваться таким способом, это синтактический сахар
+words.map(&:length)
+Ruby видит &:symbol и вызывает to_proc(), исключительно для класса Symbol.
+Когда Ruby видит & и объект - любой объект - он пытается превратить его в блок. Это просто форма приведения типов.
+
+если мы передаем не символ:
+obj = Object.new
+[1,2,3].map &obj
+TypeError: wrong argument type Object (expected Proc)
+
+Это лечится:
+class Object
+	def to_proc
+		proc { |x| "Here's #{x}!" }
+	end
+end
+
+obj = Object.new
+[1,2,3].map(&obj) # => ["Here's 1!", "Here's 2!", "Here's 3!"]
+
+- def to_proc делается в class Symbol
+- send() позволяет динамически вызывать методы с помощью symbol
+"ohai".send(:length) # => 4
+- некоторые методы требуют разной рабтты с аргументами, например inject()/reduce() по умолчанию 0 или может быть передано, поэтому передпются args в send, и исползуется не lambda а proc, что бы происходила подгонка
+
+class Symbol
+	def to_proc
+		proc { |obj, args| obj.send(self, *args) }
+	end
+end
+
+["symbols", "cymbals", "sambal"].map(&:length) # => [7, 7, 6]
+["symbols", "cymbals", "sambal"].map(&:upcase) # => ["SYMBOLS", "CYMBALS", "SAMBAL"]
+[1, 2, 3].inject(&:+) # => 6
+============================================
+Карирование с Proc
+В функциональном программировании каррирование - это процесс превращения функции, которая принимает n аргументов, в функцию, которая принимает один аргумент, но возвращает n функций, принимающих один аргумент.
+
+НАпример, дана лямбда принимающая три параметра:
+discriminant = lambda { |a, b, c| b**2 - 4*a*c }
+discriminant.call(5, 6, 7) => -104
+Её можно преобразовать в:
+discriminant = lambda { |a| lambda { |b| lambda { |c| b **2 - 4*a*c } } }
+discriminant.call(5).call(6).call(7) => -104
+В Ruby есть короткая запись:
+discriminant = lambda { |a, b, c| b**2 - 4*a*c }.curry
+discriminant.call(5).call(6).call(7) => -104
+
+Как это пользовать? Например есть функция приветствия:
+greeter = lambda do |greeting, salutation, name|
+	"#{greeting} #{salutation} #{name}"
+end
+greeter.call("Dear", "Mr.", "Gorbachev") => "Dear Mr. Gorbachev"
+Но мы хотим, что бы она всегда начиналась с Dear:
+dear_greeter = greeter.curry.call("Dear") => #<Proc:0x007f902ba542f0 (lambda)>
+потом уже добавляем аргументов
+dear_greeter.call("Great").call("Leader") => "Dear Great Leader"
+или написать без call:
+dear_greeter.("Great").("Leader")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

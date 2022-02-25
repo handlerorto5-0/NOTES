@@ -1,0 +1,62 @@
+соединение актиарекорд в скрипте:
+require 'active_record'
+ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => "dbfile"
+
+пример модели:
+class Duck < ActiveRecord::Base
+	validate do
+		errors.add(:base, "Illegal duck name.") unless name[0] == 'D'
+	end
+end
+
+создаем запись в бд:
+my_duck = Duck.new
+my_duck.name = "Donald"
+my_duck.valid?  # => true
+my_duck.save!
+
+извлекаем запись из бд:
+duck_from_database = Duck.first
+duck_from_database.name  # => "Donald"
+duck_from_database.delete
+------------------------------------------------
+механизм автозагрузки
+Каждая модель наследуются от ActiveRecord::Base, но
+Исходный код ActiveRecord::Base не содержит таких методов, как save, validate и пр. Active Record в значительной степени полагается на две другие библиотеки, которые он загружает сразу: Active Support и Active Model.
+
+require 'active_support'
+require 'active_model'
+# ...
+module ActiveRecord
+	extend ActiveSupport::Autoload
+	autoload :Base
+	autoload :NoTouching
+	# ...
+-------------------------------------------------
+ActiveRecord::Base потроха
+
+module ActiveRecord
+	class Base
+		# много расширений
+		extend ActiveModel::Naming
+		extend ActiveSupport::Benchmarkable
+		...
+		include Core
+		include Persistence
+	end
+	# позволяет некоторым из этих модулей запускать собственный код конфигурации после автозагрузки
+	ActiveSupport.run_load_hooks(:active_record, Base)
+end
+-----------------------------------------------
+пример использования:
+Если вам нужны только функции проверки, вы можете включить ActiveModel::Validations в свой собственный класс и спокойно игнорировать ActiveRecord::Base и все другие модули, как в следующем коде:
+require 'active_model'
+class User
+	include ActiveModel::Validations
+	attr_accessor :password
+
+	validate do
+		errors.add(:base, "Don't let dad choose the password.") if password == '1234'
+	end
+end
+

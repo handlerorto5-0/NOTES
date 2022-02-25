@@ -1,0 +1,157 @@
+======================================
+стр 4
+======================================
+free variable
+Свободная переменная - это переменная, определенная в родительской области.
+в примере msg для inner:
+outer = lambda do |msg|
+	lambda do
+		prefix = "Prefix"
+		"#{prefix} #{msg}"
+	end
+end
+=> #<Proc:0x000056014eae3198 (irb):1 (lambda)>
+inner = outer.call("msg")
+=> #<Proc:0x000056014eb79850 (irb):2 (lambda)>
+inner.call()
+=> "Prefix msg"
+======================================
+Симулирование классов, с помошью замыканий:
+Например имеем класс:
+class Counter
+	def initialize
+		@x = 0
+	end
+	def get_x
+		@x
+	end
+	def incr
+		@x += 1
+	end
+	def decr
+		@x -= 1
+	end
+end
+
+c = Counter.new
+c.incr и прочие методы инстанса
+
+можем написать тот же функционал с lambda:
+Counter = lambda do
+	x = 0
+	get_x = lambda { x }
+	incr = lambda { x += 1 }
+	decr = lambda { x += 1 }
+	{get_x: get_x, incr: incr, decr: decr}
+end
+
+c1 = Counter.call
+c1[:incr].call и другие состояния определенных в лямбда переменных
+c2 = Counter.call  , с1 и с2 бцдут иметь свои собстенные значения 'x'
+====================================================
+First-Class Values (зачем нужна лямбда?)
+Как и строки, как и числа, лямбда может:
+- определятся в переменной
+is_even = lambda { |x| x % 2 == 0 }
+is_even.call(4)
+- может быть передана в метод
+def complement(predicate, value)
+	not predicate.call(value)
+end
+complement(is_even, 4)
+- может быть передана в другую лямбду
+def complement(predicate)
+	lambda do |value|
+		not predicate.call(value)
+	end
+end
+complement(is_even).call(4)
+
+мы можем удобно назначать, передавать и возвращать крошечные биты вычислений
+---------------------------------------------------
+Реализация callback в Ruby с lambda
+Нопример, вы хотите узнать, успешно ли был создан отчет, и сразу же отправить его своему боссу. Однако, если что-то пойдет не так, вы хотите, чтобы вас уведомили лично.
+
+require 'ostruct' #подключает OperStruct
+good_report = OpenStruct.new(to_csv: "59.99,Great Success")
+bad_report = OpenStruct.new(to_csv: nil)
+
+class Generator
+	attr_reader :report
+	def initialize(report)
+		@report = report
+	end
+	def run
+		report.to_csv
+	end
+end
+
+class Notifier
+	attr_reader :generator, :callbacks
+	def initialize(generator, callbacks)
+		@generator = generator
+		@callbacks = callbacks
+	end
+	def run
+		result = generator.run
+		if result
+			callbacks.fetch(:on_success).call(result)
+		else
+			callbacks.fetch(:on_failure).call
+		end
+	end
+end
+
+# нужно обработать два случая:
+Notifier.new(Generator.new(good_report),
+		on_success: lambda { |r| puts "Send #{r} to boss@mail.ru" },
+		on_failure: lambda { puts "Send email to me@mail.ru"}
+		).tap do |n|
+	n.run #=> Send 59.99,Great Success to boss@mail.ru
+end
+==================================================
+Enumerable#reduce() c помощью lambda:
+Нативный пример вызова:
+[1,2,3,4,5].reduce(10) { |acc, x| p "#{acc}, #{x}"; acc + x }
+так можно написать:
+adder = lambda do |acc, arr|
+	if arr.empty?
+		acc
+	else
+		adder.call(acc + arr.first, arr.drop(1))
+	end
+end
+adder.call(10, [1, 2, 3, 4, 5]) #=> 25
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

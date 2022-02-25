@@ -1,0 +1,131 @@
+======================================
+Оборачивание тегов с расщирением htmltagwrap
+выбрать и "Alt + W"
+======================================
+Emmet
+--------------------------------------
+{
+  "emmet.triggerExpansionOnTab": true
+}
+--------------------------------------
+Создание базовой структуры html
+напишите символ ! и нажмите клавишу Tab
+--------------------------------------
+Дочерний элемент
+div>ul>li→
+--------------------------------------
+Соседний элемент
+div+p+bq→
+--------------------------------------
+Повторение
+ul>li*3→​
+--------------------------------------
+Группировка
+div>(header>ul>li*2>a)+footer>p→
+--------------------------------------
+Указание класса и id
+div#header+div.page+div#footer.class1.class2.class3→
+--------------------------------------
+Произвольные атрибуты
+td[title="Hello world!" colspan=3]→
+--------------------------------------
+Нумерация
+ul>li.item$*3→
+--------------------------------------
+Оператор $ можно поместить в любом месте имени:
+ul>li.ite$m*2→
+-------------------------------------
+Вы можете использовать несколько операторов $ подряд, чтобы дополнить номер нулями:
+ul>li.item$$$*3→
+--------------------------------------
+Начальное значение и направление нумерации
+ul>li.item$@-*3→
+--------------------------------------
+Чтобы изменить начальное значение счетчика, добавьте модификатор @N к оператору $:
+ul>li.item$@3*5→
+--------------------------------------
+Вы можете изменить начальное значение счетчика и направление нумерации одновременно:
+ul>li.item$@-3*5→
+--------------------------------------
+Добавление текста
+a{Перейти}→
+--------------------------------------
+Генератор "Lorem Ipsum"
+lorem→
+ul>li*3>lorem10→
+=====================================
+Мои расширения:
+Auto Close Tag
+Auto Import
+Auto Rename Tag
+Better Comments
+Code Spell Checker
+endwise
+ES7+ React/Redux/React-Native snippets
+ESLint
+Git History
+GitLens — Git supercharged
+htmltagwrap
+jbuilder highlight
+Live Server
+Material Icon Theme
+PostgreSQL
+Prettier - Code formatter
+Project Manager
+Ruby Test Explorer
+Russian Language Pack for Visual Studio Code
+Test Adapter Converter
+Test Explorer UI
+Browser Preview
+Go
+Terraform
+Tailwind
+=====================================
+JSON настроек:
+{
+    "workbench.colorTheme": "Default Dark+",
+    "editor.fontSize": 16,
+    "editor.tabSize": 2,
+    "window.zoomLevel": 2,
+    "workbench.iconTheme": "material-icon-theme",
+    "liveServer.settings.donotShowInfoMsg": true,
+    "files.autoSave": "onFocusChange",
+    "database-client.disableSqlCodeLen": true,
+    "database-client.enableDelimiter": true,
+    "emmet.triggerExpansionOnTab": true,
+    // my tuning
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "editor.wordWrap": "on",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "breadcrumbs.enabled": true,
+    "projectManager.openInNewWindowWhenClickingInStatusBar": true,
+}
+=====================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

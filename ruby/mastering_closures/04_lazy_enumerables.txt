@@ -1,0 +1,162 @@
+=============================================
+Вводные седения:
+1.upto(5).to_a => [1, 2, 3, 4, 5]
+
+1.upto(Float::INFINITY).to_a
+это приведет к бесконечному циклу. Enumerator.to_a () «вытесняет» значения из перечислителя. to_a() имеет псевдоним force()
+
+Использавание lazy вернет обьект
+1.upto(Float::INFINITY).lazy.map { |x| x * x }
+=> #<Enumerator::Lazy: ...>
+Который можно использовать
+1.upto(Float::INFINITY).lazy.map { |x| x * x }.take(10).to_a
+=> [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+класс Enumerator является родителем класса Lazy
+class Lazy < Enumerator
+end
+----------------------------------------------
+Enumerable - это класс коллекции (Array и Hash), который содержит методы для обхода, поиска и сортировки.
+С другой стороны, Enumerator - это объект, который выполняет фактическое перечисление.
+- (внутренняя)Internal iteration итерацией управляет объект Array (или любой объект Enumerable).
+- (внешняя)External iteration управляется каким-то другим объектом, обернутым вокруг Enumerable.
+
+Когда вы оборачиваете массив перечислителем, вы можете несколько раз вызвать метод Enumerator#next() для получения следующего значения. Когда больше не остается значений, возникает исключение StopIteration.
+e = Enumerator.new([1,2,3]) #варнинг->используйте Object#to_enum()*
+e.next # но все работает
+* правильно передавать блок (e = [3,3,6].to_enum)
+Такая запись пройдет без варнингов
+e = Enumerator.new do |yielder|
+	[1,2,3].each do |val|
+		yielder << val
+	end
+end
+e.next
+Объект yielder хранит инструкции для следующего yield, это не значение - это инструкция.
+-------------------------------------------------
+Enumerator объект содержит другой объект, называемый Enumerator::Generator
+
+Генераторы могут преобразовывать внутренний итератор, такой как [1,2,3], во внешний. Генераторы извлекают элементы перечислимого типа один за другим.
+Вот как работает генератор:
+1. Во-первых, он вычисляет какой-то результат.
+2. Этот результат возвращается вызывающему абоненту.
+3. Кроме того, он также сохраняет состояние вычисления, так что вызывающий может возобновить это вычисление для генерации следующего результата.
+
+Когда вы создаете такой fiber, блок не выполняется сразу. Это делается с помощью метода Fiber#resume ():
+f = Fiber.new do
+	x = 0
+	loop do
+		Fiber.yield x
+		x += 1
+	end
+end  => #<Fiber:0x007fb979023e58>
+f.resume => 1
+Когда код выполняет Fiber.yield x, результат и управление возвращаются вызывающей стороне. Когда Fiber#resume() вызывается снова, переменная x увеличивается. Цикл переходит к другому раунду, снова выполняя Fiber.yield x, и снова возвращает управление вызывающей стороне.
+============================================
+Пишем свой Lazy , назовем его Lax
+
+хотим, что бы работало так:
+1.upto(Float::INFINITY)
+	.lax
+	.map { |x| x*x }
+	.map { |x| x+1 }
+	.take(5)
+	.to_a
+=> [2, 5, 10, 17, 26]
+
+реализация:
+module Enumerable
+	def lax
+		Lax.new(self)
+	end
+end
+
+class Lax < Enumerator
+
+	def initialize(receiver)
+		super() do |yielder|
+			begin
+				receiver.each do |val|
+					if block_given?
+						yield(yielder, val)
+					else
+						yielder << val
+					end
+				end
+				rescue StopIteration
+			end
+		end
+	end
+
+	def map(&block)
+		Lax.new(self) do |yielder, val|
+		y	ielder << block.call(val)
+		end
+	end
+
+	def take(n)
+		taken = 0
+		Lax.new(self) do |yielder, val|
+			if taken < n
+				yielder << val
+				taken += 1
+			else
+				raise StopIteration
+			end
+		end
+	end
+
+end
+
+>> 1.upto(Float::INFINITY).lax.map { |x| x*x }.map { |x| x+1 }.take(5).to_a
+=> [2, 5, 10, 17, 26]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

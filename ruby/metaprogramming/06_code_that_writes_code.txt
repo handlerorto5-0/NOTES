@@ -1,0 +1,179 @@
+=================================================
+Kernel#eval
+выполняет код в строке и возвращает результат:
+array = [10, 20]
+element = 30
+eval("array << element")  # => [10, 20, 30]
+можно исползовать хередок
+eval <<-end_eval
+	...code
+end_eval
+-------------------------------------------------
+Связывание объектов - Binding Objects
+Привязка - это целая область, упакованная как объект. Идея состоит в том, что вы можете создать привязку для захвата локальной области видимости и ее переноса. Позже вы можете выполнить код в этой области, используя объект Binding вместе с eval.
+Вы можете создать привязку с помощью метода привязки Kernel#binding:
+
+class MyClass
+	def my_method
+		@x = 1
+		binding
+	end
+end
+b = MyClass.new.my_method
+eval "@x", b # => 1
+
+Ruby также предоставляет предопределенную константу с именем TOPLEVEL_BINDING, которая является просто привязкой области верхнего уровня. Вы можете использовать его для доступа к области верхнего уровня из любой точки вашей программы:
+a = 42
+p binding.local_variable_defined?(:a) # => true
+p TOPLEVEL_BINDING.local_variable_defined?(:a) # => true
+
+def example_method
+  p binding.local_variable_defined?(:a) # => false
+  p TOPLEVEL_BINDING.local_variable_defined?(:a) # => true
+end
+
+example_method
+
+--------------------------------------------------
+eval всегда требует строки, instance_eval и class_eval могут принимать либо строку кода, либо блок
+array = ['a', 'b', 'c']
+x = 'd'
+array.instance_eval "self[1] = x"
+array # => ["a", "d", "c"]
+---------------------------------------------------
+опасности использования eval
+***
+Утилита на основе eval, которая позволяет вызывать метод в
+образец массива и просмотрите результат:
+def explore_array(method)
+	code = "['a', 'b', 'c'].#{method}"
+	puts "Evaluating: #{code}"
+	eval code
+end
+loop { p explore_array(gets()) }
+
+find_index("b")
+Evaluating: ['a', 'b', 'c'].find_index("b")
+map! {|e| e.next }
+Evaluating: ['a', 'b', 'c'].map! {|e| e.next }
+["b", "c", "d"]
+***
+это будет работать , пака хакер не введет
+object_id; Dir.glob("*") или произвольно выполнить, любой код после ;
+
+Ruby автоматически помечает потенциально небезопасные объекты, в частности, объекты, поступающие из внешних источников, как испорченные(tainted).
+user_input = "User input: #{gets()}"
+puts user_input.tainted? -> true
+Ruby также предоставляет понятие безопасных уровней. Когда вы устанавливаете безопасный уровень (присвоив значение глобальной переменной $SAFE), вы запрещаете определенные потенциально опасные операции.
+$SAFE = 1 - от 1 до 4
+user_input = "User input: #{gets()}"
+eval user_input -> SecurityError: Insecure operation - eval
+вы можете явно удалить строки кода, прежде чем оценивать их (Object#untaint), а затем полагаться на безопасные уровни
+=======================================
+обертка вокруг класса
+class Class
+	def attr_checked(attribute, &validation)
+		define_method "#{attribute}=" do |value|
+			raise 'Invalid attribute' unless validation.call(value)
+			instance_variable_set("@#{attribute}", value)
+		end
+		define_method attribute do
+			instance_variable_get "@#{attribute}"
+		end
+	end
+end
+
+class Person
+	attr_checked :age do |v|
+		v >= 18
+	end
+end
+-----------------------------------------
+Hook Methods
+
+Эта программа выводит уведомление на экран, когда класс наследуется от String:
+class String
+	def self.inherited(subclass)
+		puts "#{self} was inherited by #{subclass}"
+	end
+end
+class MyString < String; end
+-> String was inherited by MyString
+
+More hookes
+module M1
+	def self.included(othermod)
+		puts "M1 was included into #{othermod}"
+	end
+end
+module M2
+	def self.prepended(othermod)
+		puts "M2 was prepended to #{othermod}"
+	end
+end
+class C
+	include M1
+	prepend M2
+end
+-> M1 was included into C
+-> M2 was prepended to C
+
+Module#method_added
+module M
+	def self.method_added(method)
+		puts "New method: M##{method}"
+	end
+
+	def my_method; end
+end
+-> New method: M#my_method
+
+* Чтобы поймать события метода Singleton, вы можете использовать BasicObject # singleton_method_added, singleton_method_removed и singleton_method_undefined.
+
+* instead of overriding Module#included , you can override Module#include itself.
+module M; end
+class C
+	def self.include(*modules)
+		puts "Called: C.include(#{modules})"
+		super
+	end
+	include M
+end
+-> Called: C.include(M)
+-----------------------------------
+**
+module CheckedAttributes
+	def self.included(base)
+		base.extend ClassMethods
+	end
+
+	module ClassMethods
+		def attr_checked(attribute, &validation)
+			define_method "#{attribute}=" do |value|
+				raise 'Invalid attribute' unless validation.call(value)
+				instance_variable_set("@#{attribute}", value)
+			end
+			define_method attribute do
+				instance_variable_get "@#{attribute}"
+			end
+		end
+	end
+end
+-----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

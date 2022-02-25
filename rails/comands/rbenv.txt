@@ -94,4 +94,5 @@ apt-get install libssl1.0-dev
 =========================================
 nokogiri requires Ruby version < 3.1.dev, >= 2.5.
 
-
+были проблемы с цстановкой, рельсы , запускал ,bundle install  там такое писало и помогло епта
+gem update --system 3.2.3

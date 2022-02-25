@@ -1,0 +1,49 @@
+Стандартная передача
+def write(file, data, mode = "w")
+end
+----------------------------------------
+Аргументы ключевые сслова
+def write(file:, data:, mode: "ascii")
+end
+
+class Point
+  def initialize(x: , y:)
+    @x, @y = x, y
+  end
+end
+point = Point.new(x: 10, y: 20)
+---------------------------------------
+Вариативные аргументы возвращают массив
+def print_all(*args)
+end
+print_all(1, 2, 3, 4, 5)
+=> [1, 2, 3, 4, 5]
+передаются после обычных
+def print_all(title, *chapters)
+end
+----------------------------------------
+Порядок передачи арнументов в метод
+required -> optional -> variable -> keyword
+
+**x вернет хеш {:x => 1} передавать можно только хеш
+def testing(a, b = 1, *c, d: 1, **x)
+  p a,b,c,d,x
+end
+testing('a', 'b', 'c', 'd', 'e', d: 2, x: 1)
+
+=> ["a", "b", ["c", "d", "e"], 2, {:x=>1}]
+----------------------------------------
+books_and_articles_we_love = {
+  "Ruby on Rails 4": "What is webpack?",
+  "Ruby essentials": "What is Ruby Object Model?",
+  "Javascript essentials": "What is Object?"
+}
+
+def print_list_of(**books_and_articles)
+  books_and_articles.each do |book, article|
+    puts book
+    puts article
+  end
+end
+
+print_list_of(books_and_articles_we_love)

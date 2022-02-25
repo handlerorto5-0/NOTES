@@ -1,0 +1,24 @@
+Пример методов атрибутов в действии.
+
+Например создаем таблицу с задачами:
+require 'active_record'
+ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => "dbfile"
+ActiveRecord::Base.connection.create_table :tasks do |t|
+	t.string :description
+	t.boolean :completed
+end
+
+потои создаем класс и обьект для этой таблицы:
+class Task < ActiveRecord::Base; end
+task = Task.new
+task.description = 'Clean up garage'
+task.completed = true
+task.save
+
+task.description  # => "Clean up garage"
+task.completed?  # => true
+
+Мы используем четыре метода для записи и вызова атрибутов, но ни один из них не определен в классе. Эти методы автоматически генерируются петиврекордом.
+
+
+

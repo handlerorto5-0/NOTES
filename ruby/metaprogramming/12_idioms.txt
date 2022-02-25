@@ -1,0 +1,46 @@
+=============================================
+Self Yield
+Когда вы передаете блок методу, вы ожидаете, что метод обратится к блоку с yield. Особенность обратных вызовов заключается в том, что объект также может передать себя блоку
+
+module Faraday
+	class << self
+		def new(url = nil, options = {})
+			# ...
+			Faraday::Connection.new(url, options, &block)
+		end
+		# ...
+	class Connection
+		def initialize(url = nil, options = {})
+			# ...
+			yield self if block_given?
+			# ...
+		end
+			# ...
+-------------------------------------
+The tap() Example
+
+работаем с цепочкой вызовов:
+['a', 'b', 'c'].push('d').shift.upcase.next # => "B"
+
+для проверки юзаем часто:
+temp = ['a', 'b', 'c'].push('d').shift
+puts temp
+x = temp.upcase.next
+
+можно упростить жизнь
+['a', 'b', 'c'].push('d').shift.tap {|x| puts x }.upcase.next
+---------------------------------------
+Symbol#to_proc()
+
+«Блок с одним вызовом», который принимает один аргумент и вызывает один метод для этого аргумента.
+names = ['bob', 'bill', 'heather']
+names.map {|name| name.capitalize } # => ["Bob", "Bill", "Heather"]
+можно заменить на более короткую запись
+names.map(&:capitalize)
+
+# without Symbol#to_proc:
+[1, 2, 5].inject(0) {|memo, obj| memo + obj }
+# with Symbol#to_proc:
+[1, 2, 5].inject(0, &:+)
+------------------------------------------
+

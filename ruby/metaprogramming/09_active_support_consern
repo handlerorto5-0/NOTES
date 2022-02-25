@@ -1,0 +1,98 @@
+=============================================
+include-and-extend trick
+
+module ActiveRecord
+	module Validations
+		def self.included(base)
+			base.extend ClassMethods
+		end
+
+			module ClassMethods
+				def validates_length_of(*attrs) # ...
+			end
+		def valid? 
+			# ...
+		end
+	end
+end
+----------------------------------------
+ActiveSupport::Concern
+ActiveSupport::Concern инкапсулирует трюк с включением и расширением и устраняет проблему связанных включений. Модуль может получить эту функциональность, расширив Concern и определив свой собственный модуль ClassMethods:
+require 'active_support'
+module MyConcern
+	extend ActiveSupport::Concern
+	def an_instance_method; "an instance method"; end
+
+	module ClassMethods
+		def a_class_method; "a class method"; end
+	end
+end
+class MyClass
+	include MyConcern
+end
+MyClass.new.an_instance_method  # => "an instance method"
+MyClass.a_class_method   # => "a class method"
+---------------------------------------------
+Когда модуль расширяет объект Concern, Ruby вызывает расширенный метод перехвата, а расширенный определяет переменную экземпляра класса @_dependencies на включающем устройстве.
+module ActiveSupport
+	module Concern
+	...
+	def self.extended(base)
+		base.instance_variable_set(:@_dependencies, [])
+	end
+	...
+---------------------------------------------
+Module#append_features - базовый метод Ruby.
+проверяет, входит ли уже включенный модуль в цепочку предков включающего, и если нет, добавляет модуль в цепочку.
+module M
+	def self.append_features(base); end
+end
+class C
+	include M
+end
+C.ancestors # => [C, Object, Kernel, BasicObject]
+* переопределив append_features, вы можете вообще предотвратить включение модуля.
+--------------------------------------------
+Concern определяет собственную версию append_features, он становится методом класса в модулях, расширяющих Concern(см трюк выше).
+module ActiveSupport
+	module Concern
+		def append_features(base)
+			if base.instance_variable_defined?(:@_dependencies)
+				base.instance_variable_get(:@_dependencies) << self
+				return false
+			else
+				return false if base < self
+				@_dependencies.each { |dep| base.send(:include, dep) }
+				super
+				base.extend const_get(:ClassMethods) \
+					if const_defined?(:ClassMethods)
+					# ...
+		end
+		end
+основная идея проста: концерн к концерну не подключится
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

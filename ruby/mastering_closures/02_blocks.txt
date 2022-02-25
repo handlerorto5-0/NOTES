@@ -1,0 +1,249 @@
+============================================
+Отделение общего от частного
+
+Обычно когда мы хотим получить четные числа, делаем вроде:
+Array(1..20).select { |x| x.even? }
+или с другими условиями
+Array(1..20).select { |x| x.even? and x > 10 }
+
+Пример:
+На сайте электронной коммерции, где продается спортивная обувь, на главной странице отображается выбор товаров:
+require 'ostruct'
+catalog = []
+catalog << OpenStruct.new(name: 'Nike', qty: 20, price: 99.00)
+catalog << OpenStruct.new(name: 'Adidas', qty: 10, price: 109.00)
+catalog << OpenStruct.new(name: 'New Balance', qty: 2, price: 89.00)
+# сортируем по всякому
+catalog.sort_by { |x| x.price }
+catalog.sort_by { |x| x.qty }.reverse
+============================================
+Выполнение блоков с ключевым словом yield
+
+def do_it
+	yield
+end
+# yield запускает переданый в метод блок
+do_it
+вернет ошибку, не передан блок
+do_it { puts "I'm doing it" }
+напечатеет I'm doing it
+do_it { [1,2,3] << 4 }
+вернет результат [1, 2, 3, 4]
+
+можем передать аргументы
+def do_it(x, y)
+	yield(x, y)
+end
+и вызвать 
+do_it("Vova", "Dictator") do |greeting, title|
+"#{greeting} is #{title}!!!"
+end
+-> Vova is Dictator!!!
+-----------------------------------
+проблемма арности:
+def do_it(x)
+	yield x
+end
+do_it(42) { |num, line| "#{num}: #{line}" }
+=> "42: "
+
+def do_it
+	yield "this", "is", "ignored!"
+end
+do_it { puts "Ohai!" }
+=> Ohai!
+=========================================
+Блоки как замыкания и блокирующие локальные переменные
+этот блок отработает как ожидем (три раза)
+def chalkboard_gag(line, repetition)
+	repetition.times { |x| puts "#{x}: #{line}" }
+end
+chalkboard_gag("I will not drive the principal's car", 3)
+
+а здесь будет выводить только часть строки 'x', потомучто 'line' не определена в нужном контексте
+def chalkboard_gag(line, repetition)
+	repetition.times { |x; line| puts "#{x}: #{line}" }
+end
+=========================================
+Block Pattern #1: Перечисление
+суть патерна, увеличиваем счетчик и запускаем блок
+часто в Ruby:
+%w(look ma no for loops).each do |x|
+	puts x 
+end
+или что то вроде того
+3.times { puts "D'oh!" }
+
+Fixnum#times:
+class Fixnum
+	def times
+		x = 0
+		while x < self
+			x += 1
+			yield
+		end
+		self
+	end
+end
+
+Array#each:
+class Array
+	def each
+		x = 0
+		while x < self.length
+			yield self[x]
+			x += 1
+		end
+	end
+end
+=====================================
+Block Pattern #2:Управление ресурсами
+
+В следующем примере программист пытается открыть файл и записать в него несколько строк. В последней строке программист закрывает обработчик файла:
+f = File.open('Leo Tolstoy - War and Peace.txt', 'w')
+f << "Well, Prince, so Genoa and Lucca"
+f << " are now just family estates of the Buonapartes."
+f.close
+В Ruby есть очень элегантный способ не забывать закрыть обработчик, используя блоки:
+File.open('Leo Tolstoy - War and Peace.txt', 'w') do |f|
+	f << "Well, Prince, so Genoa and Lucca"
+	f << " are now just family estates of the Buonapartes."
+end
+--------------------------------------
+Implementing File.open
+
+class File
+	def self.open(name, mode) # здесь автоматом передается &blok из yield
+		file = new(name, mode) # open и new одно и тоже
+		return file unless block_given? # просто вернет файл, если блока нет
+		yield(file) # отдаст файл в блок
+	ensure
+		file.close # гарантировано закроет
+	end
+end
+
+File.open("file_open.rb", "r") do |f|
+	puts f.path
+	puts f.ctime
+	puts f.size
+end
+========================================
+Block Pattern #3: Инициализация объекта
+
+Вот пример инициализации и конфигурации обьекта из Twitter Ruby Gem:
+client = Twitter::REST::Client.new do |config|
+	config.consumer_key = "YOUR_CONSUMER_KEY"
+	config.consumer_secret = "YOUR_CONSUMER_SECRET"
+	config.access_token = "YOUR_ACCESS_TOKEN"
+	config.access_token_secret = "YOUR_ACCESS_SECRET"
+end
+
+Как это сделано:
+В инициализаторе в блок передается self (то есть экземпляр Twitter::REST::Client). Внутри тела блока вызываются методы экземпляра. Эти методы экземпляра были созданы с помощью attr_accessor().
+
+module Twitter
+	module REST
+		class Client
+			attr_accessor :consumer_key, 
+										:consumer_secret, 
+										:access_token, 
+										:access_token_secret 
+
+			def initialize
+				yield self if block_given?
+			end
+		end
+	end
+end
+-----------------------------------------
+Реализация a Router DSL
+
+в новых версиях RoR выполняются такие настройки путей.
+routes = Router.new do 
+	match '/users' => 'users#index'
+end
+Фишка в том, что у нас нет |r| в определении метода, и мы не пишем r.match... и такая конструкция вернет ошибку undefined method `match'. Потому что Ruby пробует искать match() внутри другого контекса main .
+В блоке self() находится в контексте, в котором был определен блок.
+def foo
+	yield self
+end
+=> :foo
+instance_eval() изменяет self() так, чтобы он указывал на экземпляр, который вы ему указываете.
+**
+Правила преобразования Block-to-Proc:
+1. Block → Proc если &block передается в метод аргументом.
+2. Proc → Block если &block находится в теле метода.
+**
+так все заработает
+class Router
+	def initialize(&block) # так это делается
+		instance_eval &block
+	end
+	def match(route) # просто что то возвращается для примера
+		puts route
+	end
+end
+----------------------------------
+теперь патерн инициализации можно сделать красивее
+module Twitter
+	module REST
+		class Client
+			attr_accessor :consumer_key, 
+										:consumer_secret,
+										:access_token, 
+										:access_token_secret
+
+			def initialize(options = {}, &block)
+				options.each { |k,v| send("#{k}=", v) }
+				instance_eval(&block) if block_given?
+			end
+		end
+	end
+end
+
+client = Twitter::REST::Client.new({consumer_key: "YOUR_CONSUMER_KEY"}) do
+	consumer_secret = "YOUR_CONSUMER_SECRET"
+	access_token = "YOUR_ACCESS_TOKEN"
+	access_token_secret = "YOUR_ACCESS_SECRET"
+end
+=============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,203 @@
+
+---------------------------------------------------
+если вы определяете метод на верхнем уровне, этот метод становится методом экземпляра Object
+--------------------------------------------------
+class_eval ()
+используйте instance_eval, чтобы открыть объект, который не является классом, и Module#class_eval, чтобы открыть определение класса и определить методы с помощью def
+
+class_eval\module_eval оценивает блок в контексте существующего класса:
+(здесь мы хотим добавлять метод классам, но пока не знаем каким)
+def add_method_to(a_class)
+	a_class.class_eval do
+		def m; 'Hello!'; end
+	end
+end
+add_method_to String
+"abc".m  # => "Hello!"
+
+module_exec/class_exec могут передать дополнительные параметры в блок
+------------------------------------------------
+Singleton Methods
+
+Ruby позволяет добавлять метод к одному объекту:
+str = "just a regular string"
+def str.title?
+	self.upcase == self
+end
+str.title?  # => false
+str.methods.grep(/title?/) # => [:title?]
+str.singleton_methods  # => [:title?]
+
+вызов метода класса аналогичен вызову метода объекта, если вы сравните определение метода Singleton и определение метода класса, вы увидите, что это одно и то же:
+def obj.a_singleton_method; end
+def MyClass.another_class_method; end
+
+-------------------------------------------------
+Class Macros - методы, которые изменяют классы
+
+attr_accessor называется макросом класса
+class MyClass
+	def my_attribute=(value)
+		@my_attribute = value
+	end
+	def my_attribute
+		@my_attribute
+	end
+end
+тоже самое
+class MyClass
+	attr_accessor :my_attribute
+end
+obj = MyClass.new
+obj.my_attribute = 'x'
+obj.my_attribute # => "x"
+
+***
+пример с заменой старых методов на новые:
+(старые где то еще пока используются, в других местах )
+class Book
+	def title # ...
+	def subtitle # ...
+	def lend_to(user)
+		puts "Lending to #{user}"
+	# ...
+	end
+
+	def self.deprecate(old_method, new_method)
+		define_method(old_method) do |*args, &block|
+			warn "Warning: #{old_method}() is deprecated. Use #{new_method}()."
+			send(new_method, *args, &block)
+		end
+	end
+
+	deprecate :GetTitle, :title
+	deprecate :LEND_TO_USER, :lend_to
+	deprecate :title2, :subtitle
+end
+
+b = Book.new
+b.LEND_TO_USER("Bill")
+❮ Warning: LEND_TO_USER() is deprecated. Use lend_to().
+Lending to Bill
+***
+--------------------------------------
+Singleton Classes(metaclass)
+где живут методы Singleton
+
+Если вы хотите получить ссылку на одноэлементный класс, вы можете вернуть self вне области видимости:
+obj = Object.new
+	singleton_class = class << obj
+	self
+end
+singleton_class.class # => Class
+
+вы также можете получить ссылку на одноэлементный класс с помощью удобного метода Object # singleton_class:
+
+"abc".singleton_class # => #<Class:#<String:0x331df0>>
+
+в цепочку вызовов метаклас встраиваются между обьектом и классом обьекта, суперклас метакласа это метакласс предка
+1. Есть только один вид объекта - будь то обычный объект или модуль.
+2. Существует только один вид модуля - обычный модуль, класс или одноэлементный класс.
+3. Существует только один вид методов, и он находится в модуле, чаще всего в классе.
+4. Каждый объект, включая классы, имеет свой собственный «настоящий класс», будь то обычный класс или одноэлементный класс.
+5. Каждый класс, за исключением BasicObject, имеет ровно одного предка - суперкласс или модуль. Это означает, что у вас есть единственная цепочка предков от любого класса до BasicObject.
+6. Суперкласс одноэлементного класса объекта - это класс объекта. Суперкласс одноэлементного класса класса является одноэлементным классом суперкласса класса.
+7. Когда вы вызываете метод, Ruby идет «вправо» в реальном классе получателя, а затем «вверх» по цепочке предков. Это все, что нужно знать о том, как Ruby находит методы.
+
+----------------------------
+Class Methods Syntaxes
+Три способа определения:
+
+def MyClass.a_class_method; end
+
+class MyClass
+	def self.another_class_method; end
+end
+
+class MyClass
+	class << self
+		def yet_another_class_method; end
+	end
+end
+-----------------------------
+class Class
+	attr_accessor :b
+end
+Это работает, но добавляет атрибут ко всем классам. Если вам нужен атрибут, специфичный для MyClass
+class MyClass
+	class << self
+		attr_accessor :c
+	end
+end
+
+***
+класс вызывает self метод определенный в модуле
+module MyModule
+	def my_method; 'hello'; end
+end
+class MyClass
+	class << self
+		include MyModule
+	end
+end
+MyClass.my_method # => "hello"
+или
+module MyModule
+	def my_method; 'hello'; end
+end
+class MyClass
+	extend MyModule
+end
+***
+==================================================
+Method Wrappers
+всего есть три подхода:
+--------------------------------------------------
+Around Aliases - методы, которые обертывают дополнительный код вокруг других методов
+Вы можете дать альтернативное имя методу Ruby, используя Module#alias_method:
+class MyClass
+	def my_method; 'my_method()'; end
+	alias_method :m, :my_method
+end
+obj = MyClass.new
+obj.my_method # => "my_method()"
+obj.m # => "my_method()"
+***
+class String
+	alias_method :real_length, :length
+	def length
+		real_length > 5 ? 'long' : 'short'
+	end
+end
+***
+----------------------------------------------------
+У уточнений есть одна дополнительная функция, которая позволяет вам использовать их вместо псевдонимов Around: если вы вызываете super из уточненного метода, вы вызываете исходный неочищенный метод. Вот пример:
+module StringRefinement
+	refine String do
+		def length
+			super > 5 ? 'long' : 'short'
+		end
+	end
+end
+
+using StringRefinement
+
+"War and Peace".length # => "long"
+----------------------------------------------------
+Module#prependd вставляет модуль ниже включающего в цепочку предков. Это означает, что метод в добавленном модуле может переопределить метод во включателе и вызвать непереопределенную версию с помощью super:
+module ExplicitString
+	def length
+		super > 5 ? 'long' : 'short'
+	end
+end
+
+String.class_eval do
+	prepend ExplicitString
+end
+"War and Peace".length  # => "long"
+----------------------------------------------------
+
+
+
+
+
