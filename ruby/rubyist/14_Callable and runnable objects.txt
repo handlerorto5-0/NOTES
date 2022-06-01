@@ -10,7 +10,9 @@ callable object , те которые вызываются с методом cal
 ----------------------------------------
 Proc objects
 
-pr = Proc.new { puts "Inside a Proc's block" } или альт синтаксис  pr = proc { puts "Inside a Proc's block" }
+pr = Proc.new { puts "Inside a Proc's block" } 
+или альт синтаксис  
+pr = proc { puts "Inside a Proc's block" }
 pr.call
 Блок не объект, а proc объект, хотя работают похоже
 p = Proc.new {|x| puts x.upcase }

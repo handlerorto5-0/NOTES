@@ -63,8 +63,34 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 Затем
 rm -rf `rbenv root`
-
-----------------------------------
+curl -sL \
+https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-installer | bash -
+=============================================
+установка дополнительного совта для Rails
+sudo apt-get update
+sudo apt-get install -y autoconf \
+bison \
+build-essential \
+curl \
+g++ \
+gcc \
+git \
+libffi-dev \
+libgconf-2-4 \
+libgdbm-dev \
+libncurses5-dev \
+libreadline-dev \
+libreadline-dev \
+libsqlite3-dev \
+libssl-dev \
+libxi6 \
+libyaml-dev \
+make \
+sqlite3 \
+xvfb \
+zip \
+zlib1g-dev
+=============================================
 install ChromeDriver ?? gromium
 =============================================
 Прблемма установки 2.2.4
@@ -96,3 +122,4 @@ nokogiri requires Ruby version < 3.1.dev, >= 2.5.
 
 были проблемы с цстановкой, рельсы , запускал ,bundle install  там такое писало и помогло епта
 gem update --system 3.2.3
+

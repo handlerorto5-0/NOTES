@@ -1,0 +1,142 @@
+$ mkdir app
+$ touch 	
+# Gemfile
+source 'https://rubygems.org'
+
+ruby '3.1.1'   # Change this line if you're using a different Ruby version.
+
+gem  'sinatra', '2.2.0'
+gem  'puma',    '5.6.4'
+gem  'rerun',   '0.13.1'(грячая перегрузка)
+#####
+$ bundle _2.3.10_ install
+# app.rb
+require 'sinatra'
+
+get  '/' do
+  'hello, world!'
+end
+#####
+$ bundle exec rerun app.rb
+# config.ru (для дeплоя)
+require './app'
+run Sinatra::Application
+####
+# Dockerfile
+FROM ruby:2.7.4
+WORKDIR /code
+COPY . /code
+RUN bundle install
+EXPOSE 4567
+CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "4567"]
+######
+$ docker build --tag app .
+$ docker run -p 4567:4567 app
+$ open http://localhost:4567
+---------------------------------
+Докеризация с компосе
+# Dockerfile
+FROM ruby:3.0.0
+ADD . /Sinatra-Docker
+WORKDIR /Sinatra-Docker
+RUN bundle install
+EXPOSE 4567
+CMD ["/bin/bash"]
+# docker-compose.yml
+version: "3.8"
+services:
+  app:
+    build: .
+    command: bundle exec rackup --host 0.0.0.0 -p 4567
+    ports:
+      - "4567:4567"
+    volumes:
+      - .:/Sinatra-Docker
+#######
+$ docker compose up
+$ open http://localhost:4567
+# config.ru
+require './main'
+run MyApp
+######
+# app.rb
+require 'sinatra/base'
+require "sinatra/reloader"(горячая перегрузка)
+
+class MyApp < Sinatra::Base
+	configure :development do
+  	register Sinatra::Reloader
+ 	end
+	get '/' do
+  	'Hello world!'
+ 	end
+end
+#######
+
+-------------------------------------
+Sequel
+DB = Sequel.connect(adapter: :postgres, database: 'my_db', host: 'localhost', user: 'db_user')
+users = DB[:players].where(sport: 'tennis')
+class Player < Sequel::Model
+end
+# db/migrations/20160710094000_sports.rb
+Sequel.migration do
+  change do
+    create_table(:sports) do
+      primary_key :id
+      String :name, :null => false
+    end
+  end
+end
+# db/migrations/20160710094100_players.rb
+Sequel.migration do
+  change do
+    create_table(:players) do
+      primary_key :id
+      String :name, :null => false
+      foreign_key :sport_id, :sports
+    end
+  end
+end
+-------------------------------------
+Пример Dockerfile для установки sqlite3
+
+FROM ubuntu:trusty
+RUN sudo apt-get -y update
+RUN sudo apt-get -y upgrade
+RUN sudo apt-get install -y sqlite3 libsqlite3-dev
+RUN mkdir /db
+RUN /usr/bin/sqlite3 /db/test.db
+CMD /bin/bash
+сохранить файл db в папке ОС хоста /home/dbfolder
+
+docker run -it -v /home/dbfolder/:/db imagename
+---------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

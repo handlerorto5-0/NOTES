@@ -1,3 +1,46 @@
 Книга Learn Rails 5.2 Глава 15 стр 393
 
+------------------------------------------------------
+Использование Action Cable — это трехэтапный процесс: создание канала, передача некоторых данных и получение данных..
+
+rails generate channel products
+это создаст
+nvoke test_unit
+create
+test/channels/products_channel_test.rb
+create app/channels/products_channel.rb
+identical app/javascript/channels/index.js
+identical app/javascript/channels/consumer.js
+create app/javascript/channels/products_channel.js
+
+
+Канал может поддерживать несколько потоков (например, приложение чата может иметь несколько комнат), но пока нам нужен только один поток.
+app/channels/products_channel.rb
+def subscribed
+	stream_from "products"
+end
+
+По умолчанию Rails разрешает доступ только с локального хоста при работе в режиме разработки. Отключить эту проверку в config/environments/development.rb:
+config.action_cable.disable_request_forgery_protection = true
+
+
+store/index это вид
+в котролере индекс соглоасовываем вывод
+@products = Product.all.order(:title)
+вызываем render_to_string() для отображения представления в виде строки, передавая layout: false , потому что нам нужно только это представление, а не вся страница
+посылаем иныормацию из контролера в канал
+@products = Product.all.order(:title)
+ActionCable.server.broadcast 'products', 
+	html: render_to_string('store/index', layout: false)
+
+Последним шагом является получение данных о клиенте. Это включает в себя подписку на канал и определение того, что будет сделано при получении данных.
+app/javascript/channels/products_channel.js
+received() вызывается с данными, которые отправляются по каналу
+received(data) {
+	const storeElement = document.querySelector("main.store")
+	if (storeElement) {
+		storeElement.innerHTML = data.html
+	}
+}
+----------------------------------------------------------------------
 

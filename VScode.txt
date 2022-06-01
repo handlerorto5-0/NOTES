@@ -58,6 +58,7 @@ ul>li*3>lorem10→
 Auto Close Tag
 Auto Import
 Auto Rename Tag
+Path Autocomplete
 Better Comments
 Code Spell Checker
 endwise
@@ -80,6 +81,8 @@ Browser Preview
 Go
 Terraform
 Tailwind
+Remote - SSH
+OpenAPI (Swagger) Editor
 =====================================
 JSON настроек:
 {

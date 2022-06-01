@@ -104,7 +104,7 @@ Ruby предоставляет стандартный библиотечный 
 
 Deferred Evaluation (Отложенная оценка):
 inc = Proc.new {|x| x + 1 }
-млм
+или
 my_proc = proc { "Bill" }
 # more code...
 inc.call(2) # => 3

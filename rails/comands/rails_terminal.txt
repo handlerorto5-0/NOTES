@@ -44,7 +44,13 @@ User.where.not(favorite_animal: "snake")
 User.where.not(favorite_animal: "snake").or(User.where(favorite_animal: nil))
 User.where.not(subscribed: true)
 User.where(subscribed: [nil, false])
-
+-----------------------------------------------------
+получить имена полей
+class Event < ActiveRecord::Base
+end
+> Event.column_names
+=> [“id”, “name”, “description”, “image_url”, “created_at”, “updated_at”]
+----------------------------------------------------
 
 
 
