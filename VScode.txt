@@ -70,7 +70,6 @@ htmltagwrap
 jbuilder highlight
 Live Server
 Material Icon Theme
-PostgreSQL
 Prettier - Code formatter
 Project Manager
 Ruby Test Explorer

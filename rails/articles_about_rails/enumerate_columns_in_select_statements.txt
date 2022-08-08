@@ -1,0 +1,3 @@
+config.active_record.enumerate_columns_in_select_statements
+
+Когда true, имена столбцов будут всегда включаться в выражения SELECT, и будут избегаться запросы с подстановкой SELECT * FROM .... Это помогает избежать ошибок кэширования в prepared statement при добавлении столбцов в базу данных PostgreSQL, к примеру. По умолчанию false.

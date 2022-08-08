@@ -34,6 +34,8 @@ SHOW server_version;
 \d посмотреть базу
 \du просмотр ролей
 \dx просмотр расширений
+\x расширенный вывод
+\z t_person информация о правах
 sudo adduser kv-2 Создайте одноименного с ролью пользователя Ubuntu
 
 sudo -u postgres createuser --interactive

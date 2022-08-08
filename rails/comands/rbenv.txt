@@ -15,6 +15,8 @@ git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 список всех доступных версий Ruby:
 rbenv install -l
 rbenv install -L все
+обновить список
+cd ~/.rbenv/plugins/ruby-build and git pull
 rbenv versions  установленные
 установить ruby
 rbenv install 2.7.2

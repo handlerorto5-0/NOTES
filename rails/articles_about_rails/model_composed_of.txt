@@ -1,0 +1,11 @@
+В Rails ActiveRecord есть метод composer_of, который позволяет нам группировать атрибуты модели под общим PORO-подобным объектом. Допустим, у нас есть пользователь с полями address_street и address_city, хранящимися в одной таблице, поэтому мы все еще можем сгруппировать атрибуты адреса:
+
+class User < ActiveRecord::Base
+  composed_of :address, mapping: [%w(address_street street), %w(address_city city)]
+end
+
+Таким образом, помимо user.address_street и user.address_city, мы также можем получить доступ к тем же значениям, что и:
+
+address = user.address
+puts address.street
+puts address.city
